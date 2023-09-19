@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  double gridCount = 4;
+  double endScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -85,59 +93,96 @@ class HomeScreen extends StatelessWidget {
       "https://images.unsplash.com/photo-1497752531616-c3afd9760a11?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
     ];
 
+    void onScaleUpdate(ScaleUpdateDetails details) {
+      // 제스처에 따라 그리드 수를 동적으로 조절
+      endScale = details.scale;
+    }
+
+    void onScaleEnd(ScaleEndDetails details) {
+      setState(() {
+        if (endScale < 1) {
+          gridCount += 1;
+        } else {
+          gridCount -= 1;
+        }
+
+        if (gridCount == 0) {
+          gridCount = 1;
+        }
+
+        if (gridCount == 11) {
+          gridCount = 10;
+        }
+      });
+    }
+
     return Scaffold(
-      body: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisSpacing: 0,
-            mainAxisSpacing: 0,
-            crossAxisCount: 4,
-          ),
-          itemCount: imageUrls.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PhotoRoute(
-                      image: imageUrls[index],
-                      prevImage: imageUrls[index - 1],
-                      nextImage: imageUrls[index + 1],
+      body: GestureDetector(
+        onScaleUpdate: onScaleUpdate,
+        onScaleEnd: onScaleEnd,
+        child: CustomScrollView(
+          slivers: [
+            const SliverAppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                "tiny-human",
+                style: TextStyle(
+                  color: Colors.deepOrange,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            SliverGrid(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                if (index + 1 > imageUrls.length) {
+                  return null;
+                }
+                return Padding(
+                  padding: EdgeInsets.all(8 / gridCount),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PhotoRoute(
+                            image: imageUrls[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(imageUrls[index]),
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
                     ),
                   ),
                 );
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(imageUrls[index]),
-                  )),
-                ),
+              }),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: gridCount.toInt(),
               ),
-            );
-          }),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
 
 class PhotoRoute extends StatelessWidget {
-  final prevImage;
   final image;
-  final nextImage;
 
   const PhotoRoute({
-    required this.prevImage,
     required this.image,
-    required this.nextImage,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return InteractiveViewer(
       child: Scaffold(
         body: Center(
