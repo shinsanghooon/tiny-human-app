@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -186,7 +187,7 @@ class PhotoRoute extends StatelessWidget {
     return InteractiveViewer(
       child: Scaffold(
         body: Center(
-          child: Image.network(image),
+          child: CachedNetworkImage(imageUrl: image)
         ),
       ),
     );
