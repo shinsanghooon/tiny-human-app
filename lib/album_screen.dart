@@ -1,20 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class AlbumScreen extends StatefulWidget {
+  const AlbumScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<AlbumScreen> createState() => _AlbumScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _AlbumScreenState extends State<AlbumScreen> {
   double gridCount = 4;
   double endScale = 1.0;
 
+  final ImagePicker imagePicker = ImagePicker();
+  final List<XFile?> pickedImages = [];
+
   @override
   Widget build(BuildContext context) {
-    final imageUrls = [
+    List imageUrls = [
       "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
       "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
       "https://images.unsplash.com/photo-1497752531616-c3afd9760a11?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
@@ -118,6 +122,29 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          print("Floating Button is pressed.");
+          List<XFile>? images = await imagePicker.pickMultipleMedia();
+
+          print('selected images count: ${images.length}');
+
+          if (images.isNotEmpty) {
+            setState(() {
+              pickedImages.addAll(images);
+            });
+          }
+        },
+        icon: const Icon(
+          Icons.photo,
+          size: 20.0,
+        ),
+        label: const Text(
+          '사진 올리기',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
+        ),
+        backgroundColor: Colors.deepOrange,
+      ),
       body: GestureDetector(
         onScaleUpdate: onScaleUpdate,
         onScaleEnd: onScaleEnd,
@@ -186,9 +213,7 @@ class PhotoRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return InteractiveViewer(
       child: Scaffold(
-        body: Center(
-          child: CachedNetworkImage(imageUrl: image)
-        ),
+        body: Center(child: CachedNetworkImage(imageUrl: image)),
       ),
     );
   }
