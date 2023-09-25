@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class AlbumScreen extends StatefulWidget {
+  const AlbumScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<AlbumScreen> createState() => _AlbumScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _AlbumScreenState extends State<AlbumScreen> {
   double gridCount = 4;
   double endScale = 1.0;
 
@@ -99,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     void onScaleEnd(ScaleEndDetails details) {
+      print('set State grid count');
       setState(() {
         if (endScale < 1) {
           gridCount += 1;
