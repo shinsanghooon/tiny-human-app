@@ -26,8 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
     final accessToken =  await storage.read(key: ACCESS_TOKEN_KEY);
     final refreshToken =  await storage.read(key: REFRESH_TOKEN_KEY);
 
+    print('splash $accessToken');
+
     if (refreshToken == null || accessToken == null) {
-      print('1');
+      print('1 splash');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const LoginScreen(),
@@ -35,10 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
         (route) => false,
       );
     } else {
-      print('2');
+      print('2 splash');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const AlbumScreen(),
+          builder: (_) => const LoginScreen(),
         ),
         (route) => false,
       );
