@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
+import 'package:tiny_human_app/common/utils/validator.dart';
 
 class CustomTextFormField extends StatelessWidget {
+  final String keyName;
   final bool obscureText;
   final bool autofocus;
-  final ValueChanged<String> onChanged;
+  final FormFieldSetter<String> onSaved;
   final String? hintText;
   final String? errorText;
-  final bool requiredValue;
+  final String initialValue;
 
-  const CustomTextFormField(
-      {this.obscureText = false,
-      this.autofocus = false,
-      required this.onChanged,
-      this.hintText,
-      this.errorText,
-      this.requiredValue = true,
-      super.key});
+  const CustomTextFormField({
+    required this.keyName,
+    this.obscureText = false,
+    this.autofocus = false,
+    required this.onSaved,
+    this.hintText,
+    this.errorText,
+    required this.initialValue,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +34,19 @@ class CustomTextFormField extends StatelessWidget {
       cursorColor: PRIMARY_COLOR,
       obscureText: obscureText,
       autofocus: autofocus,
-      onChanged: onChanged,
-      validator: requiredValue
-          ? (value) {
+      onSaved: onSaved,
+      validator: (value) {
               if (value == null || value.isEmpty) {
-                return '필수 값입니다.';
+                return '필수 입력값입니다.';
               }
+
+              if(keyName == 'email' && !isValidEmail(value)) {
+                print(value);
+                return '올바른 이메일 주소를 입력해주세요';
+              }
+
               return null;
-            }
-          : null,
+            },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20.0),
         hintText: hintText,

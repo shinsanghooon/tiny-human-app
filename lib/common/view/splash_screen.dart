@@ -3,6 +3,7 @@ import 'package:tiny_human_app/album/view/album_screen.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
+import 'package:tiny_human_app/common/view/root_screen.dart';
 
 import '../../user/view/login_screen.dart';
 
@@ -40,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
       print('2 splash');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const LoginScreen(),
+          builder: (_) => const RootScreen(),
         ),
         (route) => false,
       );
