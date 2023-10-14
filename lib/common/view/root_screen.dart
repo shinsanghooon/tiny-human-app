@@ -12,21 +12,73 @@ class RootScreen extends StatelessWidget {
     final List<String> features = ['아기', '일기', '앨범', 'HELP', '설정'];
 
     return DefaultLayout(
-      child: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
-        child: Center(
-          child: GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 3,
+      backgroundColor: Colors.black,
+      child: SafeArea(
+        // bottom: false,
+        // top: false,
+        child: Container(
+          color: Colors.white,
+          child: Column(
             children: [
-              MainMenuItemButton(menuItemName: 'BABY', screen: AlbumScreen()),
-              MainMenuItemButton(menuItemName: 'DIARY', screen: AlbumScreen()),
-              MainMenuItemButton(menuItemName: 'ALBUM', screen: AlbumScreen()),
-              MainMenuItemButton(menuItemName: 'HELP', screen: AlbumScreen()),
-              MainMenuItemButton(menuItemName: 'SETTINGS', screen: AlbumScreen()),
+              SizedBox(
+                height: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 35.0),
+                child: Text(
+                  "Tiny Human",
+                  style: TextStyle(
+                    fontSize: 42.0,
+                    fontWeight: FontWeight.w900,
+                    color: PRIMARY_COLOR,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 80,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MainMenuItemButton(
+                    menuItemName: 'BABY',
+                    menuItemIcon: Icons.child_care_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                  MainMenuItemButton(
+                    menuItemName: 'DIARY',
+                    menuItemIcon: Icons.event_note_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                  MainMenuItemButton(
+                    menuItemName: 'ALBUM',
+                    menuItemIcon: Icons.photo_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MainMenuItemButton(
+                    menuItemName: 'HELP',
+                    menuItemIcon: Icons.mark_chat_unread_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                  MainMenuItemButton(
+                    menuItemName: 'CHECK-LIST',
+                    customFontSize: 13.0,
+                    menuItemIcon: Icons.check_box_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                  MainMenuItemButton(
+                    menuItemName: 'SETTINGS',
+                    customFontSize: 13.0,
+                    menuItemIcon: Icons.settings_outlined,
+                    screen: AlbumScreen(),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
