@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
+import 'package:tiny_human_app/baby/view/baby_screen.dart';
+import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/component/menu_item_button.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
+import 'package:tiny_human_app/common/view/setting_screen.dart';
+import 'package:tiny_human_app/diary/view/diary_screen.dart';
+import 'package:tiny_human_app/help/view/help_screen.dart';
 
 class RootScreen extends StatelessWidget {
   const RootScreen({super.key});
@@ -18,13 +23,13 @@ class RootScreen extends StatelessWidget {
         // top: false,
         child: Container(
           color: Colors.white,
-          child: Column(
+          child: const Column(
             children: [
               SizedBox(
                 height: 60,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 35.0),
+                padding: EdgeInsets.symmetric(vertical: 35.0),
                 child: Text(
                   "Tiny Human",
                   style: TextStyle(
@@ -43,12 +48,12 @@ class RootScreen extends StatelessWidget {
                   MainMenuItemButton(
                     menuItemName: 'BABY',
                     menuItemIcon: Icons.child_care_outlined,
-                    screen: AlbumScreen(),
+                    screen: BabyScreen(),
                   ),
                   MainMenuItemButton(
                     menuItemName: 'DIARY',
                     menuItemIcon: Icons.event_note_outlined,
-                    screen: AlbumScreen(),
+                    screen: DiaryScreen(),
                   ),
                   MainMenuItemButton(
                     menuItemName: 'ALBUM',
@@ -63,19 +68,19 @@ class RootScreen extends StatelessWidget {
                   MainMenuItemButton(
                     menuItemName: 'HELP',
                     menuItemIcon: Icons.mark_chat_unread_outlined,
-                    screen: AlbumScreen(),
+                    screen: HelpScreen(),
                   ),
                   MainMenuItemButton(
                     menuItemName: 'CHECK-LIST',
                     customFontSize: 13.0,
                     menuItemIcon: Icons.check_box_outlined,
-                    screen: AlbumScreen(),
+                    screen: CheckListScreen(),
                   ),
                   MainMenuItemButton(
                     menuItemName: 'SETTINGS',
                     customFontSize: 13.0,
                     menuItemIcon: Icons.settings_outlined,
-                    screen: AlbumScreen(),
+                    screen: SettingScreen(),
                   ),
                 ],
               ),
