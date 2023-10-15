@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_human_app/common/constant/colors.dart';
+import 'package:tiny_human_app/common/constant/data.dart';
 
 class AlbumScreen extends StatefulWidget {
   const AlbumScreen({super.key});
@@ -123,14 +125,18 @@ class _AlbumScreenState extends State<AlbumScreen> {
         onScaleEnd: onScaleEnd,
         child: CustomScrollView(
           slivers: [
-            const SliverAppBar(
+            SliverAppBar(
               backgroundColor: Colors.transparent,
-              title: Text(
-                "tiny-human",
+              title: const Text(
+                "ALBUM",
                 style: TextStyle(
                   color: Colors.deepOrange,
                   fontWeight: FontWeight.w800,
                 ),
+              ),
+              leading: IconButton(
+                icon: Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ),
             SliverGrid(

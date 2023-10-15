@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Tiny Human",
+              APP_TITLE,
               style: TextStyle(
                 fontSize: 42.0,
                 fontWeight: FontWeight.w900,

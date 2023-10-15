@@ -4,8 +4,9 @@ import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/component/menu_item_button.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
+import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
-import 'package:tiny_human_app/common/view/setting_screen.dart';
+import 'package:tiny_human_app/user/view/setting_screen.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
 import 'package:tiny_human_app/help/view/help_screen.dart';
 
@@ -14,13 +15,12 @@ class RootScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> features = ['아기', '일기', '앨범', 'HELP', '설정'];
 
     return DefaultLayout(
       backgroundColor: Colors.black,
       child: SafeArea(
-        // bottom: false,
-        // top: false,
+        bottom: false,
+        top: false,
         child: Container(
           color: Colors.white,
           child: const Column(
@@ -31,7 +31,7 @@ class RootScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 35.0),
                 child: Text(
-                  "Tiny Human",
+                  APP_TITLE,
                   style: TextStyle(
                     fontSize: 42.0,
                     fontWeight: FontWeight.w900,

@@ -47,5 +47,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>타이니 휴먼이 이미지에 접근하려고 합니다.</string>
 </dict>
 </plist>

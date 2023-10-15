@@ -6,7 +6,7 @@ import 'package:tiny_human_app/album/view/album_screen.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:dio/dio.dart';
-import 'package:tiny_human_app/user/component/text_component.dart';
+import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/user/view/register_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
@@ -43,13 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const UserScreenTitle(title: "환영합니다."),
+                const ScreenTitle(title: "환영합니다."),
                 const SizedBox(
                   height: 20.0,
                 ),
-                const UserScreenSubTitle(
+                const ScreenSubTitle(
                     subTitle:
-                        "이메일과 비밀번호를 입력해서 로그인해주세요.\n오늘도 타이니 휴먼 한 페이지를 남겨보아요!"),
+                        "이메일과 비밀번호를 입력해서 로그인해주세요.\n오늘도 ${APP_TITLE}에 하루를 남겨보세요!"),
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () async {
+                        onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (_) => const RegisterScreen()));
                         },

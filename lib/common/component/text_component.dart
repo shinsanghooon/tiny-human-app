@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class UserScreenTitle extends StatelessWidget {
+class ScreenTitle extends StatelessWidget {
   final String title;
 
-  const UserScreenTitle({
+  const ScreenTitle({
     required this.title,
     super.key,
   });
@@ -15,10 +15,10 @@ class UserScreenTitle extends StatelessWidget {
   }
 }
 
-class UserScreenSubTitle extends StatelessWidget {
+class ScreenSubTitle extends StatelessWidget {
   final String subTitle;
 
-  const UserScreenSubTitle({required this.subTitle, super.key});
+  const ScreenSubTitle({required this.subTitle, super.key});
 
   @override
   Widget build(BuildContext context) {
