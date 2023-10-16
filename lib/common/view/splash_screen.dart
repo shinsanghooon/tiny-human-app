@@ -30,7 +30,6 @@ class _SplashScreenState extends State<SplashScreen> {
     print('splash $accessToken');
 
     if (refreshToken == null || accessToken == null) {
-      print('1 splash');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const LoginScreen(),
@@ -38,7 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
         (route) => false,
       );
     } else {
-      print('2 splash');
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const RootScreen(),
