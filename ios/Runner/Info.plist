@@ -48,6 +48,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>타이니 휴먼이 이미지에 접근하려고 합니다.</string>
+    <string>This app needs to access your photo gallery.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>This app needs to access your camera.</string>
 </dict>
 </plist>
