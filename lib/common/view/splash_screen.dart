@@ -1,20 +1,23 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
+import 'package:tiny_human_app/common/secure_storage/secure_storage.dart';
 import 'package:tiny_human_app/common/view/root_screen.dart';
 
 import '../../user/view/login_screen.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -23,32 +26,43 @@ class _SplashScreenState extends State<SplashScreen> {
     checkToken();
   }
 
+  void deleteToken() async {
+    final storage = ref.read(secureStorageProvider);
+    await storage.deleteAll();
+  }
+
   void checkToken() async {
-    final accessToken =  await storage.read(key: ACCESS_TOKEN_KEY);
-    final refreshToken =  await storage.read(key: REFRESH_TOKEN_KEY);
+    final storage = ref.read(secureStorageProvider);
+    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
+    final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
 
     print('splash $accessToken');
 
-    if (refreshToken == null || accessToken == null) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const LoginScreen(),
-        ),
-        (route) => false,
-      );
-    } else {
+    final dio = Dio();
+
+    try {
+      final response = await dio.post('http://$ip/api/v1/token',
+          data: {'refreshToken': refreshToken});
+
+      await storage.write(
+          key: ACCESS_TOKEN_KEY, value: response.data['accessToken']);
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const RootScreen(),
         ),
+            (route) => false,
+      );
+
+    } catch (e) {
+      print('something wrong in splash screen');
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => LoginScreen()),
         (route) => false,
       );
     }
   }
 
-  void deleteToken() async {
-    await storage.deleteAll();
-  }
 
   @override
   Widget build(BuildContext context) {

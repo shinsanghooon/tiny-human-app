@@ -7,6 +7,7 @@ import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:dio/dio.dart';
 import 'package:tiny_human_app/common/component/text_component.dart';
+import 'package:tiny_human_app/common/view/root_screen.dart';
 import 'package:tiny_human_app/user/view/register_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
@@ -117,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                              builder: (_) => AlbumScreen(),
+                              builder: (_) => RootScreen(),
                             ),
                             (route) => false,
                           );

@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/baby/model/baby_model.dart';
+import 'package:tiny_human_app/baby/repository/baby_repository.dart';
 import 'package:tiny_human_app/baby/view/baby_register_screen.dart';
 
 import '../../common/constant/colors.dart';
+import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
 import '../component/baby_card.dart';
+import '../provider/baby_provider.dart';
 
-class BabyScreen extends StatelessWidget {
+class BabyScreen extends ConsumerWidget {
   const BabyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 어떤 순간에서든 babyProvider 사용하게 되면
+    // 이 화면에서든 어떤 화면에서든 한 번 불리면 프로바이더가 생성이 되고 계속 기억이 된다.
+    // 이제 future builder가 필요가 없다.
+    final data = ref.watch(babyProvider);
+
+    if (data.length == 0) {
+      final emptyBabyModel = BabyModel(
+        id: '9999',
+        name: 'tiny-human',
+        gender: '남자 아이',
+        dayOfBirth: '2023-01-01',
+        timeOfBirth: 10,
+        nickName: '태명',
+        profileImgKeyName: '',);
+
+      data.add(emptyBabyModel);
+    }
+
     return DefaultLayout(
       child: CustomScrollView(slivers: [
         SliverAppBar(
@@ -27,15 +50,14 @@ class BabyScreen extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.add, color: PRIMARY_COLOR),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => BabyRegisterScreen(),
-                  ),
-                );
-              }
-            )
+                icon: Icon(Icons.add, color: PRIMARY_COLOR),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => BabyRegisterScreen(),
+                    ),
+                  );
+                })
           ],
         ),
         SliverPadding(
@@ -44,19 +66,20 @@ class BabyScreen extends StatelessWidget {
           ),
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) {
+                  (context, index) {
+                final item = data[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: BabyCard(
-                    name: '신리카',
-                    gender: '여자',
-                    birth: '2022년 9월 27일',
+                    name: item.name,
+                    gender: item.gender,
+                    birth: '${item.dayOfBirth} ${item.timeOfBirth}시',
                     description:
-                        "서울 은평구 인정병원에서 22년 9월 27일 14시에 56cm, 4.1kg의 자이언트 베이비로 태어남. 태어나자마자 똥을 쌌다고 전해짐. ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
+                    "아기와의 처음 만난 순간을 기록해보세요. 아직 이 기능은 구현되지 않았으며 백엔드 작업이 필요합니다.",
                   ),
                 );
               },
-              childCount: 10,
+              childCount: data.length,
             ),
           ),
         )

@@ -5,13 +5,15 @@ class BabyCard extends StatelessWidget {
   final String gender;
   final String birth;
   final String description;
+  final String imageUrl;
 
-  const BabyCard({
-    required this.name,
-    required this.gender,
-    required this.birth,
-    this.description = "",
-    super.key});
+  const BabyCard(
+      {required this.name,
+      required this.gender,
+      required this.birth,
+      this.description = "",
+      this.imageUrl = "",
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,9 @@ class BabyCard extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Image.network(
-            "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
+            imageUrl == ""
+                ? "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80"
+                : imageUrl,
             fit: BoxFit.cover,
             width: MediaQuery.of(context).size.width / 2.5,
             height: MediaQuery.of(context).size.width / 2.5,
@@ -39,7 +43,7 @@ class BabyCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    name,
+                    '${name}(${gender == 'MALE' ? '남' : '여'})',
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.w500,
@@ -52,13 +56,16 @@ class BabyCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    description,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      description,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

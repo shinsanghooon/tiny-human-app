@@ -38,7 +38,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
   String? nickname;
   DateTime? dayOfBirth;
   int? timeOfBirth;
-  String? gender;
+  String gender = '남자 아기';
   String? fileName;
   String? relation;
   String? description;
@@ -168,6 +168,8 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
             return null;
           }
 
+          print('gender: $gender');
+
           final response = await dio.post(
             'http://$ip/api/v1/babies',
             options: Options(headers: {
@@ -196,6 +198,10 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
                   );
                 });
           }
+
+          print('preSignedUrl ${response.data}');
+          String preSignedUrl = response.data['preSignedUrl'];
+
 
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -319,6 +325,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
 
   void _showTimeDialog(BuildContext context) {
     List<int> times = List.generate(24, (index) => index);
+    timeOfBirth = 0;
 
     showDialog(
       context: context,
