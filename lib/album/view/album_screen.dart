@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tiny_human_app/common/constant/colors.dart';
-import 'package:tiny_human_app/common/constant/data.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../common/constant/colors.dart';
 
 class AlbumScreen extends StatefulWidget {
   const AlbumScreen({super.key});
@@ -13,9 +15,12 @@ class _AlbumScreenState extends State<AlbumScreen> {
   double gridCount = 4;
   double endScale = 1.0;
 
+  final ImagePicker imagePicker = ImagePicker();
+  final List<XFile?> pickedImages = [];
+
   @override
   Widget build(BuildContext context) {
-    final imageUrls = [
+    List imageUrls = [
       "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
       "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
       "https://images.unsplash.com/photo-1497752531616-c3afd9760a11?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
@@ -101,7 +106,6 @@ class _AlbumScreenState extends State<AlbumScreen> {
     }
 
     void onScaleEnd(ScaleEndDetails details) {
-      print('set State grid count');
       setState(() {
         if (endScale < 1) {
           gridCount += 1;
@@ -120,6 +124,29 @@ class _AlbumScreenState extends State<AlbumScreen> {
     }
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          print("Floating Button is pressed.");
+          List<XFile>? images = await imagePicker.pickMultipleMedia();
+
+          print('selected images count: ${images.length}');
+
+          if (images.isNotEmpty) {
+            setState(() {
+              pickedImages.addAll(images);
+            });
+          }
+        },
+        icon: const Icon(
+          Icons.photo,
+          size: 20.0,
+        ),
+        label: const Text(
+          '사진 올리기',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
+        ),
+        backgroundColor: Colors.deepOrange,
+      ),
       body: GestureDetector(
         onScaleUpdate: onScaleUpdate,
         onScaleEnd: onScaleEnd,
@@ -138,6 +165,12 @@ class _AlbumScreenState extends State<AlbumScreen> {
                 icon: Icon(Icons.home_outlined, color: PRIMARY_COLOR),
                 onPressed: () => Navigator.of(context).pop(),
               ),
+              actions: [
+                IconButton(
+                    icon: Icon(Icons.add, color: PRIMARY_COLOR),
+                    onPressed: () {
+                    })
+              ],
             ),
             SliverGrid(
               delegate: SliverChildBuilderDelegate((context, index) {
@@ -192,9 +225,7 @@ class PhotoRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return InteractiveViewer(
       child: Scaffold(
-        body: Center(
-          child: Image.network(image),
-        ),
+        body: Center(child: CachedNetworkImage(imageUrl: image)),
       ),
     );
   }
