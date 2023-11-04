@@ -124,29 +124,6 @@ class _AlbumScreenState extends State<AlbumScreen> {
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          print("Floating Button is pressed.");
-          List<XFile>? images = await imagePicker.pickMultipleMedia();
-
-          print('selected images count: ${images.length}');
-
-          if (images.isNotEmpty) {
-            setState(() {
-              pickedImages.addAll(images);
-            });
-          }
-        },
-        icon: const Icon(
-          Icons.photo,
-          size: 20.0,
-        ),
-        label: const Text(
-          '사진 올리기',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
-        ),
-        backgroundColor: Colors.deepOrange,
-      ),
       body: GestureDetector(
         onScaleUpdate: onScaleUpdate,
         onScaleEnd: onScaleEnd,
@@ -168,7 +145,8 @@ class _AlbumScreenState extends State<AlbumScreen> {
               actions: [
                 IconButton(
                     icon: Icon(Icons.add, color: PRIMARY_COLOR),
-                    onPressed: () {
+                    onPressed: () async {
+                      await uploadImages();
                     })
               ],
             ),
@@ -210,6 +188,19 @@ class _AlbumScreenState extends State<AlbumScreen> {
         ),
       ),
     );
+  }
+
+  uploadImages() async {
+    print("Floating Button is pressed.");
+    List<XFile>? images = await imagePicker.pickMultipleMedia();
+
+    print('selected images count: ${images.length}');
+
+    if (images.isNotEmpty) {
+      setState(() {
+        pickedImages.addAll(images);
+      });
+    }
   }
 }
 
