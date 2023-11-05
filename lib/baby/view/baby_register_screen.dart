@@ -29,6 +29,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
   final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
   XFile? pickedFile;
   ImageProvider profileImage = const NetworkImage(SAMPLE_BABY_IMAGE_URL);
+  String? pickedFilePath;
 
   // gender
   List<String> genderList = ['남자 아기', '여자 아기'];
@@ -51,6 +52,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
   }
 
   String accessToken = '';
+
   void checkToken() async {
     accessToken = (await storage.read(key: ACCESS_TOKEN_KEY))!;
   }
@@ -133,20 +135,19 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
 
   GestureDetector ProfileAvatar() {
     return GestureDetector(
-                  onTap: () async {
-                    final XFile? pickedFile =
-                        await picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      setState(() {
-                        profileImage =
-                            Image.file(File(pickedFile!.path)).image;
-                        fileName = pickedFile.name;
-                      });
-                    }
-                  },
-                  child: GradientBorderCircleAvatar(
-                      selectedProfileImage: profileImage),
-                );
+      onTap: () async {
+        final XFile? pickedFile =
+            await picker.pickImage(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          setState(() {
+            pickedFilePath = pickedFile!.path;
+            profileImage = Image.file(File(pickedFile!.path)).image;
+            fileName = pickedFile.name;
+          });
+        }
+      },
+      child: GradientBorderCircleAvatar(selectedProfileImage: profileImage),
+    );
   }
 
   SizedBox registerBabyActionButton(BuildContext context) {
@@ -158,11 +159,11 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
           print('Request to register baby');
           print(accessToken);
 
-          if(formKey.currentState == null) {
+          if (formKey.currentState == null) {
             return null;
           }
 
-          if(formKey.currentState!.validate()){
+          if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
           } else {
             return null;
@@ -178,7 +179,8 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
             data: {
               "name": name,
               "gender": gender == '남자 아기' ? 'MALE' : 'FEMALE',
-              "dayOfBirth": DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
+              "dayOfBirth":
+                  DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
               "timeOfBirth": timeOfBirth,
               "nickName": nickname,
               "fileName": fileName,
@@ -202,6 +204,21 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
           print('preSignedUrl ${response.data}');
           String preSignedUrl = response.data['preSignedUrl'];
 
+          print('filePath');
+          print(pickedFilePath);
+          File file = File(pickedFilePath!);
+
+          var fileExt = file.path.split('.').last == 'jpg'
+              ? 'jpeg'
+              : file.path.split('.').last;
+          await dio.put(preSignedUrl,
+              data: file.openRead(),
+              options: Options(
+                headers: {
+                  Headers.contentLengthHeader: file.lengthSync(),
+                },
+                contentType: 'image/$fileExt',
+              ));
 
           Navigator.of(context).push(
             MaterialPageRoute(
