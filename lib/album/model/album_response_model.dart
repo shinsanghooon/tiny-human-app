@@ -15,7 +15,6 @@ class AlbumResponseModel implements IModelWithId{
   final String keyName;
   @JsonKey(
     fromJson: DataUtils.stringToDateTime,
-    includeIfNull: false,
   )
   final DateTime? originalCreatedAt;
 

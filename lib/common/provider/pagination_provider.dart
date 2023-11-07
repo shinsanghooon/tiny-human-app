@@ -4,24 +4,6 @@ import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/model/model_with_id.dart';
 import 'package:tiny_human_app/common/repository/base_pagination_repository.dart';
 
-class _PaginationInfo {
-  final int fetchCount;
-
-  // true일 경우, 추가로 데이터를 가져옴. 현재 데이터는 유지하면서 새로고침
-  // false일 경우 새로고침(현재 상태 덮어씌움)
-  final bool fetchMore;
-
-  // 강제로 다시 로딩하기
-  // true일 경우, cursorPaginationLoading()
-  final bool forceRefetch;
-
-  _PaginationInfo({
-    this.fetchCount = 50,
-    this.fetchMore = false,
-    this.forceRefetch = false,
-  });
-}
-
 // PaginationProvider는 CursorPaginationBase의 상태를 관리하는 것이다.
 class PaginationProvider<T extends IModelWithId,
         U extends IBasePaginationRepository<T>>
@@ -31,10 +13,10 @@ class PaginationProvider<T extends IModelWithId,
   PaginationProvider({
     required this.repository,
   }) : super(CursorPaginationLoading()){
-    paginateWithId();
+    paginate();
   }
 
-  Future<void> paginateWithId({
+  Future<void> paginate({
     int fetchCount = 50,
     bool fetchMore = false,
     bool forceRefetch = false,
@@ -59,9 +41,12 @@ class PaginationProvider<T extends IModelWithId,
       //  - fetchMore가 true일 때, fetchMore는 스크롤 아래까지 가서 데이터를 더 가져와라 라고 할 때
       //  - fetchMore가 false일 때(데이터를 쭉 가져오고 있다가 위로 올라가서 새로고침을 할 때), 기존 요청은 중요하지 않기 때문에 멈추고 다시 페이지네이션
 
+      print('paginate');
+
       if (state is CursorPagination && !forceRefetch) {
         final pState = state as CursorPagination;
 
+        print(pState.body);
         // 데이터가 더 없으면 stop
         // 일단 임의로 100으로 설정함
         if (pState.nextCursorRequest.key == -1) {
@@ -86,6 +71,7 @@ class PaginationProvider<T extends IModelWithId,
         // 데이터를 추가로 가져오는 상황
         final pState = state as CursorPagination<T>;
 
+        // 새로운 상태를 만든다.
         state = CursorPaginationFetchingMore<T>(
           nextCursorRequest: pState.nextCursorRequest,
           body: pState.body,
@@ -94,6 +80,7 @@ class PaginationProvider<T extends IModelWithId,
         cursorPaginationParams.copyWith(
           key: pState.body.last.id,
         );
+
       } else {
         // 데이터를 처음부터 가져오는 상황
         // 만약 기존 데이터가 있다면 기존 데이터를 보존한채로 Fetch 요청을 해야함
@@ -107,14 +94,11 @@ class PaginationProvider<T extends IModelWithId,
         }
       }
 
-      print('***');
       final response = await repository.paginateWithId(
-        id: 1,
-        order: 'uploadedAt',
+        id: 1, // babyId
+        order: 'uploadedAt', // fixed values until update something
         cursorPaginationParams: cursorPaginationParams,
       );
-      print('---');
-      print(response.body);
 
       if (state is CursorPaginationFetchingMore<T>) {
         final pState = state as CursorPaginationFetchingMore<T>;

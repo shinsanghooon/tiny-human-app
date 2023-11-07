@@ -14,13 +14,12 @@ class AlbumModel {
   final String preSignedUrl;
   @JsonKey(
     fromJson: DataUtils.stringToDateTime,
-    includeIfNull: false,
   )
   final DateTime? originalCreatedAt;
   @JsonKey(
     fromJson: DataUtils.stringToDateTime,
   )
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   AlbumModel({
     required this.id,
@@ -29,14 +28,10 @@ class AlbumModel {
     required this.filename,
     required this.preSignedUrl,
     this.originalCreatedAt,
-    required this.createdAt,
+    this.createdAt,
   });
 
   factory AlbumModel.fromJson(Map<String, dynamic> json) =>
       _$AlbumModelFromJson(json);
 
-  @override
-  String toString() {
-    return 'AlbumModel{id: $id, babyId: $babyId, contentType: $contentType, filename: $filename, preSignedUrl: $preSignedUrl, originalCreatedAt: $originalCreatedAt, createdAt: $createdAt}';
-  }
 }

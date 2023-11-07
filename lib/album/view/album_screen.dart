@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/album/provider/album_provider.dart';
 import 'package:tiny_human_app/album/repository/album_repository.dart';
+import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 
 import '../../common/constant/colors.dart';
 
@@ -24,11 +25,12 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final albums = ref.read(albumProvider.notifier);
-    final album_pagination = ref.watch(albumPaginationProvider);
+    final albums = ref.watch(albumProvider.notifier);
+    final album_pagination = ref.watch(albumPaginationProvider.notifier);
 
-    print(album_pagination);
+    print('?');
 
+    print('??');
 
     List imageUrls = [
       // "https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80",
