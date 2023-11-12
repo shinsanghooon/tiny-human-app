@@ -16,3 +16,5 @@ const APP_TITLE = "TINY HUMAN";
 const SAMPLE_BABY_IMAGE_URL =
     "https://images.unsplash.com/photo-1519689680058-324335c77eba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3477&q=80";
 
+const S3_ALBUM_BASE_URL =
+    "https://tiny-human-dev.s3.ap-northeast-2.amazonaws.com/";
