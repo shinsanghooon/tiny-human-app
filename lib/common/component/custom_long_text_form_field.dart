@@ -33,7 +33,6 @@ class CustomLongTextFormField extends StatelessWidget {
 
     return TextFormField(
       textAlignVertical: TextAlignVertical.top,
-
       maxLength: 300,
       maxLines: null,
       expands: true,
