@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../common/constant/data.dart';
+
 class BabyCard extends StatelessWidget {
   final String name;
   final String gender;
@@ -18,62 +20,52 @@ class BabyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
-      child: Row(children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: Image.network(
-            imageUrl == ""
-                ? "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=500&q=80"
-                : imageUrl,
-            fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width / 2.5,
-            height: MediaQuery.of(context).size.width / 2.5,
-          ),
-        ),
-        const SizedBox(
-          width: 12.0,
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: Container(
-              color: Colors.grey.shade200,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    '${name}(${gender == 'MALE' ? '남' : '여'})',
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    birth,
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      description,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(
+              imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width / 1,
+              height: MediaQuery.of(context).size.width / 1,
             ),
           ),
-        ),
-      ]),
+          const SizedBox(
+            height: 12.0,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0, bottom: 20.0,),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 36.0,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.end,
+                ),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                Text(
+                  birth,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.end,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
