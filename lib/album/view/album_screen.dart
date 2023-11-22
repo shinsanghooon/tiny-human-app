@@ -23,20 +23,25 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   double endScale = 1.0;
 
   final ImagePicker imagePicker = ImagePicker();
-  final List<XFile?> pickedImages = [];
 
   @override
   Widget build(BuildContext context) {
     final albums = ref.watch(albumProvider.notifier);
     final albumPagination = ref.watch(albumPaginationProvider);
 
-    if(albumPagination is CursorPaginationLoading) {
+    if (albumPagination is CursorPaginationLoading) {
+      return const Center(
+          child: CircularProgressIndicator(
+        color: PRIMARY_COLOR,
+      ));
+    }
+
+    if (albumPagination is CursorPaginationError) {
       return Center(
-        child: CircularProgressIndicator(
-          color: PRIMARY_COLOR,
-        )
+        child: Text("에러가 있습니다. ${albumPagination.message}"),
       );
     }
+
     final cp = albumPagination as CursorPagination;
     final data = cp.body;
 
@@ -46,7 +51,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     print(s3ImageUrls);
 
     print('?');
-
 
     void onScaleUpdate(ScaleUpdateDetails details) {
       // 제스처에 따라 그리드 수를 동적으로 조절
@@ -95,8 +99,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                     icon: const Icon(Icons.add, color: PRIMARY_COLOR),
                     onPressed: () async {
                       List<XFile> selectedImages = await uploadImages();
-                      if(selectedImages.isNotEmpty){
-                        print(selectedImages[0].name);
+                      if (selectedImages.isNotEmpty) {
                         albums.addAlbums(1, selectedImages);
                       }
                     })
@@ -145,15 +148,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   Future<List<XFile>> uploadImages() async {
     print("Album upload button is pressed.");
     List<XFile>? images = await imagePicker.pickMultipleMedia();
-
     print('selected images count: ${images.length}');
-
-    if (images.isNotEmpty) {
-      setState(() {
-        pickedImages.addAll(images);
-      });
-    }
-
     return images;
   }
 }

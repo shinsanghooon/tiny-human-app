@@ -11,6 +11,7 @@ class CustomLongTextFormField extends StatelessWidget {
   final String? hintText;
   final String? errorText;
   final String initialValue;
+  final TextEditingController? textEditingController;
 
   const CustomLongTextFormField({
     required this.keyName,
@@ -20,6 +21,7 @@ class CustomLongTextFormField extends StatelessWidget {
     this.hintText,
     this.errorText,
     required this.initialValue,
+    this.textEditingController,
     super.key,
   });
 
@@ -32,6 +34,7 @@ class CustomLongTextFormField extends StatelessWidget {
     ));
 
     return TextFormField(
+      controller: textEditingController,
       textAlignVertical: TextAlignVertical.top,
       maxLength: 300,
       maxLines: null,
@@ -58,7 +61,7 @@ class CustomLongTextFormField extends StatelessWidget {
         errorText: errorText,
         hintStyle: const TextStyle(
           color: BODY_TEXT_COLOR,
-          fontSize: 16.0,
+          fontSize: 14.0,
         ),
         fillColor: INPUT_BG_COLOR,
         filled: true,

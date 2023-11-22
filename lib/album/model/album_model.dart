@@ -34,4 +34,5 @@ class AlbumModel {
   factory AlbumModel.fromJson(Map<String, dynamic> json) =>
       _$AlbumModelFromJson(json);
 
+
 }

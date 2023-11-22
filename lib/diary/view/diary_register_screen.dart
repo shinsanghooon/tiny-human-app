@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -23,12 +25,13 @@ class DiaryRegisterScreen extends StatefulWidget {
 class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
-  final List<Widget> _formWidgets = [];
+  CarouselController buttonCarouselController = CarouselController();
+  int photoCurrentIndex = 0;
 
   // profile image
-  final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
+  final ImagePicker imagePicker = ImagePicker(); //ImagePicker 초기화
   XFile? pickedFile;
-  List<XFile>? pickedFiles;
+  List<XFile> pickedImages = [];
   String? pickedFilePath;
 
   String? name;
@@ -36,7 +39,7 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
 
   int? daysAfterBirth;
 
-  DateTime? diaryDate;
+  DateTime? diaryDate = DateTime.now();
   List<String> fileName = [];
   List<String> sentences = [];
 
@@ -68,110 +71,157 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: SingleChildScrollView(
-            child: Column(children: [
-              Container(
-                height: 200,
-                width: MediaQuery.of(context).size.width,
-                child: Icon(
-                  Icons.photo_outlined,
-                  size: 80.0,
-                ),
-                color: Colors.deepOrange.shade500,
-              ),
-              const SizedBox(height: 20.0),
-              Container(
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          datePickerButton(context),
-                          const SizedBox(width: 14.0),
-                          if (daysAfterBirth != null)
-                            Text(
-                              '+${daysAfterBirth.toString()}일',
-                              style: const TextStyle(
-                                color: Colors.deepOrange,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 20.0),
-                      // 기존 입력 폼 목록 표시
-                      Column(
-                        children: _formWidgets,
-                      ),
-                      // + 버튼
-                      if (_formWidgets.length < 3)
-                        TextButton(
-                          onPressed: () {
-                            // + 버튼 클릭 시 새로운 입력 폼 추가
-                            if (_formWidgets.length >= 3) {
-                              throw Exception("최대 3개까지만 입력이 가능합니다.");
-                            }
-                            _addNewForm(_formWidgets.length + 1);
-                          },
-                          child: Icon(
-                            Icons.add,
-                            color: PRIMARY_COLOR,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: const BorderSide(
-                              width: 0.5,
-                              color: PRIMARY_COLOR,
-                            ),
-                          ),
+            child: Column(
+              children: [
+                pickedImages.isEmpty
+                    ? GestureDetector(
+                        onTap: () async {
+                          List<XFile> selectedImages = await uploadImages();
+                          if (selectedImages!.isNotEmpty) {
+                            print('selected image is not emtpy');
+                          }
+
+                          if ((pickedImages.length + selectedImages.length) >
+                              5) {
+                            throw const Expanded(
+                                child: Text("사진은 5장까지만 선택이 가능합니다."));
+                          }
+
+                          setState(() {
+                            pickedImages = selectedImages;
+                          });
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.width / 1.2,
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          color: Colors.deepOrange.shade500,
+                          child: _uploadPhotoLabel(),
                         ),
-                      const SizedBox(height: 20.0),
-                      registerDiaryActionButton(context),
-                    ],
+                      )
+                    : GestureDetector(
+                        onTap: () async {
+                          List<XFile> selectedImages = await uploadImages();
+                          if (selectedImages!.isNotEmpty) {
+                            print('selected image is not emtpy');
+                          }
+
+                          if ((pickedImages.length + selectedImages.length) >
+                              5) {
+                            throw const Expanded(
+                                child: Text("사진은 5장까지만 선택이 가능합니다."));
+                          }
+
+                          setState(() {
+                            pickedImages = [...pickedImages, ...selectedImages];
+                          });
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.width / 1.2,
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          color: Colors.transparent,
+                          child: _uploadPhotoCarousel(
+                              MediaQuery.of(context).size.width / 1.2),
+                        ),
+                      ),
+                const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    datePickerButton(context),
+                    const SizedBox(width: 14.0),
+                    if (daysAfterBirth != null)
+                      Text(
+                        '+${daysAfterBirth.toString()}일',
+                        style: const TextStyle(
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Form(
+                    key: formKey,
+                    child: diaryTextCard(1, 1),
                   ),
                 ),
-              ),
-            ]),
+                registerDiaryActionButton(context),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // 새로운 입력 폼 추가
-  void _addNewForm(int id) {
-    setState(() {
-      _formWidgets.add(_buildFormWidget(id));
-    });
+  Future<List<XFile>> uploadImages() async {
+    print("Diary Image upload button is pressed.");
+    List<XFile>? images = await imagePicker.pickMultipleMedia();
+    print('selected images count: ${images.length}');
+    return images;
   }
 
-  // 입력 폼 위젯 생성
-  Widget _buildFormWidget(int id) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _uploadPhotoLabel() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "#$id",
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.w800,
-          ),
-          textAlign: TextAlign.start,
+        Icon(
+          Icons.photo_outlined,
+          size: 100.0,
         ),
-        Container(
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: CustomLongTextFormField(
-              keyName: 'description_$id',
-              onSaved: (String? value) {
-                sentences.add(value!);
-              },
-              hintText: "아기의 오늘을 남겨주세요.",
-              initialValue: '',
+        Text(
+          "사진을 업로드 해주세요.",
+          style: TextStyle(
+            fontSize: 20.0,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _uploadPhotoCarousel(double size) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        CarouselSlider(
+            carouselController: buttonCarouselController,
+            items: pickedImages.map((image) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Image.asset(
+                  image.path,
+                  width: size,
+                  height: size,
+                  fit: BoxFit.cover,
+                ),
+              );
+            }).toList(),
+            options: CarouselOptions(
+                autoPlay: true,
+                height: size,
+                viewportFraction: 1.0,
+                onPageChanged: (index, _) {
+                  setState(() {
+                    print("new index $index");
+                    photoCurrentIndex = index;
+                    buttonCarouselController.jumpToPage(index);
+                  });
+                })),
+        Positioned(
+          bottom: 5.0,
+          child: AnimatedSmoothIndicator(
+            activeIndex: photoCurrentIndex,
+            count: pickedImages.length,
+            effect: JumpingDotEffect(
+              verticalOffset: 10.0,
+              jumpScale: 2.0,
+              dotColor: Colors.white.withOpacity(0.3),
+              activeDotColor: Colors.deepOrange.withOpacity(0.6),
+              dotWidth: 14.0,
+              dotHeight: 14.0,
+              spacing: 8.0,
             ),
           ),
         ),
@@ -179,9 +229,26 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
     );
   }
 
+  // 입력 폼 위젯 생성
+  Widget diaryTextCard(int id, diaryLength) {
+    return SizedBox(
+      height: 250,
+      child: CustomLongTextFormField(
+        keyName: 'description_$id',
+        // textEditingController: textEditingController,
+        onSaved: (String? value) {
+          sentences.add(value!);
+        },
+        hintText: "아기의 오늘을 남겨주세요.",
+        initialValue: '',
+      ),
+    );
+  }
+
   SizedBox registerDiaryActionButton(BuildContext context) {
     return SizedBox(
       height: 46.0,
+      width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
@@ -301,34 +368,43 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
     );
   }
 
-  Expanded datePickerButton(BuildContext context) {
-    return Expanded(
-      child: SizedBox(
-        height: 50.0,
-        child: OutlinedButton(
-          onPressed: () {
-            showDatePicker(
-              context: context,
-              initialEntryMode: DatePickerEntryMode.calendarOnly,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(1900),
-              lastDate: DateTime.now(),
-            ).then((value) {
-              setState(() {
-                diaryDate = value;
-                print(diaryDate);
+  Widget datePickerButton(BuildContext context) {
+    return SizedBox(
+      height: 46.0,
+      child: OutlinedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialEntryMode: DatePickerEntryMode.calendarOnly,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(1900),
+            lastDate: DateTime.now(),
+          ).then((value) {
+            setState(() {
+              diaryDate = value;
+              print(diaryDate);
 
-                calculateDaysAfterBirth(diaryDate!);
-              });
+              calculateDaysAfterBirth(diaryDate!);
             });
-          },
-          child: Text(
-            DateFormat('yyyy-MM-dd').format(diaryDate!).toString(),
-            style: const TextStyle(
-              fontSize: 14.0,
-              color: Colors.black,
+          });
+        },
+        child: Row(
+          children: [
+            const Icon(
+              Icons.calendar_month_outlined,
+              color: Colors.black54,
             ),
-          ),
+            const SizedBox(
+              width: 5.0,
+            ),
+            Text(
+              DateFormat('yyyy-MM-dd').format(diaryDate!).toString(),
+              style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.black,
+              ),
+            ),
+          ],
         ),
       ),
     );
