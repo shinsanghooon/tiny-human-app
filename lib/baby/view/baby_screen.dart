@@ -20,19 +20,6 @@ class BabyScreen extends ConsumerWidget {
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
 
-    if (data.length == 0) {
-      final emptyBabyModel = BabyModel(
-        id: '9999',
-        name: 'tiny-human',
-        gender: '남자 아이',
-        dayOfBirth: '2023-01-01',
-        timeOfBirth: 10,
-        nickName: '태명',
-        profileImgKeyName: '',);
-
-      data.add(emptyBabyModel);
-    }
-
     return DefaultLayout(
       child: CustomScrollView(slivers: [
         SliverAppBar(
@@ -45,12 +32,12 @@ class BabyScreen extends ConsumerWidget {
             ),
           ),
           leading: IconButton(
-            icon: Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
             IconButton(
-                icon: Icon(Icons.add, color: PRIMARY_COLOR),
+                icon: const Icon(Icons.add, color: PRIMARY_COLOR),
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -60,29 +47,30 @@ class BabyScreen extends ConsumerWidget {
                 })
           ],
         ),
-        SliverPadding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.0,
-          ),
-          sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final item = data[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: BabyCard(
-                    name: item.name,
-                    gender: item.gender,
-                    birth: '${item.dayOfBirth} ${item.timeOfBirth}시',
-                    description:
-                    "아기와의 처음 만난 순간을 기록해보세요. 아직 이 기능은 구현되지 않았으며 백엔드 작업이 필요합니다.",
-                  ),
-                );
-              },
-              childCount: data.length,
+        if (data.length != 0)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
             ),
-          ),
-        )
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final item = data[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: BabyCard(
+                      name: item.name,
+                      gender: item.gender,
+                      birth: '${item.dayOfBirth} ${item.timeOfBirth}시',
+                      description:
+                          "아기와의 처음 만난 순간을 기록해보세요. 아직 이 기능은 구현되지 않았으며 백엔드 작업이 필요합니다.",
+                    ),
+                  );
+                },
+                childCount: data.length,
+              ),
+            ),
+          )
       ]),
     );
   }
