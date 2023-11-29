@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -23,19 +22,19 @@ import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
 import '../model/photo_with_savetype_model.dart';
 
-class DiaryUpdateScreen extends StatefulWidget {
-  final DiaryResponseModel model;
+class DiaryUpdateScreen extends ConsumerStatefulWidget {
+  final int id;
 
   const DiaryUpdateScreen({
     super.key,
-    required this.model,
+    required this.id,
   });
 
   @override
-  State<DiaryUpdateScreen> createState() => _DiaryUpdateScreenState();
+  ConsumerState<DiaryUpdateScreen> createState() => _DiaryUpdateScreenState();
 }
 
-class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
+class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
   final ImagePicker imagePicker = ImagePicker(); //ImagePicker 초기화
@@ -54,8 +53,8 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
   List<DiaryPictureModel> baseFiles = [];
   List<DiarySentenceModel> baseSentence = [];
 
-  List<PhotoWithSaveTypeModel> models = [];
-  List<PhotoWithSaveTypeModel> deletedFiles = [];
+  // List<PhotoWithSaveTypeModel> models = [];
+  // List<PhotoWithSaveTypeModel> deletedFiles = [];
 
   @override
   void initState() {
@@ -63,14 +62,16 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
     // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
 
-    for (var picture in widget.model.pictures) {
-      print(picture.keyName);
-      models.add(PhotoWithSaveTypeModel(
-          id: picture.id, type: SaveType.URL, path: picture.keyName));
-    }
+    ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.id);
 
-    diaryDate = widget.model.date;
-    calculateDaysAfterBirth(diaryDate!);
+    //   for (var picture in state.pictures) {
+    //     print(picture.keyName);
+    //     models.add(PhotoWithSaveTypeModel(
+    //         id: picture.id, type: SaveType.URL, path: picture.keyName));
+    //   }
+    //
+    //   diaryDate = state.date;
+    //   calculateDaysAfterBirth(diaryDate!);
   }
 
   void checkToken() async {
@@ -79,17 +80,44 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
 
   void calculateDaysAfterBirth(DateTime selectedDate) {
     final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
+    daysAfterBirth = selectedDate
+        .difference(birthday)
+        .inDays + 1;
     print('in calculateDaysAfterBirth');
     print(daysAfterBirth);
   }
 
   @override
   Widget build(BuildContext context) {
-    baseDiaryDate = widget.model.date;
-    baseDaysAfterBirth = widget.model.daysAfterBirth;
-    baseFiles = widget.model.pictures;
-    baseSentence = widget.model.sentences;
+    List<PhotoWithSaveTypeModel> models = [];
+    List<PhotoWithSaveTypeModel> deletedFiles = [];
+
+    print('Diary Update Screen');
+    final state = ref.watch(diaryDetailProvider(widget.id));
+
+    if (state == null) {
+      return const DefaultLayout(
+          child: Center(
+              child: CircularProgressIndicator(
+                color: PRIMARY_COLOR,
+              )));
+    }
+
+    for (var picture in state.pictures) {
+      print(picture.keyName);
+      models.add(PhotoWithSaveTypeModel(
+          id: picture.id, type: SaveType.URL, path: picture.keyName));
+    }
+    print('model length: ${models.length}');
+
+    diaryDate = state.date;
+    calculateDaysAfterBirth(diaryDate!);
+
+    // base data
+    baseDiaryDate = state.date;
+    baseDaysAfterBirth = state.daysAfterBirth;
+    baseFiles = state.pictures;
+    baseSentence = state.sentences;
 
     return DefaultLayout(
       appBar: diaryAppBar(context),
@@ -99,17 +127,17 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _diaryImageCarousel(context),
+                _diaryImageCarousel(context, models, deletedFiles),
                 const SizedBox(height: 20.0),
                 _diaryDate(context),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Form(
                     key: formKey,
-                    child: diaryTextCard(1, 1),
+                    child: diaryTextCard(1, 1, state.sentences.first),
                   ),
                 ),
-                _updateDiaryActionButton(context),
+                _updateDiaryActionButton(context, state, models, deletedFiles),
               ],
             ),
           ),
@@ -139,65 +167,82 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
     );
   }
 
-  GestureDetector _diaryImageCarousel(BuildContext context) {
+  GestureDetector _diaryImageCarousel(BuildContext context,
+      List<PhotoWithSaveTypeModel> models,
+      List<PhotoWithSaveTypeModel> deletedFiles) {
     return models.isEmpty
         ? GestureDetector(
-            onTap: () async {
-              List<XFile> selectedImages = await uploadImages();
-              if (selectedImages!.isNotEmpty) {
-                print('selected image is not emtpy');
-              }
+      onTap: () async {
+        List<XFile> selectedImages = await uploadImages();
+        if (selectedImages!.isNotEmpty) {
+          print('selected image is not emtpy');
+        }
 
-              if ((models.length + selectedImages.length) > 5) {
-                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-              }
+        if ((models.length + selectedImages.length) > 5) {
+          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+        }
 
-              setState(() {
-                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
-                }).toList();
+        setState(() {
+          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+            return PhotoWithSaveTypeModel(
+                type: SaveType.LOCAL, path: image.path, name: image.name);
+          }).toList();
 
-                models = [
-                  ...models,
-                  ...temp,
-                ];
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.width / 1.2,
-              width: MediaQuery.of(context).size.width / 1.2,
-              color: Colors.deepOrange.shade500,
-              child: _uploadPhotoLabel(),
-            ),
-          )
+          models = [
+            ...models,
+            ...temp,
+          ];
+        });
+      },
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        color: Colors.deepOrange.shade500,
+        child: _uploadPhotoLabel(),
+      ),
+    )
         : GestureDetector(
-            onTap: () async {
-              List<XFile> selectedImages = await uploadImages();
-              if ((models.length + selectedImages.length) > 5) {
-                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-              }
+      onTap: () async {
+        List<XFile> selectedImages = await uploadImages();
+        if ((models.length + selectedImages.length) > 5) {
+          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+        }
 
-              setState(() {
-                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
-                }).toList();
+        setState(() {
+          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+            return PhotoWithSaveTypeModel(
+                type: SaveType.LOCAL, path: image.path, name: image.name);
+          }).toList();
 
-                models = [
-                  ...models,
-                  ...temp,
-                ];
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.width / 1.2,
-              width: MediaQuery.of(context).size.width / 1.2,
-              color: Colors.transparent,
-              child:
-                  _uploadPhotoCarousel(MediaQuery.of(context).size.width / 1.2),
-            ),
-          );
+          models = [
+            ...models,
+            ...temp,
+          ];
+        });
+      },
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        color: Colors.transparent,
+        child:
+        _uploadPhotoCarousel(MediaQuery
+            .of(context)
+            .size
+            .width / 1.2, models, deletedFiles),
+      ),
+    );
   }
 
   Future<List<XFile>> uploadImages() async {
@@ -224,7 +269,8 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
     );
   }
 
-  Widget _uploadPhotoCarousel(double size) {
+  Widget _uploadPhotoCarousel(double size, List<PhotoWithSaveTypeModel> models,
+      List<PhotoWithSaveTypeModel> deletedFiles) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -237,17 +283,17 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
                     borderRadius: BorderRadius.circular(16.0),
                     child: image.type == SaveType.LOCAL
                         ? Image.asset(
-                            image.path,
-                            width: size,
-                            height: size,
-                            fit: BoxFit.cover,
-                          )
+                      image.path,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    )
                         : Image.network(
-                            '$S3_BASE_URL${image.path}',
-                            width: size,
-                            height: size,
-                            fit: BoxFit.cover,
-                          ),
+                      '$S3_BASE_URL${image.path}',
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Positioned(
                     child: IconButton(
@@ -258,7 +304,7 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
                         print('이미지 삭제');
                         setState(() {
                           PhotoWithSaveTypeModel deleteModel =
-                              models.removeAt(photoCurrentIndex);
+                          models.removeAt(photoCurrentIndex);
                           deletedFiles.add(deleteModel);
                           if (deleteModel.type == SaveType.URL) {
                             print("삭제 요청 API를 호출한다");
@@ -302,7 +348,8 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
   }
 
   // 입력 폼 위젯 생성
-  Widget diaryTextCard(int id, diaryLength) {
+  Widget diaryTextCard(int id, diaryLength,
+      DiarySentenceModel originalSentence) {
     return SizedBox(
       height: 250,
       child: CustomLongTextFormField(
@@ -310,19 +357,24 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
         onSaved: (String? value) {
           sentence = value;
         },
-        initialValue: widget.model.sentences.first.sentence,
+        initialValue: originalSentence.sentence,
       ),
     );
   }
 
-  SizedBox _updateDiaryActionButton(BuildContext context) {
+  SizedBox _updateDiaryActionButton(BuildContext context,
+      DiaryResponseModel state, List<PhotoWithSaveTypeModel> models,
+      List<PhotoWithSaveTypeModel> deletedFiles) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
-          print('---------- Request to register diary ----------');
+          print('---------- Request To Update Diary ----------');
           print(accessToken);
 
           if (formKey.currentState == null) {
@@ -337,21 +389,21 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
 
           int userId = 1;
           int babyId = 1;
-          int diaryId = widget.model.id;
+          int diaryId = state.id;
 
           // 기존 데이터와 비교해서 달라졌으면 Patch 요청
           if (isSentenceChanged()) {
-            print("일기 글(${widget.model.sentences.first.id})이 수정됨.");
+            print("일기 글(${state.sentences.first.id})이 수정됨.");
             print(sentence);
             try {
               final response = await dio.patch(
-                'http://$ip/api/v1/diaries/$diaryId/sentences/${widget.model.sentences.first.id}',
+                'http://$ip/api/v1/diaries/$diaryId/sentences/${state.sentences
+                    .first.id}',
                 options: Options(headers: {
                   'Authorization': 'Bearer $accessToken',
                 }),
                 data: SentenceRequestModel(sentence: sentence!),
               );
-              print(response.data);
             } catch (e) {
               showDialogWhenResponseFail(context);
             }
@@ -365,7 +417,7 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
 
           // 기존에 삭제된 이미지는 서버에 삭제 요청
           print('기존 사진에서 삭제 요청 ${deletedFiles.length}개');
-          for(var deletedFile in deletedFiles) {
+          for (var deletedFile in deletedFiles) {
             print('- 서버에 삭제 요청 id: ${deletedFile.id}');
 
             try {
@@ -380,7 +432,7 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
                 throw Exception("요청 결과를 확인해주세요.");
               }
             } catch (e) {
-              if(mounted){
+              if (mounted) {
                 showDialogWhenResponseFail(context);
               }
             }
@@ -388,7 +440,7 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
 
           // 이미지는 새로 업로드된 이미지만 수정
           List<PhotoWithSaveTypeModel> newImages =
-              models.where((image) => image.type == SaveType.LOCAL).toList();
+          models.where((image) => image.type == SaveType.LOCAL).toList();
           print('새로 업로드된 사진 ${newImages.length}개');
 
           try {
@@ -412,14 +464,18 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
                 .toList();
 
             List<PhotoWithSaveTypeModel> localImages =
-                models.where((model) => model.type == SaveType.LOCAL).toList();
+            models.where((model) => model.type == SaveType.LOCAL).toList();
 
             for (int i = 0; i < localImages.length; i++) {
               File file = File(localImages[i].path!);
 
-              var fileExt = file.path.split('.').last == 'jpg'
+              var fileExt = file.path
+                  .split('.')
+                  .last == 'jpg'
                   ? 'jpeg'
-                  : file.path.split('.').last;
+                  : file.path
+                  .split('.')
+                  .last;
 
               await dio.put(preSignedUrls[i],
                   data: file.openRead(),
@@ -431,13 +487,15 @@ class _DiaryUpdateScreenState extends State<DiaryUpdateScreen> {
                     contentType: 'image/$fileExt',
                   ));
             }
+
+            ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.id);
           } catch (e) {
             print(e);
-            if(mounted){
+            if (mounted) {
               showDialogWhenResponseFail(context);
             }
           }
-          if(mounted){
+          if (mounted) {
             Navigator.of(context).pop();
           }
         },
