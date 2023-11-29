@@ -27,8 +27,8 @@ class DiaryCard extends StatelessWidget {
       id: model.id,
       image: Image.network(
         '$S3_BASE_URL${model.pictures.first.keyName}',
-        width: 120,
-        height: 120,
+        width: 160,
+        height: 160,
         fit: BoxFit.cover,
       ),
       detail: model.sentences.first.sentence,
@@ -43,28 +43,17 @@ class DiaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: PRIMARY_COLOR.withOpacity(0.1),
-            spreadRadius: 10,
-            blurRadius: 50,
-            offset: Offset(-50, 50),
-          ),
-        ],
       ),
       child: IntrinsicHeight(
         child: Row(
           children: [
             ClipRRect(borderRadius: BorderRadius.circular(8.0), child: image),
-            const SizedBox(width: 12.0),
+            const SizedBox(width: 18.0),
             Expanded(
               child: Container(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(
-                      height: 12.0,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -77,7 +66,7 @@ class DiaryCard extends StatelessWidget {
                         ),
                         Text('+$afterBirthDay일',
                             style: const TextStyle(
-                              fontSize: 14.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.w500,
                             )),
                       ],
@@ -90,7 +79,7 @@ class DiaryCard extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontSize: 14.0,
+                          fontSize: 16.0,
                           color: BODY_TEXT_COLOR,
                           height: 1.5,
                           fontWeight: FontWeight.w500),

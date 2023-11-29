@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 
 class BabyCard extends StatelessWidget {
@@ -18,54 +19,57 @@ class BabyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w600,
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            name,
+            style: const TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(
-              height: 12.0,
+          ),
+          const SizedBox(
+            height: 4.0,
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(
+              imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width / 1.7,
+              height: MediaQuery.of(context).size.width / 2.5,
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width / 1.7,
-                height: MediaQuery.of(context).size.width / 2.5,
-              ),
+          ),
+          const SizedBox(
+            height: 4.0,
+          ),
+          Icon(
+            Icons.horizontal_rule_outlined,
+            color: PRIMARY_COLOR.withOpacity(0.7),
+          ),
+          const SizedBox(
+            height: 4.0,
+          ),
+          Text(
+            birth,
+            style: const TextStyle(
+              fontSize: 16.0,
             ),
-            const SizedBox(
-              height: 12.0,
+          ),
+          const SizedBox(
+            height: 4.0,
+          ),
+          Text(
+            gender,
+            style: const TextStyle(
+              fontSize: 16.0,
             ),
-            Text(
-              birth,
-              style: const TextStyle(
-                fontSize: 16.0,
-              ),
-            ),
-            const SizedBox(
-              height: 4.0,
-            ),
-            Text(
-              gender,
-              style: const TextStyle(
-                fontSize: 16.0,
-              ),
-            ),
-            const SizedBox(height: 8.0,),
-            Divider(color: Colors.grey.shade300, thickness: 1.0,),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
