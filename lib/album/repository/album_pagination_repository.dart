@@ -1,20 +1,17 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
+import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
-import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/common/repository/base_pagination_repository.dart';
-
 
 part 'album_pagination_repository.g.dart';
 
 final albumPaginationRepositoryProvider =
-    Provider<AlbumPaginationRepository>((ref) {
+Provider<AlbumPaginationRepository>((ref) {
   final dio = ref.watch(dioProvider);
   return AlbumPaginationRepository(dio, baseUrl: "http://$ip/api/v1/babies");
 });
@@ -24,7 +21,7 @@ abstract class AlbumPaginationRepository
     implements IBasePaginationRepository<AlbumResponseModel> {
   // baseUrl: api/v1/babies
   factory AlbumPaginationRepository(Dio dio, {String baseUrl}) =
-      _AlbumPaginationRepository;
+  _AlbumPaginationRepository;
 
   @GET('/{babyId}/albums')
   @Headers({'accessToken': 'true'})
@@ -33,4 +30,9 @@ abstract class AlbumPaginationRepository
     @Query("order") required String order,
     @Queries() CursorPaginationParams? cursorPaginationParams,
   });
+
+  @GET('/{babyId}/albums/{albumId}')
+  @Headers({'accessToken': 'true'})
+  Future<AlbumResponseModel> getDetail({@Path('albumId') required int id});
+
 }
