@@ -4,11 +4,13 @@ class DefaultLayout extends StatelessWidget {
   final Color? backgroundColor;
   final Widget child;
   final AppBar? appBar;
+  final bool? extendBodyBehindAppBar;
 
   const DefaultLayout({
     required this.child,
     this.backgroundColor,
     this.appBar,
+    this.extendBodyBehindAppBar,
     super.key,
   });
 
@@ -17,7 +19,8 @@ class DefaultLayout extends StatelessWidget {
     return Scaffold(
         backgroundColor: backgroundColor ?? Colors.white,
         appBar: appBar,
-        body: child
+        body: child,
+        extendBodyBehindAppBar: extendBodyBehindAppBar ?? false,
     );
   }
 }
