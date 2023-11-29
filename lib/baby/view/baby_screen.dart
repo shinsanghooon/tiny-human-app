@@ -47,7 +47,7 @@ class BabyScreen extends ConsumerWidget {
                 })
           ],
         ),
-        if (data.length != 0)
+        if (data.isNotEmpty)
           SliverPadding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
@@ -62,6 +62,7 @@ class BabyScreen extends ConsumerWidget {
                       name: item.name,
                       gender: item.gender,
                       birth: '${item.dayOfBirth} ${item.timeOfBirth}시',
+                      imageUrl: '$S3_BASE_URL${item.profileImgKeyName}',
                       description:
                           "아기와의 처음 만난 순간을 기록해보세요. 아직 이 기능은 구현되지 않았으며 백엔드 작업이 필요합니다.",
                     ),

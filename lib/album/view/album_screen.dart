@@ -46,11 +46,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     final data = cp.body;
 
     final s3ImageUrls =
-        data.map((e) => '${S3_ALBUM_BASE_URL}${e.keyName}').toList();
-
-    print(s3ImageUrls);
-
-    print('?');
+        data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
 
     void onScaleUpdate(ScaleUpdateDetails details) {
       // 제스처에 따라 그리드 수를 동적으로 조절

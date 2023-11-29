@@ -24,7 +24,7 @@ class DiaryCard extends StatelessWidget {
     return DiaryCard(
       id: model.id,
       image: Image.network(
-        model.pictures.first,
+        '$S3_BASE_URL${model.pictures.first.keyName}',
         width: 120,
         height: 120,
         fit: BoxFit.cover,
