@@ -1,0 +1,2 @@
+
+enum SaveType { LOCAL, URL }
