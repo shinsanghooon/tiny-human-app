@@ -1,5 +1,5 @@
 class BabyModel {
-  final String id;
+  final int id;
   final String name;
   final String gender;
   final String dayOfBirth;
@@ -19,7 +19,7 @@ class BabyModel {
 
   static BabyModel fromJson(Map<String, dynamic> data) {
     return BabyModel(
-      id: data['id'].toString(),
+      id: data['id'],
       name: data['name'],
       gender: data['gender'],
       dayOfBirth: data['dayOfBirth'],

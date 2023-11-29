@@ -22,4 +22,11 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
     final response = await repository.getMyBabies();
     state = response;
   }
+
+  void addBaby(BabyModel baby) {
+    state = [
+      ...state,
+      baby
+    ];
+  }
 }

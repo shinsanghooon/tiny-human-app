@@ -2,10 +2,14 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/baby/component/gradient_border_avatar.dart';
+import 'package:tiny_human_app/baby/model/baby_model.dart';
+import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:tiny_human_app/common/dio/dio.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -14,14 +18,14 @@ import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
 
-class BabyRegisterScreen extends StatefulWidget {
+class BabyRegisterScreen extends ConsumerStatefulWidget {
   const BabyRegisterScreen({super.key});
 
   @override
-  State<BabyRegisterScreen> createState() => _BabyRegisterScreenState();
+  ConsumerState<BabyRegisterScreen> createState() => _BabyRegisterScreenState();
 }
 
-class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
+class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
 
@@ -137,11 +141,13 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
     return GestureDetector(
       onTap: () async {
         final XFile? pickedFile =
-            await picker.pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           setState(() {
             pickedFilePath = pickedFile!.path;
-            profileImage = Image.file(File(pickedFile!.path)).image;
+            profileImage = Image
+                .file(File(pickedFile!.path))
+                .image;
             fileName = pickedFile.name;
           });
         }
@@ -169,8 +175,6 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
             return null;
           }
 
-          print('gender: $gender');
-
           final response = await dio.post(
             'http://$ip/api/v1/babies',
             options: Options(headers: {
@@ -180,7 +184,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
               "name": name,
               "gender": gender == '남자 아기' ? 'MALE' : 'FEMALE',
               "dayOfBirth":
-                  DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
+              DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
               "timeOfBirth": timeOfBirth,
               "nickName": nickname,
               "fileName": fileName,
@@ -201,16 +205,16 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
                 });
           }
 
-          print('preSignedUrl ${response.data}');
           String preSignedUrl = response.data['preSignedUrl'];
-
-          print('filePath');
-          print(pickedFilePath);
           File file = File(pickedFilePath!);
 
-          var fileExt = file.path.split('.').last == 'jpg'
+          var fileExt = file.path
+              .split('.')
+              .last == 'jpg'
               ? 'jpeg'
-              : file.path.split('.').last;
+              : file.path
+              .split('.')
+              .last;
           await dio.put(preSignedUrl,
               data: file.openRead(),
               options: Options(
@@ -220,11 +224,9 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
                 contentType: 'image/$fileExt',
               ));
 
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => BabyScreen(),
-            ),
-          );
+          ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
+
+          Navigator.of(context).pop();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
@@ -234,6 +236,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
       ),
@@ -361,7 +364,7 @@ class _BabyRegisterScreenState extends State<BabyRegisterScreen> {
               timeOfBirth = value!;
             },
             dropdownMenuEntries: times.map(
-              (t) {
+                  (t) {
                 return DropdownMenuEntry(value: t, label: '${t}시');
               },
             ).toList(),
