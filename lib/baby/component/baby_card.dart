@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../common/constant/data.dart';
 
 class BabyCard extends StatelessWidget {
@@ -20,51 +19,53 @@ class BabyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(
-              imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width / 1,
-              height: MediaQuery.of(context).size.width / 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 12.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0, bottom: 20.0,),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 36.0,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.end,
-                ),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                Text(
-                  birth,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.end,
-                ),
-              ],
+            const SizedBox(
+              height: 12.0,
             ),
-          ),
-        ],
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.network(
+                imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width / 1.7,
+                height: MediaQuery.of(context).size.width / 2.5,
+              ),
+            ),
+            const SizedBox(
+              height: 12.0,
+            ),
+            Text(
+              birth,
+              style: const TextStyle(
+                fontSize: 16.0,
+              ),
+            ),
+            const SizedBox(
+              height: 4.0,
+            ),
+            Text(
+              gender,
+              style: const TextStyle(
+                fontSize: 16.0,
+              ),
+            ),
+            const SizedBox(height: 8.0,),
+            Divider(color: Colors.grey.shade300, thickness: 1.0,),
+          ],
+        ),
       ),
     );
   }
