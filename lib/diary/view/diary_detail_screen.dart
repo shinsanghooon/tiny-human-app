@@ -1,28 +1,29 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/common/utils/data_utils.dart';
 import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
-import 'package:tiny_human_app/diary/view/diary_register_screen.dart';
+import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 import 'package:tiny_human_app/diary/view/diary_update_screen.dart';
 
 import '../../common/constant/data.dart';
 import '../../common/enum/update_delete_menu.dart';
 
-class DiaryDetailScreen extends StatefulWidget {
+class DiaryDetailScreen extends ConsumerStatefulWidget {
   final DiaryResponseModel model;
 
   const DiaryDetailScreen({super.key, required this.model});
 
   @override
-  State<DiaryDetailScreen> createState() => _DiaryDetailScreenState();
+  ConsumerState<DiaryDetailScreen> createState() => _DiaryDetailScreenState();
 }
 
-class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
+class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
   final GlobalKey _menuButtonKey = GlobalKey();
   final dio = Dio();
 
@@ -36,6 +37,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     super.initState();
     // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
+    ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.model.id);
   }
 
   void checkToken() async {
@@ -44,30 +46,38 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(diaryDetailProvider(widget.model.id));
+    print('Diary Detail Screen');
+
+    if (state == null) {
+      return DefaultLayout(child: Center(child: CircularProgressIndicator()));
+    }
+
     return DefaultLayout(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
-        title: _diaryAppBarTitle(),
+        title: _diaryAppBarTitle(state),
         actions: [
           TextButton(
             onPressed: () {},
-            child: _moreFeatureIcon(context, widget.model),
+            child: _moreFeatureIcon(context, state),
           )
         ],
       ),
       extendBodyBehindAppBar: true,
       child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
-                widget.model.pictures.length > 1
+                state.pictures.length > 1
                     ? CarouselSlider(
-                        items: widget.model.pictures.map((image) {
+                        items: state.pictures.map((image) {
                           return _diaryImage(image, context);
                         }).toList(),
                         options: CarouselOptions(
@@ -79,13 +89,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                               });
                             }),
                       )
-                    : _diaryImage(widget.model.pictures.first, context),
-                if (widget.model.pictures.length > 1)
+                    : _diaryImage(state.pictures.first, context),
+                if (state.pictures.length > 1)
                   Positioned(
                     bottom: 5.0,
                     child: AnimatedSmoothIndicator(
                       activeIndex: photoCurrentIndex,
-                      count: widget.model.pictures.length,
+                      count: state.pictures.length,
                       effect: JumpingDotEffect(
                         verticalOffset: 10.0,
                         jumpScale: 2.0,
@@ -110,7 +120,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(
-                widget.model.sentences.first.sentence,
+                state.sentences.first.sentence,
                 style: const TextStyle(
                   fontSize: 18.0,
                   height: 1.8,
@@ -126,12 +136,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  Column _diaryAppBarTitle() {
+  Column _diaryAppBarTitle(DiaryResponseModel state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          DataUtils.dateTimeToKoreanDateString(widget.model.date),
+          DataUtils.dateTimeToKoreanDateString(state.date),
           style: const TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.w600,
@@ -142,7 +152,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           height: 4.0,
         ),
         Text(
-          '+ ${widget.model.daysAfterBirth.toString()}일',
+          '+ ${state.daysAfterBirth.toString()}일',
           style: const TextStyle(
             fontSize: 14.0,
             fontWeight: FontWeight.w600,
@@ -153,7 +163,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  Container _moreFeatureIcon(BuildContext context, DiaryResponseModel model) {
+  Container _moreFeatureIcon(BuildContext context, DiaryResponseModel state) {
     return Container(
       height: 28.0,
       width: 28.0,
@@ -169,7 +179,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           RenderBox renderBox =
               _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
           Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
-          _showPopupMenu(buttonOffset, context, model);
+          _showPopupMenu(buttonOffset, context, state);
         },
         icon: const Icon(
           Icons.more_horiz,
@@ -179,7 +189,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
     );
   }
 
-  void _showPopupMenu(Offset buttonOffset, BuildContext context, DiaryResponseModel model) {
+  void _showPopupMenu(
+      Offset buttonOffset, BuildContext context, DiaryResponseModel state) {
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy, 0, 0),
@@ -198,22 +209,23 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       settings: const RouteSettings(name: "/updateDiary"),
-                      builder: (_) => DiaryUpdateScreen(model: model),
+                      builder: (_) => DiaryUpdateScreen(id: state.id),
                     ),
                   );
                 } else if (UpdateDeleteMenu.DELETE == value) {
                   print("delete this diary");
                   final response = await dio.delete(
-                    'http://$ip/api/v1/diaries/${widget.model.id}',
+                    'http://$ip/api/v1/diaries/${state.id}',
                     options: Options(headers: {
                       'Authorization': 'Bearer $accessToken',
                     }),
                   );
-
-                  if(mounted) {
+                  ref
+                      .read(diaryPaginationProvider.notifier)
+                      .deleteDetail(id: state.id);
+                  if (mounted) {
                     Navigator.of(context).pop();
                   }
-
                 }
               },
             ),
@@ -231,40 +243,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> {
           height: MediaQuery.of(context).size.height / 1.8,
           fit: BoxFit.cover,
         ),
-        // Positioned(
-        //   top: 50.0,
-        //   child: SizedBox(
-        //     width: MediaQuery.of(context).size.width,
-        //     child: Padding(
-        //       padding: const EdgeInsets.all(16.0),
-        //       child: Column(
-        //         mainAxisAlignment: MainAxisAlignment.start,
-        //         crossAxisAlignment: CrossAxisAlignment.center,
-        //         children: [
-        //           Text(
-        //             DataUtils.dateTimeToKoreanDateString(widget.model.date),
-        //             style: const TextStyle(
-        //               fontSize: 20.0,
-        //               fontWeight: FontWeight.w600,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //           const SizedBox(
-        //             height: 4.0,
-        //           ),
-        //           Text(
-        //             '+ ${widget.model.daysAfterBirth.toString()}일',
-        //             style: const TextStyle(
-        //               fontSize: 14.0,
-        //               fontWeight: FontWeight.w600,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }

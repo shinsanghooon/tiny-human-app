@@ -13,10 +13,9 @@ part 'diary_pagination_repository.g.dart';
 
 final diaryPaginationRepositoryProvider =
     Provider<DiaryPaginationRepository>((ref) {
-      final dio = ref.watch(dioProvider);
-      return DiaryPaginationRepository(dio, baseUrl: "http://$ip/api/v1/diaries");
-    });
-
+  final dio = ref.watch(dioProvider);
+  return DiaryPaginationRepository(dio, baseUrl: "http://$ip/api/v1/diaries");
+});
 
 @RestApi()
 abstract class DiaryPaginationRepository
@@ -31,4 +30,8 @@ abstract class DiaryPaginationRepository
     @Query("order") required String order,
     @Queries() CursorPaginationParams? cursorPaginationParams,
   });
+
+  @GET('/{diaryId}')
+  @Headers({'accessToken': 'true'})
+  Future<DiaryResponseModel> getDetail({@Path('diaryId') required int id});
 }

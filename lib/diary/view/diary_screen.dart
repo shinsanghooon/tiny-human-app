@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stacked_card_carousel/stacked_card_carousel.dart';
-import 'package:tiny_human_app/baby/view/baby_register_screen.dart';
-import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/diary/component/diary_card.dart';
-import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 import 'package:tiny_human_app/diary/view/diary_detail_screen.dart';
 
 import '../../common/constant/colors.dart';
-import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
 import '../../common/model/cursor_pagination_model.dart';
-import '../component/diary_card_2.dart';
 import 'diary_register_screen.dart';
 
 class DiaryScreen extends ConsumerStatefulWidget {
@@ -50,9 +44,9 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
         color: PRIMARY_COLOR,
 
         onRefresh: () async {
-          ref.read(diaryPaginationProvider.notifier).paginate(
-            forceRefetch: true
-          );
+          ref
+              .read(diaryPaginationProvider.notifier)
+              .paginate(forceRefetch: true);
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

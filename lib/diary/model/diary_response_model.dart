@@ -1,7 +1,5 @@
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tiny_human_app/common/model/model_with_id.dart';
-import 'package:tiny_human_app/common/utils/data_utils.dart';
 import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
 import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 
