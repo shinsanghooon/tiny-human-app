@@ -48,6 +48,7 @@ class RootScreen extends StatelessWidget {
                   MainMenuItemButton(
                     menuItemName: 'BABY',
                     menuItemIcon: Icons.child_care_outlined,
+
                     screen: BabyScreen(),
                   ),
                   MainMenuItemButton(
@@ -72,13 +73,13 @@ class RootScreen extends StatelessWidget {
                   ),
                   MainMenuItemButton(
                     menuItemName: 'CHECK-LIST',
-                    customFontSize: 13.0,
+                    customFontSize: 12.0,
                     menuItemIcon: Icons.check_box_outlined,
                     screen: CheckListScreen(),
                   ),
                   MainMenuItemButton(
                     menuItemName: 'SETTINGS',
-                    customFontSize: 13.0,
+                    customFontSize: 14.0,
                     menuItemIcon: Icons.settings_outlined,
                     screen: SettingScreen(),
                   ),
