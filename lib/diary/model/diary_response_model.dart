@@ -2,6 +2,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tiny_human_app/common/model/model_with_id.dart';
 import 'package:tiny_human_app/common/utils/data_utils.dart';
+import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
+import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 
 part 'diary_response_model.g.dart';
 
@@ -14,8 +16,8 @@ class DiaryResponseModel implements IModelWithId {
   final int likeCount;
   final bool isDeleted;
   final DateTime date;
-  final List<String> sentences;
-  final List<String> pictures;
+  final List<DiarySentenceModel> sentences;
+  final List<DiaryPictureModel> pictures;
 
   DiaryResponseModel({
     required this.id,

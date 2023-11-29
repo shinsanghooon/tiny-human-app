@@ -4,28 +4,31 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tiny_human_app/diary/model/diary_file_model.dart';
+import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
+import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
-import 'diary_screen.dart';
+import '../model/sentence_request_model.dart';
 
-class DiaryRegisterScreen extends StatefulWidget {
+class DiaryRegisterScreen extends ConsumerStatefulWidget {
   const DiaryRegisterScreen({super.key});
 
   @override
-  State<DiaryRegisterScreen> createState() => _DiaryRegisterScreenState();
+  ConsumerState<DiaryRegisterScreen> createState() => _DiaryRegisterScreenState();
 }
 
-class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
+class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
-  CarouselController buttonCarouselController = CarouselController();
   int photoCurrentIndex = 0;
 
   // profile image
@@ -34,15 +37,14 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
   List<XFile> pickedImages = [];
   String? pickedFilePath;
 
-  String? name;
-  String? nickname;
+  // String? name;
+  // String? nickname;
 
   int? daysAfterBirth;
 
   DateTime? diaryDate = DateTime.now();
-  List<String> fileName = [];
-  List<String> sentences = [];
-
+  List<String> fileNames = [];
+  String? sentence;
   String? accessToken;
 
   @override
@@ -65,6 +67,9 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final diaries = ref.watch(diaryPaginationProvider);
+
     return DefaultLayout(
       appBar: diaryAppBar(context),
       child: SafeArea(
@@ -89,6 +94,9 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
 
                           setState(() {
                             pickedImages = selectedImages;
+                            fileNames = pickedImages
+                                .map((image) => image.name)
+                                .toList();
                           });
                         },
                         child: Container(
@@ -113,6 +121,9 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
 
                           setState(() {
                             pickedImages = [...pickedImages, ...selectedImages];
+                            fileNames = pickedImages
+                                .map((image) => image.name)
+                                .toList();
                           });
                         },
                         child: Container(
@@ -186,27 +197,44 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
       alignment: Alignment.bottomCenter,
       children: [
         CarouselSlider(
-            carouselController: buttonCarouselController,
             items: pickedImages.map((image) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: Image.asset(
-                  image.path,
-                  width: size,
-                  height: size,
-                  fit: BoxFit.cover,
-                ),
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.asset(
+                      image.path,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.cancel),
+                      color: Colors.deepOrange.withOpacity(0.9),
+                      onPressed: () {
+                        print('Delete Diary Photo');
+                        setState(() {
+                          pickedImages.removeAt(photoCurrentIndex);
+                          fileNames =
+                              pickedImages.map((image) => image.name).toList();
+                        });
+                      },
+                    ),
+                  )
+                ],
               );
             }).toList(),
             options: CarouselOptions(
-                autoPlay: true,
                 height: size,
                 viewportFraction: 1.0,
                 onPageChanged: (index, _) {
                   setState(() {
                     print("new index $index");
                     photoCurrentIndex = index;
-                    buttonCarouselController.jumpToPage(index);
                   });
                 })),
         Positioned(
@@ -237,7 +265,7 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
         keyName: 'description_$id',
         // textEditingController: textEditingController,
         onSaved: (String? value) {
-          sentences.add(value!);
+          sentence = value;
         },
         hintText: "아기의 오늘을 남겨주세요.",
         initialValue: '',
@@ -265,36 +293,24 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
             return null;
           }
 
-          //   {
-          //     "babyId": 1,
-          //   "daysAfterBirth": 10,
-          //   "userId": 1,
-          //   "likeCount": 0,
-          //   "date": "2022-10-31",
-          //   "sentences": [
-          // {"sentence": "지안이가 일어났다."},
-          // {"sentence": "지안이가 잠을 잔다."},
-          // {"sentence": "지안이가 다시 일어났다."}
-          //   ],
-          //   "files": [
-          // {"fileName": "bbbb.jpg"},
-          // {"fileName": "cccc.png"}
-          //   ]
-          // }
 
+          print('daysAfterBirth');
+          print(daysAfterBirth);
           final response = await dio.post(
             'http://$ip/api/v1/diaries',
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
             }),
             data: {
-              "babyId": name,
-              "dayAfterBirth": daysAfterBirth,
               "userId": 1,
+              "babyId": 1,
+              "daysAfterBirth": daysAfterBirth,
               "likeCount": 0,
               "date": DateFormat('yyyy-MM-dd').format(diaryDate!).toString(),
-              "sentences": [],
-              "files": [],
+              "sentences": [SentenceRequestModel(sentence: sentence!)],
+              "files": fileNames
+                  .map((fileName) => DiaryFileModel(fileName: fileName))
+                  .toList(),
             },
           );
 
@@ -311,30 +327,32 @@ class _DiaryRegisterScreenState extends State<DiaryRegisterScreen> {
                 });
           }
 
-          print('preSignedUrl ${response.data}');
-          String preSignedUrl = response.data['preSignedUrl'];
+          List<String> preSignedUrls = (response.data['pictures'] as List)
+              .map((pictureInfo) => pictureInfo['preSignedUrl'] as String)
+              .toList();
 
-          print('filePath');
-          print(pickedFilePath);
-          File file = File(pickedFilePath!);
+          for (int i = 0; i < pickedImages.length; i ++) {
 
-          var fileExt = file.path.split('.').last == 'jpg'
-              ? 'jpeg'
-              : file.path.split('.').last;
-          await dio.put(preSignedUrl,
-              data: file.openRead(),
-              options: Options(
-                headers: {
-                  Headers.contentLengthHeader: file.lengthSync(),
-                },
-                contentType: 'image/$fileExt',
-              ));
+            File file = File(pickedImages[i].path!);
 
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => DiaryScreen(),
-            ),
-          );
+            var fileExt = file.path.split('.').last == 'jpg'
+                ? 'jpeg'
+                : file.path.split('.').last;
+
+            await dio.put(preSignedUrls[i],
+                data: file.openRead(),
+                options: Options(
+                  headers: {
+                    Headers.contentLengthHeader: file.lengthSync(),
+                  },
+                  contentType: 'image/$fileExt',
+                ));
+          }
+
+          ref.read(diaryPaginationProvider.notifier).addDiary();
+
+          Navigator.of(context).pop();
+
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
