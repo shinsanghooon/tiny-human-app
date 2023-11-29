@@ -43,6 +43,7 @@ class CustomLongTextFormField extends StatelessWidget {
       obscureText: obscureText,
       autofocus: autofocus,
       onSaved: onSaved,
+      initialValue: initialValue,
       validator: (value) {
               if (value == null || value.isEmpty) {
                 return '필수 입력값입니다.';

@@ -33,13 +33,14 @@ class CustomAlertDialog extends StatelessWidget {
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       },
       child: Center(
         child: Text(
           buttonText,
           style: TextStyle(
             color: Colors.white,
+            fontSize: 18.0,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -58,6 +58,7 @@ class MainMenuItemButton extends StatelessWidget {
                 Icon(
                   menuItemIcon,
                   size: 36.0,
+                  color: Colors.white,
                 ),
                 SizedBox(
                   height: 12.0,
@@ -67,6 +68,7 @@ class MainMenuItemButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: customFontSize,
                     fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
                 ),
               ],

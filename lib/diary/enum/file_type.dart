@@ -1,0 +1,2 @@
+
+enum FileType { PHOTO, VIDEO }

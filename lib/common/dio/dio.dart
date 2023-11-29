@@ -14,8 +14,6 @@ final dioProvider = Provider<Dio>((ref) {
       CustomInterceptor(storage: storage)
   );
 
-  print('use dio provider');
-
   return dio;
 });
 
