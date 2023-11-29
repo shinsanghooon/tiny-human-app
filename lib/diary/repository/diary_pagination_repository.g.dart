@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'album_pagination_repository.dart';
+part of 'diary_pagination_repository.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,8 +8,8 @@ part of 'album_pagination_repository.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _AlbumPaginationRepository implements AlbumPaginationRepository {
-  _AlbumPaginationRepository(
+class _DiaryPaginationRepository implements DiaryPaginationRepository {
+  _DiaryPaginationRepository(
     this._dio, {
     this.baseUrl,
   });
@@ -19,7 +19,7 @@ class _AlbumPaginationRepository implements AlbumPaginationRepository {
   String? baseUrl;
 
   @override
-  Future<CursorPagination<AlbumResponseModel>> paginateWithId({
+  Future<CursorPagination<DiaryResponseModel>> paginateWithId({
     required id,
     required order,
     cursorPaginationParams,
@@ -33,46 +33,46 @@ class _AlbumPaginationRepository implements AlbumPaginationRepository {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CursorPagination<AlbumResponseModel>>(Options(
+        _setStreamType<CursorPagination<DiaryResponseModel>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/${id}/albums',
+              '/babies/${id}',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = CursorPagination<AlbumResponseModel>.fromJson(
+    final value = CursorPagination<DiaryResponseModel>.fromJson(
       _result.data!,
-      (json) => AlbumResponseModel.fromJson(json as Map<String, dynamic>),
+      (json) => DiaryResponseModel.fromJson(json as Map<String, dynamic>),
     );
     return value;
   }
 
   @override
-  Future<AlbumResponseModel> getDetail({required id}) async {
+  Future<DiaryResponseModel> getDetail({required id}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<AlbumResponseModel>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<DiaryResponseModel>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/{babyId}/albums/${id}',
+              '/${id}',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = AlbumResponseModel.fromJson(_result.data!);
+    final value = DiaryResponseModel.fromJson(_result.data!);
     return value;
   }
 
