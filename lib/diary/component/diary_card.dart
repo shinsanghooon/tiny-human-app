@@ -3,6 +3,8 @@ import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 
+import '../../common/constant/data.dart';
+
 class DiaryCard extends StatelessWidget {
   final int id;
   final String detail;
@@ -29,7 +31,7 @@ class DiaryCard extends StatelessWidget {
         height: 120,
         fit: BoxFit.cover,
       ),
-      detail: model.sentences.first,
+      detail: model.sentences.first.sentence,
       createdAt: model.date,
       afterBirthDay: model.daysAfterBirth,
     );
@@ -43,10 +45,10 @@ class DiaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: PRIMARY_COLOR.withOpacity(0.1),
             spreadRadius: 10,
-            blurRadius: 7,
-            offset: Offset(0, 3),
+            blurRadius: 50,
+            offset: Offset(-50, 50),
           ),
         ],
       ),
@@ -61,14 +63,23 @@ class DiaryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(
-                      height: 8.0,
+                      height: 12.0,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                            '${createdAt.year}년 ${createdAt.month}월 ${createdAt.day}일'),
-                        Text('+${afterBirthDay} 일'),
+                          '${createdAt.year}년 ${createdAt.month}월 ${createdAt.day}일',
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text('+$afterBirthDay일',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w500,
+                            )),
                       ],
                     ),
                     const SizedBox(
@@ -76,11 +87,12 @@ class DiaryCard extends StatelessWidget {
                     ),
                     Text(
                       detail,
-                      maxLines: 4,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 13.0,
+                      style: const TextStyle(
+                          fontSize: 14.0,
                           color: BODY_TEXT_COLOR,
+                          height: 1.5,
                           fontWeight: FontWeight.w500),
                     ),
                   ],
