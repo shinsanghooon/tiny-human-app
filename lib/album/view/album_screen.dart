@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/album/provider/album_provider.dart';
-import 'package:tiny_human_app/album/repository/album_repository.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 
 import '../../common/constant/colors.dart';
-import '../../common/model/cursor_pagination_params.dart';
 
 class AlbumScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'album';
+
   const AlbumScreen({super.key});
 
   @override
@@ -45,8 +45,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     final cp = albumPagination as CursorPagination;
     final data = cp.body;
 
-    final s3ImageUrls =
-        data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
+    final s3ImageUrls = data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
 
     void onScaleUpdate(ScaleUpdateDetails details) {
       // 제스처에 따라 그리드 수를 동적으로 조절

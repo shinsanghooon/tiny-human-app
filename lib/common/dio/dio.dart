@@ -10,9 +10,7 @@ final dioProvider = Provider<Dio>((ref) {
 
   final storage = ref.watch(secureStorageProvider);
 
-  dio.interceptors.add(
-      CustomInterceptor(storage: storage)
-  );
+  dio.interceptors.add(CustomInterceptor(storage: storage));
 
   return dio;
 });
@@ -37,7 +35,7 @@ class CustomInterceptor extends Interceptor {
       options.headers.remove('accessToken');
 
       final token = await storage.read(key: ACCESS_TOKEN_KEY);
-      print('[ACCESS TOKEN] ${token}');
+      print('[ACCESS TOKEN] $token');
       options.headers.addAll({
         'Authorization': 'Bearer $token',
       });
@@ -65,6 +63,7 @@ class CustomInterceptor extends Interceptor {
     // 다시 새로운 토큰으로 요청을 한다.
     print('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
     print('[ERROR] [${err.message}]');
+    print('[ERROR] [${err}]');
 
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
 
@@ -92,9 +91,7 @@ class CustomInterceptor extends Interceptor {
 
         final options = err.requestOptions;
 
-        options.headers.addAll({
-          'authorization': 'Bearer $accessToken'
-        });
+        options.headers.addAll({'authorization': 'Bearer $accessToken'});
 
         await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
 
@@ -115,7 +112,8 @@ class CustomInterceptor extends Interceptor {
   // 2. 응답을 받을 때
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    print('[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
+    print(
+        '[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
     print('[RES] [${response.data}]');
 
     return super.onResponse(response, handler);

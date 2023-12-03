@@ -10,6 +10,8 @@ import '../../common/model/cursor_pagination_model.dart';
 import 'diary_register_screen.dart';
 
 class DiaryScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'diary';
+
   const DiaryScreen({super.key});
 
   @override

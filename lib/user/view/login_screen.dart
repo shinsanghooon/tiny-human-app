@@ -1,26 +1,25 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:tiny_human_app/album/view/album_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
-import 'package:dio/dio.dart';
-import 'package:tiny_human_app/common/component/text_component.dart';
-import 'package:tiny_human_app/common/view/root_screen.dart';
+import 'package:tiny_human_app/user/model/user_model.dart';
+import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/register_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/constant/data.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'login';
+
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
 
   String email = '';
@@ -28,12 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dio = Dio();
-
-    final emulatorIp = '10.0.2.2.:8080';
-    final simulatorIp = '127.0.0.1:8080';
-
-    final ip = Platform.isIOS == true ? simulatorIp : emulatorIp;
+    final state = ref.watch(userMeProvider);
 
     return DefaultLayout(
       child: SingleChildScrollView(
@@ -79,50 +73,56 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16.0),
                       ElevatedButton(
-                        onPressed: () async {
-                          // final rawString = '${username}:${password}';
-                          // Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                          // String token = stringToBase64.encode(rawString);
+                        onPressed: state is UserModelLoading
+                            ? null
+                            : () async {
+                                // final rawString = '${username}:${password}';
+                                // Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                                // String token = stringToBase64.encode(rawString);
 
-                          if (formKey.currentState == null) {
-                            // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
-                            return null;
-                          }
+                                if (formKey.currentState == null) {
+                                  // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
+                                  return null;
+                                }
 
-                          // form을 쓸 때 동일하게 하는 패턴
-                          // Form 아래 TextFormField의 validator가 모두 실행됨
-                          if (formKey.currentState!.validate()) {
-                            // save를 해주면 TextFormField의 onSaved 함수가 호출된다.
-                            formKey.currentState!.save();
-                          } else {
-                            // 어떤 필드가 문제가 있는 경우.
-                            return null;
-                          }
+                                // form을 쓸 때 동일하게 하는 패턴
+                                // Form 아래 TextFormField의 validator가 모두 실행됨
+                                if (formKey.currentState!.validate()) {
+                                  // save를 해주면 TextFormField의 onSaved 함수가 호출된다.
+                                  formKey.currentState!.save();
+                                } else {
+                                  // 어떤 필드가 문제가 있는 경우.
+                                  return null;
+                                }
 
-                          final response = await dio.post(
-                            'http://$ip/api/v1/auth/login',
-                            data: {
-                              "email": email,
-                              "password": password,
-                            },
-                          );
-                          print('login');
-                          print(response.data);
-                          final accessToken = response.data['accessToken'];
-                          final refreshToken = response.data['refreshToken'];
+                                ref
+                                    .read(userMeProvider.notifier)
+                                    .login(email: email, password: password);
 
-                          await storage.write(
-                              key: ACCESS_TOKEN_KEY, value: accessToken);
-                          await storage.write(
-                              key: REFRESH_TOKEN_KEY, value: refreshToken);
-
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (_) => RootScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        },
+                                // final response = await dio.post(
+                                //   'http://$ip/api/v1/auth/login',
+                                //   data: {
+                                //     "email": email,
+                                //     "password": password,
+                                //   },
+                                // );
+                                // print('login');
+                                // print(response.data);
+                                // final accessToken = response.data['accessToken'];
+                                // final refreshToken = response.data['refreshToken'];
+                                //
+                                // await storage.write(
+                                //     key: ACCESS_TOKEN_KEY, value: accessToken);
+                                // await storage.write(
+                                //     key: REFRESH_TOKEN_KEY, value: refreshToken);
+                                //
+                                // Navigator.of(context).pushAndRemoveUntil(
+                                //   MaterialPageRoute(
+                                //     builder: (_) => RootScreen(),
+                                //   ),
+                                //   (route) => false,
+                                // );
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: PRIMARY_COLOR,
                         ),

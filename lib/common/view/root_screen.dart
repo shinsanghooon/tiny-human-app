@@ -6,16 +6,17 @@ import 'package:tiny_human_app/common/component/menu_item_button.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
-import 'package:tiny_human_app/user/view/setting_screen.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
 import 'package:tiny_human_app/help/view/help_screen.dart';
+import 'package:tiny_human_app/user/view/setting_screen.dart';
 
 class RootScreen extends StatelessWidget {
+  static String get routeName => 'home';
+
   const RootScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultLayout(
       backgroundColor: Colors.black,
       child: SafeArea(
@@ -48,7 +49,6 @@ class RootScreen extends StatelessWidget {
                   MainMenuItemButton(
                     menuItemName: 'BABY',
                     menuItemIcon: Icons.child_care_outlined,
-
                     screen: BabyScreen(),
                   ),
                   MainMenuItemButton(
