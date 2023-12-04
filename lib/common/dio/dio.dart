@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tiny_human_app/user/provider/auth_provider.dart';
 
 import '../constant/data.dart';
 import '../secure_storage/secure_storage.dart';
@@ -10,17 +11,16 @@ final dioProvider = Provider<Dio>((ref) {
 
   final storage = ref.watch(secureStorageProvider);
 
-  dio.interceptors.add(CustomInterceptor(storage: storage));
+  dio.interceptors.add(CustomInterceptor(storage: storage, ref: ref));
 
   return dio;
 });
 
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
+  final Ref ref;
 
-  CustomInterceptor({
-    required this.storage,
-  });
+  CustomInterceptor({required this.storage, required this.ref});
 
   // 1) 요청을 보낼때
   @override
@@ -99,6 +99,12 @@ class CustomInterceptor extends Interceptor {
         final newResponse = await dio.fetch(options);
         return handler.resolve(newResponse);
       } on DioError catch (e) {
+        // jwt 관련 다른 에러(토큰 만료)
+
+        // 여기서 userMeProvider를 불러와서 logout을 해주면
+        // circular dependency error가 발생한다.
+        // userMeProvider -> dio -> userMeProvider -> dio ...
+        ref.read(authProvider.notifier).logout();
         return handler.reject(e);
       }
     }

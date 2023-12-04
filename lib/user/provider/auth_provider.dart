@@ -28,7 +28,8 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  List<GoRoute> get routes => [
+  List<GoRoute> get routes =>
+      [
         GoRoute(
           path: '/',
           name: RootScreen.routeName,
@@ -86,5 +87,12 @@ class AuthProvider extends ChangeNotifier {
     }
 
     return null;
+  }
+
+  logout() {
+    // 실행이 되는 순간에만 provider를 읽어서 실행한다.
+    // 클래스 전체의 디펜던시는 아니다. 함수를 실행하는 순간에 알 수 있다.
+    // 하지만 inject를 할 때는 빌드 타임에 알고 있어야 한다.
+    ref.read(userMeProvider.notifier).logout();
   }
 }
