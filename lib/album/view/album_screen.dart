@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/album/provider/album_provider.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
@@ -22,6 +23,9 @@ class AlbumScreen extends ConsumerStatefulWidget {
 class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   double gridCount = 4;
   double endScale = 1.0;
+
+  bool isSelectMode = false;
+  List<int> selectedIds = List.empty();
 
   final ImagePicker imagePicker = ImagePicker();
 
@@ -87,19 +91,61 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 ),
               ),
               leading: IconButton(
-                icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+                icon: const Icon(
+                  Icons.home_outlined,
+                  color: PRIMARY_COLOR,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: [
-                IconButton(
-                    icon: const Icon(Icons.add, color: PRIMARY_COLOR),
-                    onPressed: () async {
-                      List<XFile> selectedImages = await uploadImages();
-                      if (selectedImages.isNotEmpty) {
-                        albums.addAlbums(1, selectedImages);
-                      }
-                      ref.read(albumPaginationProvider.notifier).addAlbums();
-                    })
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isSelectMode = !isSelectMode;
+                          if (!isSelectMode) {
+                            selectedIds = List.empty();
+                          }
+                        });
+                      },
+                      icon: isSelectMode
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: PRIMARY_COLOR,
+                            )
+                          : const Icon(
+                              Icons.check_circle_outline_outlined,
+                              color: PRIMARY_COLOR,
+                            ),
+                    ),
+                    isSelectMode
+                        ? IconButton(
+                            icon: const Icon(
+                              Icons.more_horiz,
+                              color: PRIMARY_COLOR,
+                            ),
+                            onPressed: () async {
+                              debugPrint('Show Menu Button');
+                            },
+                          )
+                        : IconButton(
+                            icon: const Icon(
+                              Icons.add,
+                              color: PRIMARY_COLOR,
+                            ),
+                            onPressed: () async {
+                              List<XFile> selectedImages = await uploadImages();
+                              if (selectedImages.isNotEmpty) {
+                                albums.addAlbums(1, selectedImages);
+                              }
+                              ref
+                                  .read(albumPaginationProvider.notifier)
+                                  .addAlbums();
+                            },
+                          ),
+                  ],
+                )
               ],
             ),
             SliverGrid(
@@ -109,23 +155,55 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 }
                 return Padding(
                   padding: EdgeInsets.all(8 / gridCount),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PhotoRoute(
-                            image: s3ImageUrls[index],
+                  child: isSelectMode
+                      ? GestureDetector(
+                          onTap: () {
+                            final selectedModel =
+                                (data[index] as AlbumResponseModel);
+                            print('Select Model ID : ${selectedModel.id}');
+                            setState(() {
+                              if (selectedIds
+                                  .where((id) => id == data[index].id)
+                                  .isEmpty) {
+                                selectedIds = [
+                                  ...selectedIds,
+                                  selectedModel.id
+                                ];
+                              } else {
+                                selectedIds.remove(data[index].id);
+                              }
+                            });
+                            print('Selected IDs : ${selectedIds.toString()}');
+                          },
+                          child: ImageContainer(
+                            url: s3ImageUrls[index],
+                            width: null,
+                            height: null,
+                            selected: selectedIds
+                                .where((id) => id == data[index].id)
+                                .isNotEmpty,
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PhotoRoute(
+                                  image: s3ImageUrls[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6.0),
+                            child: ImageContainer(
+                              url: s3ImageUrls[index],
+                              width: null,
+                              height: null,
+                            ),
                           ),
                         ),
-                      );
-                    },
-                    child: ImageContainer(
-                      url: s3ImageUrls[index],
-                      width: 80,
-                      height: 80,
-                    ),
-                  ),
                 );
               }),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -139,9 +217,8 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   }
 
   Future<List<XFile>> uploadImages() async {
-    print("Album upload button is pressed.");
     List<XFile>? images = await imagePicker.pickMultipleMedia();
-    print('selected images count: ${images.length}');
+    debugPrint('[ALBUM UPLOAD] selected images count: ${images.length}');
     return images;
   }
 }
