@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/album/provider/album_provider.dart';
@@ -10,6 +12,7 @@ import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 
 import '../../common/constant/colors.dart';
+import '../../common/enum/update_delete_menu.dart';
 
 class AlbumScreen extends ConsumerStatefulWidget {
   static String get routeName => 'album';
@@ -21,6 +24,8 @@ class AlbumScreen extends ConsumerStatefulWidget {
 }
 
 class _AlbumScreenState extends ConsumerState<AlbumScreen> {
+  final GlobalKey _menuButtonKey = GlobalKey();
+
   double gridCount = 4;
   double endScale = 1.0;
 
@@ -121,12 +126,19 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                     ),
                     isSelectMode
                         ? IconButton(
+                            key: _menuButtonKey,
                             icon: const Icon(
                               Icons.more_horiz,
                               color: PRIMARY_COLOR,
                             ),
                             onPressed: () async {
                               debugPrint('Show Menu Button');
+                              RenderBox renderBox = _menuButtonKey
+                                  .currentContext!
+                                  .findRenderObject() as RenderBox;
+                              Offset buttonOffset =
+                                  renderBox.localToGlobal(Offset.zero);
+                              _showAlbumPopupMenu(buttonOffset, context);
                             },
                           )
                         : IconButton(
@@ -213,6 +225,110 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showAlbumPopupMenu(Offset buttonOffset, BuildContext context) {
+    showMenu(
+      context: context,
+      position:
+          RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 20, 20, 0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(14.0),
+          bottomLeft: Radius.circular(14.0),
+          bottomRight: Radius.circular(14.0),
+        ),
+      ),
+      items: AlbumPopUpMenu.values
+          .map(
+            (value) => PopupMenuItem(
+              value: value,
+              textStyle: const TextStyle(
+                color: Colors.black,
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(value.disPlayIcon),
+                  ),
+                  Text(
+                    value.displayName,
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ],
+              ),
+              onTap: () async {
+                https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
+                await Future.delayed(Duration.zero);
+                if (AlbumPopUpMenu.DELETE == value) {
+                  await _checkDeleteMenuDialog();
+                }
+              },
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Future<void> _checkDeleteMenuDialog() async {
+    const msgTextStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 20.0,
+      fontWeight: FontWeight.w500,
+    );
+
+    const buttonTextStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+      fontSize: 18.0,
+    );
+
+    return Dialogs.materialDialog(
+      msg: '앨범을 삭제하시겠습니까? 삭제된 앨범은 복구할 수 없습니다.',
+      msgStyle: msgTextStyle,
+      title: "앨범 삭제",
+      titleStyle: msgTextStyle.copyWith(fontWeight: FontWeight.w600),
+      color: Colors.white,
+      context: context,
+      actions: [
+        IconsButton(
+          onPressed: () {
+            if (mounted) {
+              // TODO: Go to DiaryDetailScreen
+              Navigator.of(context).pop();
+            }
+          },
+          text: '돌아가기',
+          color: PRIMARY_COLOR,
+          iconData: Icons.cancel_outlined,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+        IconsButton(
+          onPressed: () async {
+            // final response = await dio.delete(
+            //   'http://$ip/api/v1/diaries/${state.id}',
+            //   options: Options(headers: {
+            //     'Authorization': 'Bearer $accessToken',
+            //   }),
+            // );
+            // ref
+            //     .read(diaryPaginationProvider.notifier)
+            //     .deleteDetail(id: state.id);
+            // if (mounted) {
+            //   // TODO: Go to DiaryScreen
+            //   context.goNamed(DiaryScreen.routeName);
+            // }
+          },
+          text: '삭제하기',
+          iconData: Icons.delete,
+          color: PRIMARY_COLOR,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+      ],
     );
   }
 
