@@ -25,6 +25,8 @@ class ImageContainer extends StatelessWidget {
             ),
           ),
         ),
+        fadeInDuration: const Duration(milliseconds: 100),
+        fadeOutDuration: const Duration(milliseconds: 100),
         errorWidget: (context, url, error) => const Icon(Icons.error_outline),
       ),
     );

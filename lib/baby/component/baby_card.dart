@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_human_app/common/component/image_container.dart';
+
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 
@@ -36,12 +38,11 @@ class BabyCard extends StatelessWidget {
             height: 4.0,
           ),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(
-              imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
-              fit: BoxFit.cover,
+            borderRadius: BorderRadius.circular(12.0),
+            child: ImageContainer(
+              url: imageUrl == "" ? SAMPLE_BABY_IMAGE_URL : imageUrl,
               width: MediaQuery.of(context).size.width / 1.7,
-              height: MediaQuery.of(context).size.width / 2.5,
+              height: MediaQuery.of(context).size.width / 1.7,
             ),
           ),
           const SizedBox(
