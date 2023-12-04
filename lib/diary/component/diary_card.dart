@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
-import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 
 import '../../common/constant/data.dart';
@@ -8,7 +8,7 @@ import '../../common/constant/data.dart';
 class DiaryCard extends StatelessWidget {
   final int id;
   final String detail;
-  final Image? image;
+  final Widget? image;
   final DateTime createdAt;
   final int afterBirthDay;
 
@@ -25,11 +25,10 @@ class DiaryCard extends StatelessWidget {
   }) {
     return DiaryCard(
       id: model.id,
-      image: Image.network(
-        '$S3_BASE_URL${model.pictures.first.keyName}',
+      image: ImageContainer(
+        url: '$S3_BASE_URL${model.pictures.first.keyName}',
         width: 160,
         height: 160,
-        fit: BoxFit.cover,
       ),
       detail: model.sentences.first.sentence,
       createdAt: model.date,
@@ -47,45 +46,43 @@ class DiaryCard extends StatelessWidget {
       child: IntrinsicHeight(
         child: Row(
           children: [
-            ClipRRect(borderRadius: BorderRadius.circular(8.0), child: image),
+            ClipRRect(borderRadius: BorderRadius.circular(8.0), child: image!),
             const SizedBox(width: 18.0),
             Expanded(
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${createdAt.year}년 ${createdAt.month}월 ${createdAt.day}일',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${createdAt.year}년 ${createdAt.month}월 ${createdAt.day}일',
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text('+$afterBirthDay일',
                           style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text('+$afterBirthDay일',
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
-                            )),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 8.0,
-                    ),
-                    Text(
-                      detail,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 16.0,
-                          color: BODY_TEXT_COLOR,
-                          height: 1.5,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
+                          )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    detail,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 16.0,
+                        color: BODY_TEXT_COLOR,
+                        height: 1.5,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 12.0),

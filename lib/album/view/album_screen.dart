@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/album/provider/album_provider.dart';
+import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 
@@ -119,14 +120,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                         ),
                       );
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(s3ImageUrls[index]),
-                        ),
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
+                    child: ImageContainer(
+                      url: s3ImageUrls[index],
+                      width: 80,
+                      height: 80,
                     ),
                   ),
                 );
