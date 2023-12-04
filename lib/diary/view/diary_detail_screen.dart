@@ -58,7 +58,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
-        title: _diaryAppBarTitle(state),
         actions: [
           TextButton(
             onPressed: () {},
@@ -109,16 +108,20 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                   ),
               ],
             ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Icon(
-              Icons.horizontal_rule_outlined,
-              color: PRIMARY_COLOR.withOpacity(0.7),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Icon(
+                Icons.horizontal_rule_outlined,
+                color: PRIMARY_COLOR.withOpacity(0.7),
+              ),
             ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              child: _diaryDateTitle(state),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
                 state.sentences.first.sentence,
                 style: const TextStyle(
@@ -136,16 +139,16 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     );
   }
 
-  Column _diaryAppBarTitle(DiaryResponseModel state) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _diaryDateTitle(DiaryResponseModel state) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           DataUtils.dateTimeToKoreanDateString(state.date),
           style: const TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Colors.deepOrange,
           ),
         ),
         const SizedBox(
@@ -156,7 +159,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
           style: const TextStyle(
             fontSize: 14.0,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Colors.deepOrange,
           ),
         ),
       ],
