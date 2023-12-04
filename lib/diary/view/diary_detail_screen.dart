@@ -2,6 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -13,6 +16,7 @@ import 'package:tiny_human_app/diary/view/diary_update_screen.dart';
 
 import '../../common/constant/data.dart';
 import '../../common/enum/update_delete_menu.dart';
+import 'diary_screen.dart';
 
 class DiaryDetailScreen extends ConsumerStatefulWidget {
   final DiaryResponseModel model;
@@ -47,7 +51,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(diaryDetailProvider(widget.model.id));
-    print('Diary Detail Screen');
 
     if (state == null) {
       return DefaultLayout(child: Center(child: CircularProgressIndicator()));
@@ -67,7 +70,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       ),
       extendBodyBehindAppBar: true,
       child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -166,6 +169,66 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     );
   }
 
+  Future<void> _checkDeleteMenuDialog(DiaryResponseModel state) async {
+    const msgTextStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 20.0,
+      fontWeight: FontWeight.w500,
+    );
+
+    const buttonTextStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+      fontSize: 18.0,
+    );
+
+    return Dialogs.materialDialog(
+      msg: '일기를 삭제하시겠습니까? 삭제된 일기는 복구할 수 없습니다.',
+      msgStyle: msgTextStyle,
+      title: "일기 삭제",
+      titleStyle: msgTextStyle.copyWith(fontWeight: FontWeight.w600),
+      color: Colors.white,
+      context: context,
+      actions: [
+        IconsButton(
+          onPressed: () {
+            if (mounted) {
+              // TODO: Go to DiaryDetailScreen
+              Navigator.of(context).pop();
+            }
+          },
+          text: '돌아가기',
+          color: PRIMARY_COLOR,
+          iconData: Icons.cancel_outlined,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+        IconsButton(
+          onPressed: () async {
+            final response = await dio.delete(
+              'http://$ip/api/v1/diaries/${state.id}',
+              options: Options(headers: {
+                'Authorization': 'Bearer $accessToken',
+              }),
+            );
+            ref
+                .read(diaryPaginationProvider.notifier)
+                .deleteDetail(id: state.id);
+            if (mounted) {
+              // TODO: Go to DiaryScreen
+              context.goNamed(DiaryScreen.routeName);
+            }
+          },
+          text: '삭제하기',
+          iconData: Icons.delete,
+          color: PRIMARY_COLOR,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+      ],
+    );
+  }
+
   Container _moreFeatureIcon(BuildContext context, DiaryResponseModel state) {
     return Container(
       height: 28.0,
@@ -178,11 +241,12 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       child: IconButton(
         key: _menuButtonKey,
         padding: const EdgeInsets.only(bottom: 0.0),
-        onPressed: () {
+        onPressed: () async {
           RenderBox renderBox =
               _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
           Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
           _showPopupMenu(buttonOffset, context, state);
+          // await _diaryDetailMenuDialog(state);
         },
         icon: const Icon(
           Icons.more_horiz,
@@ -196,7 +260,15 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       Offset buttonOffset, BuildContext context, DiaryResponseModel state) {
     showMenu(
       context: context,
-      position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy, 0, 0),
+      position:
+          RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 5, 25, 0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(14.0),
+          bottomLeft: Radius.circular(14.0),
+          bottomRight: Radius.circular(14.0),
+        ),
+      ),
       items: UpdateDeleteMenu.values
           .map(
             (value) => PopupMenuItem(
@@ -204,31 +276,32 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               textStyle: const TextStyle(
                 color: Colors.black,
               ),
-              child: Text(value.displayName),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(value.disPlayIcon),
+                  ),
+                  Text(
+                    value.displayName,
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ],
+              ),
               onTap: () async {
                 https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
                 await Future.delayed(Duration.zero);
                 if (UpdateDeleteMenu.UPDATE == value) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      settings: const RouteSettings(name: "/updateDiary"),
-                      builder: (_) => DiaryUpdateScreen(id: state.id),
-                    ),
-                  );
-                } else if (UpdateDeleteMenu.DELETE == value) {
-                  print("delete this diary");
-                  final response = await dio.delete(
-                    'http://$ip/api/v1/diaries/${state.id}',
-                    options: Options(headers: {
-                      'Authorization': 'Bearer $accessToken',
-                    }),
-                  );
-                  ref
-                      .read(diaryPaginationProvider.notifier)
-                      .deleteDetail(id: state.id);
                   if (mounted) {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        settings: const RouteSettings(name: "/updateDiary"),
+                        builder: (_) => DiaryUpdateScreen(id: state.id),
+                      ),
+                    );
                   }
+                } else if (UpdateDeleteMenu.DELETE == value) {
+                  await _checkDeleteMenuDialog(state);
                 }
               },
             ),

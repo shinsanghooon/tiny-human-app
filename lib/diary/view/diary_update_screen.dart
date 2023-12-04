@@ -54,25 +54,15 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   List<DiaryPictureModel> baseFiles = [];
   List<DiarySentenceModel> baseSentence = [];
 
-  // List<PhotoWithSaveTypeModel> models = [];
-  // List<PhotoWithSaveTypeModel> deletedFiles = [];
+  List<PhotoWithSaveTypeModel> saveModels = [];
+  List<PhotoWithSaveTypeModel> deletedFiles = [];
 
   @override
   void initState() {
     super.initState();
     // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
-
     ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.id);
-
-    //   for (var picture in state.pictures) {
-    //     print(picture.keyName);
-    //     models.add(PhotoWithSaveTypeModel(
-    //         id: picture.id, type: SaveType.URL, path: picture.keyName));
-    //   }
-    //
-    //   diaryDate = state.date;
-    //   calculateDaysAfterBirth(diaryDate!);
   }
 
   void checkToken() async {
@@ -82,16 +72,10 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   void calculateDaysAfterBirth(DateTime selectedDate) {
     final birthday = DateTime(2022, 9, 27);
     daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
-    print('in calculateDaysAfterBirth');
-    print(daysAfterBirth);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<PhotoWithSaveTypeModel> models = [];
-    List<PhotoWithSaveTypeModel> deletedFiles = [];
-
-    print('Diary Update Screen');
     final state = ref.watch(diaryDetailProvider(widget.id));
 
     if (state == null) {
@@ -102,12 +86,12 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       )));
     }
 
-    for (var picture in state.pictures) {
-      print(picture.keyName);
-      models.add(PhotoWithSaveTypeModel(
-          id: picture.id, type: SaveType.URL, path: picture.keyName));
+    if (saveModels.isEmpty) {
+      for (var picture in state.pictures) {
+        saveModels.add(PhotoWithSaveTypeModel(
+            id: picture.id, type: SaveType.URL, path: picture.keyName));
+      }
     }
-    print('model length: ${models.length}');
 
     diaryDate = state.date;
     calculateDaysAfterBirth(diaryDate!);
@@ -126,7 +110,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _diaryImageCarousel(context, models, deletedFiles),
+                _diaryImageCarousel(context, saveModels, deletedFiles),
                 const SizedBox(height: 20.0),
                 _diaryDate(context),
                 Padding(
@@ -136,7 +120,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                     child: diaryTextCard(1, 1, state.sentences.first),
                   ),
                 ),
-                _updateDiaryActionButton(context, state, models, deletedFiles),
+                _updateDiaryActionButton(
+                    context, state, saveModels, deletedFiles),
               ],
             ),
           ),
@@ -146,8 +131,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   Row _diaryDate(BuildContext context) {
-    print('in _dairyDate Widget');
-    print(daysAfterBirth);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -174,10 +157,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
         ? GestureDetector(
             onTap: () async {
               List<XFile> selectedImages = await uploadImages();
-              if (selectedImages!.isNotEmpty) {
-                print('selected image is not emtpy');
-              }
-
               if ((models.length + selectedImages.length) > 5) {
                 throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
               }
@@ -188,7 +167,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                       type: SaveType.LOCAL, path: image.path, name: image.name);
                 }).toList();
 
-                models = [
+                saveModels = [
                   ...models,
                   ...temp,
                 ];
@@ -204,6 +183,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
         : GestureDetector(
             onTap: () async {
               List<XFile> selectedImages = await uploadImages();
+              print('selected images length : ${selectedImages.length}');
+
               if ((models.length + selectedImages.length) > 5) {
                 throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
               }
@@ -214,7 +195,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                       type: SaveType.LOCAL, path: image.path, name: image.name);
                 }).toList();
 
-                models = [
+                // 여기서 setState를 하니까 위젯이 다시 빌드되고 이미지는 다시 1개가 된다...
+                saveModels = [
                   ...models,
                   ...temp,
                 ];
@@ -288,7 +270,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                       icon: const Icon(Icons.cancel),
                       color: Colors.deepOrange.withOpacity(0.9),
                       onPressed: () {
-                        print('이미지 삭제');
                         setState(() {
                           PhotoWithSaveTypeModel deleteModel =
                               models.removeAt(photoCurrentIndex);
@@ -310,7 +291,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                 viewportFraction: 1.0,
                 onPageChanged: (index, _) {
                   setState(() {
-                    print("new index $index");
                     photoCurrentIndex = index;
                   });
                 })),
@@ -360,7 +340,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
-          print('---------- Request To Update Diary ----------');
+          print('[Request] Update Diary');
           print(accessToken);
 
           if (formKey.currentState == null) {
