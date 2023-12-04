@@ -4,12 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
 import 'package:tiny_human_app/baby/component/gradient_border_avatar.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
-import 'package:tiny_human_app/baby/view/baby_screen.dart';
-import 'package:intl/intl.dart';
-import 'package:tiny_human_app/common/dio/dio.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -208,23 +207,19 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           String preSignedUrl = response.data['preSignedUrl'];
           File file = File(pickedFilePath!);
 
-          var fileExt = file.path
-              .split('.')
-              .last == 'jpg'
-              ? 'jpeg'
-              : file.path
-              .split('.')
-              .last;
+          String? mimeType = lookupMimeType(file.path);
+
           await dio.put(preSignedUrl,
               data: file.openRead(),
               options: Options(
                 headers: {
                   Headers.contentLengthHeader: file.lengthSync(),
                 },
-                contentType: 'image/$fileExt',
+                contentType: mimeType,
               ));
 
-          ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
+          ref.read(babyProvider.notifier).addBaby(
+              BabyModel.fromJson(response.data));
 
           Navigator.of(context).pop();
         },

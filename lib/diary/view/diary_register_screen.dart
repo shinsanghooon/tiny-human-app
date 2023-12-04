@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
-import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 
 import '../../common/component/alert_dialog.dart';
@@ -23,7 +22,8 @@ class DiaryRegisterScreen extends ConsumerStatefulWidget {
   const DiaryRegisterScreen({super.key});
 
   @override
-  ConsumerState<DiaryRegisterScreen> createState() => _DiaryRegisterScreenState();
+  ConsumerState<DiaryRegisterScreen> createState() =>
+      _DiaryRegisterScreenState();
 }
 
 class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
@@ -67,7 +67,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final diaries = ref.watch(diaryPaginationProvider);
 
     return DefaultLayout(
@@ -293,7 +292,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
             return null;
           }
 
-
           print('daysAfterBirth');
           print(daysAfterBirth);
           final response = await dio.post(
@@ -331,13 +329,10 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
               .map((pictureInfo) => pictureInfo['preSignedUrl'] as String)
               .toList();
 
-          for (int i = 0; i < pickedImages.length; i ++) {
-
+          for (int i = 0; i < pickedImages.length; i++) {
             File file = File(pickedImages[i].path!);
 
-            var fileExt = file.path.split('.').last == 'jpg'
-                ? 'jpeg'
-                : file.path.split('.').last;
+            String? mimeType = lookupMimeType(file.path);
 
             await dio.put(preSignedUrls[i],
                 data: file.openRead(),
@@ -345,14 +340,13 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                   headers: {
                     Headers.contentLengthHeader: file.lengthSync(),
                   },
-                  contentType: 'image/$fileExt',
+                  contentType: mimeType,
                 ));
           }
 
           ref.read(diaryPaginationProvider.notifier).addDiary();
 
           Navigator.of(context).pop();
-
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,

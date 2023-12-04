@@ -97,6 +97,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                       if (selectedImages.isNotEmpty) {
                         albums.addAlbums(1, selectedImages);
                       }
+                      ref.read(albumPaginationProvider.notifier).addAlbums();
                     })
               ],
             ),

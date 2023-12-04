@@ -1,13 +1,5 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:tiny_human_app/album/model/album_create_model.dart';
-import 'package:tiny_human_app/album/model/album_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
-import 'package:tiny_human_app/album/repository/album_repository.dart';
-import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
@@ -33,12 +25,15 @@ class AlbumPaginationStateNotifier
     required this.babyId,
     required this.order,
     required super.repository,
-  });
+  }) : super();
 
   void getAlbums({
     required int id,
     required String order,
     required CursorPaginationParams cursorPaginationParams,
-  }) {
+  }) {}
+
+  void addAlbums() {
+    paginate(forceRefetch: true);
   }
 }

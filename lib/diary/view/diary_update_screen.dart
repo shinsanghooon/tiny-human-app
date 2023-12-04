@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/diary/enum/save_type.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
@@ -80,9 +81,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
   void calculateDaysAfterBirth(DateTime selectedDate) {
     final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate
-        .difference(birthday)
-        .inDays + 1;
+    daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
     print('in calculateDaysAfterBirth');
     print(daysAfterBirth);
   }
@@ -99,8 +98,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       return const DefaultLayout(
           child: Center(
               child: CircularProgressIndicator(
-                color: PRIMARY_COLOR,
-              )));
+        color: PRIMARY_COLOR,
+      )));
     }
 
     for (var picture in state.pictures) {
@@ -167,82 +166,70 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  GestureDetector _diaryImageCarousel(BuildContext context,
+  GestureDetector _diaryImageCarousel(
+      BuildContext context,
       List<PhotoWithSaveTypeModel> models,
       List<PhotoWithSaveTypeModel> deletedFiles) {
     return models.isEmpty
         ? GestureDetector(
-      onTap: () async {
-        List<XFile> selectedImages = await uploadImages();
-        if (selectedImages!.isNotEmpty) {
-          print('selected image is not emtpy');
-        }
+            onTap: () async {
+              List<XFile> selectedImages = await uploadImages();
+              if (selectedImages!.isNotEmpty) {
+                print('selected image is not emtpy');
+              }
 
-        if ((models.length + selectedImages.length) > 5) {
-          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-        }
+              if ((models.length + selectedImages.length) > 5) {
+                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+              }
 
-        setState(() {
-          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-            return PhotoWithSaveTypeModel(
-                type: SaveType.LOCAL, path: image.path, name: image.name);
-          }).toList();
+              setState(() {
+                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+                  return PhotoWithSaveTypeModel(
+                      type: SaveType.LOCAL, path: image.path, name: image.name);
+                }).toList();
 
-          models = [
-            ...models,
-            ...temp,
-          ];
-        });
-      },
-      child: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .width / 1.2,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width / 1.2,
-        color: Colors.deepOrange.shade500,
-        child: _uploadPhotoLabel(),
-      ),
-    )
+                models = [
+                  ...models,
+                  ...temp,
+                ];
+              });
+            },
+            child: Container(
+              height: MediaQuery.of(context).size.width / 1.2,
+              width: MediaQuery.of(context).size.width / 1.2,
+              color: Colors.deepOrange.shade500,
+              child: _uploadPhotoLabel(),
+            ),
+          )
         : GestureDetector(
-      onTap: () async {
-        List<XFile> selectedImages = await uploadImages();
-        if ((models.length + selectedImages.length) > 5) {
-          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-        }
+            onTap: () async {
+              List<XFile> selectedImages = await uploadImages();
+              if ((models.length + selectedImages.length) > 5) {
+                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+              }
 
-        setState(() {
-          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-            return PhotoWithSaveTypeModel(
-                type: SaveType.LOCAL, path: image.path, name: image.name);
-          }).toList();
+              setState(() {
+                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+                  return PhotoWithSaveTypeModel(
+                      type: SaveType.LOCAL, path: image.path, name: image.name);
+                }).toList();
 
-          models = [
-            ...models,
-            ...temp,
-          ];
-        });
-      },
-      child: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .width / 1.2,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width / 1.2,
-        color: Colors.transparent,
-        child:
-        _uploadPhotoCarousel(MediaQuery
-            .of(context)
-            .size
-            .width / 1.2, models, deletedFiles),
-      ),
-    );
+                models = [
+                  ...models,
+                  ...temp,
+                ];
+              });
+            },
+            child: Container(
+              height: MediaQuery.of(context).size.width / 1.2,
+              width: MediaQuery.of(context).size.width / 1.2,
+              color: Colors.transparent,
+              child: _uploadPhotoCarousel(
+                  MediaQuery.of(context).size.width / 1.2,
+                  models,
+                  deletedFiles),
+            ),
+          );
   }
 
   Future<List<XFile>> uploadImages() async {
@@ -283,17 +270,17 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                     borderRadius: BorderRadius.circular(16.0),
                     child: image.type == SaveType.LOCAL
                         ? Image.asset(
-                      image.path,
-                      width: size,
-                      height: size,
-                      fit: BoxFit.cover,
-                    )
+                            image.path,
+                            width: size,
+                            height: size,
+                            fit: BoxFit.cover,
+                          )
                         : Image.network(
-                      '$S3_BASE_URL${image.path}',
-                      width: size,
-                      height: size,
-                      fit: BoxFit.cover,
-                    ),
+                            '$S3_BASE_URL${image.path}',
+                            width: size,
+                            height: size,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   Positioned(
                     child: IconButton(
@@ -304,7 +291,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                         print('이미지 삭제');
                         setState(() {
                           PhotoWithSaveTypeModel deleteModel =
-                          models.removeAt(photoCurrentIndex);
+                              models.removeAt(photoCurrentIndex);
                           deletedFiles.add(deleteModel);
                           if (deleteModel.type == SaveType.URL) {
                             print("삭제 요청 API를 호출한다");
@@ -348,8 +335,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   // 입력 폼 위젯 생성
-  Widget diaryTextCard(int id, diaryLength,
-      DiarySentenceModel originalSentence) {
+  Widget diaryTextCard(
+      int id, diaryLength, DiarySentenceModel originalSentence) {
     return SizedBox(
       height: 250,
       child: CustomLongTextFormField(
@@ -362,15 +349,14 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  SizedBox _updateDiaryActionButton(BuildContext context,
-      DiaryResponseModel state, List<PhotoWithSaveTypeModel> models,
+  SizedBox _updateDiaryActionButton(
+      BuildContext context,
+      DiaryResponseModel state,
+      List<PhotoWithSaveTypeModel> models,
       List<PhotoWithSaveTypeModel> deletedFiles) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
@@ -397,8 +383,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             print(sentence);
             try {
               final response = await dio.patch(
-                'http://$ip/api/v1/diaries/$diaryId/sentences/${state.sentences
-                    .first.id}',
+                'http://$ip/api/v1/diaries/$diaryId/sentences/${state.sentences.first.id}',
                 options: Options(headers: {
                   'Authorization': 'Bearer $accessToken',
                 }),
@@ -440,7 +425,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
           // 이미지는 새로 업로드된 이미지만 수정
           List<PhotoWithSaveTypeModel> newImages =
-          models.where((image) => image.type == SaveType.LOCAL).toList();
+              models.where((image) => image.type == SaveType.LOCAL).toList();
           print('새로 업로드된 사진 ${newImages.length}개');
 
           try {
@@ -464,18 +449,12 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                 .toList();
 
             List<PhotoWithSaveTypeModel> localImages =
-            models.where((model) => model.type == SaveType.LOCAL).toList();
+                models.where((model) => model.type == SaveType.LOCAL).toList();
 
             for (int i = 0; i < localImages.length; i++) {
               File file = File(localImages[i].path!);
 
-              var fileExt = file.path
-                  .split('.')
-                  .last == 'jpg'
-                  ? 'jpeg'
-                  : file.path
-                  .split('.')
-                  .last;
+              String? mimeType = lookupMimeType(file.path);
 
               await dio.put(preSignedUrls[i],
                   data: file.openRead(),
@@ -483,8 +462,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                     headers: {
                       Headers.contentLengthHeader: file.lengthSync(),
                     },
-                    // TODO: mime-type 라이브러리 사용해서 변경
-                    contentType: 'image/$fileExt',
+                    contentType: mimeType,
                   ));
             }
 
