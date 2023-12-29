@@ -33,7 +33,7 @@ class _BabyRepository implements BabyRepository {
     )
             .compose(
               _dio.options,
-              '',
+              '/my',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -42,6 +42,84 @@ class _BabyRepository implements BabyRepository {
         .map((dynamic i) => BabyModel.fromJson(i as Map<String, dynamic>))
         .toList();
     return value;
+  }
+
+  @override
+  Future<BabyModel> updateBaby({
+    required id,
+    required body,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<BabyModel>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BabyModel.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BabyModelWithPreSigned> updateBabyProfile({
+    required id,
+    required body,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BabyModelWithPreSigned>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/${id}/image',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BabyModelWithPreSigned.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<void> deleteBaby({required id}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    await _dio.fetch<void>(_setStreamType<void>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/${id}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    return null;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
