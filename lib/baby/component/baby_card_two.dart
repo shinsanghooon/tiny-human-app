@@ -154,7 +154,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCardTwo> {
                         fontSize: 16.0,
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 30.0),
                     ElevatedButton(
                       onPressed: () {
                         context.goNamed(RootScreen.routeName);
