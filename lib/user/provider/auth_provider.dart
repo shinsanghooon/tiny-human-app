@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
+import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/view/root_screen.dart';
 import 'package:tiny_human_app/common/view/splash_screen.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
@@ -28,12 +29,11 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  List<GoRoute> get routes =>
-      [
+  List<GoRoute> get routes => [
         GoRoute(
           path: '/',
           name: RootScreen.routeName,
-          builder: (_, __) => RootScreen(),
+          builder: (_, __) => const RootScreen(),
         ),
         GoRoute(
           path: '/splash',
@@ -43,12 +43,17 @@ class AuthProvider extends ChangeNotifier {
         GoRoute(
           path: '/login',
           name: LoginScreen.routeName,
-          builder: (_, __) => LoginScreen(),
+          builder: (_, __) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/baby',
+          name: BabyScreen.routeName,
+          builder: (_, __) => const BabyScreen(),
         ),
         GoRoute(
           path: '/diary',
           name: DiaryScreen.routeName,
-          builder: (_, __) => DiaryScreen(),
+          builder: (_, __) => const DiaryScreen(),
           // routes: [
           //   GoRoute(
           //     path: 'diary/:id',
