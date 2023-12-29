@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiny_human_app/baby/model/baby_model.dart';
-import 'package:tiny_human_app/baby/repository/baby_repository.dart';
 import 'package:tiny_human_app/baby/view/baby_register_screen.dart';
 
 import '../../common/constant/colors.dart';
-import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
-import '../component/baby_card.dart';
+import '../component/baby_card_two.dart';
 import '../provider/baby_provider.dart';
 
 class BabyScreen extends ConsumerWidget {
+  static String get routeName => 'baby';
+
   const BabyScreen({super.key});
 
   @override
@@ -19,6 +18,8 @@ class BabyScreen extends ConsumerWidget {
     // 이 화면에서든 어떤 화면에서든 한 번 불리면 프로바이더가 생성이 되고 계속 기억이 된다.
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
+
+    print(data);
 
     return DefaultLayout(
       child: CustomScrollView(slivers: [
@@ -41,7 +42,7 @@ class BabyScreen extends ConsumerWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => BabyRegisterScreen(),
+                      builder: (_) => const BabyRegisterScreen(),
                     ),
                   );
                 })
@@ -58,14 +59,7 @@ class BabyScreen extends ConsumerWidget {
                   final item = data[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 20.0),
-                    child: BabyCard(
-                      name: item.name,
-                      gender: item.gender,
-                      birth: '${item.dayOfBirth} ${item.timeOfBirth}시',
-                      imageUrl: '$S3_BASE_URL${item.profileImgKeyName}',
-                      description:
-                          "아기와의 처음 만난 순간을 기록해보세요. 아직 이 기능은 구현되지 않았으며 백엔드 작업이 필요합니다.",
-                    ),
+                    child: BabyCardTwo(model: item),
                   );
                 },
                 childCount: data.length,
