@@ -140,13 +140,11 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     return GestureDetector(
       onTap: () async {
         final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+            await picker.pickImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           setState(() {
             pickedFilePath = pickedFile!.path;
-            profileImage = Image
-                .file(File(pickedFile!.path))
-                .image;
+            profileImage = Image.file(File(pickedFile!.path)).image;
             fileName = pickedFile.name;
           });
         }
@@ -183,10 +181,11 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
               "name": name,
               "gender": gender == '남자 아기' ? 'MALE' : 'FEMALE',
               "dayOfBirth":
-              DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
+                  DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
               "timeOfBirth": timeOfBirth,
               "nickName": nickname,
               "fileName": fileName,
+              "description": description,
               "relation": 'FATHER',
             },
           );
@@ -218,8 +217,11 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                 contentType: mimeType,
               ));
 
-          ref.read(babyProvider.notifier).addBaby(
-              BabyModel.fromJson(response.data));
+          print('baby');
+          print(response);
+          ref
+              .read(babyProvider.notifier)
+              .addBaby(BabyModel.fromJson(response.data));
 
           Navigator.of(context).pop();
         },
@@ -359,7 +361,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
               timeOfBirth = value!;
             },
             dropdownMenuEntries: times.map(
-                  (t) {
+              (t) {
                 return DropdownMenuEntry(value: t, label: '${t}시');
               },
             ).toList(),

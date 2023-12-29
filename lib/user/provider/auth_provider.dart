@@ -32,6 +32,11 @@ class AuthProvider extends ChangeNotifier {
   List<GoRoute> get routes => [
         GoRoute(
           path: '/',
+          name: BabyScreen.routeName,
+          builder: (_, __) => const BabyScreen(),
+        ),
+        GoRoute(
+          path: '/home',
           name: RootScreen.routeName,
           builder: (_, __) => const RootScreen(),
         ),
@@ -44,11 +49,6 @@ class AuthProvider extends ChangeNotifier {
           path: '/login',
           name: LoginScreen.routeName,
           builder: (_, __) => const LoginScreen(),
-        ),
-        GoRoute(
-          path: '/baby',
-          name: BabyScreen.routeName,
-          builder: (_, __) => const BabyScreen(),
         ),
         GoRoute(
           path: '/diary',

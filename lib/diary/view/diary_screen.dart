@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/diary/component/diary_card.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 import 'package:tiny_human_app/diary/view/diary_detail_screen.dart';
@@ -64,6 +66,9 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
+              leading: IconButton(
+                  icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+                  onPressed: () => context.goNamed(BabyScreen.routeName)),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.add, color: PRIMARY_COLOR),

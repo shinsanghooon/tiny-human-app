@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
+import 'package:tiny_human_app/common/view/root_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
@@ -25,138 +27,160 @@ class _BabyCardTwoState extends ConsumerState<BabyCardTwo> {
   Widget build(BuildContext context) {
     final GlobalKey menuButtonKey = GlobalKey();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        color: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 7,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: ImageContainer(
-                    url: widget.model.profileImgKeyName == ""
-                        ? SAMPLE_BABY_IMAGE_URL
-                        : '$S3_BASE_URL${widget.model.profileImgKeyName}',
-                    width: 400,
-                    height: 300,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 14.0,
-                    left: 14.0,
-                    right: 14.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.model.name,
-                        style: const TextStyle(
-                            fontSize: 36.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 4.0),
-                      ),
-                      InkWell(
-                        key: menuButtonKey,
-                        onTap: () {
-                          RenderBox renderBox = menuButtonKey.currentContext!
-                              .findRenderObject() as RenderBox;
-                          Offset buttonOffset =
-                              renderBox.localToGlobal(Offset.zero);
-                          _showPopupMenu(buttonOffset, context, widget.model);
-                          // await _diaryDetailMenuDialog(state);
-                        },
-                        child: Align(
-                            child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              border:
-                                  Border.all(width: 2, color: Colors.white)),
-                          child: const Icon(
-                            Icons.more_horiz,
-                            color: Colors.white,
-                          ),
-                        )),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      children: [
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          color: Colors.white,
+          surfaceTintColor: Colors.white,
+          elevation: 7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${widget.model.dayOfBirth} ${widget.model.timeOfBirth}시',
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          widget.model.gender == 'FEMALE'
-                              ? const Icon(
-                                  Icons.female_outlined,
-                                  color: Colors.pink,
-                                  size: 20.0,
-                                )
-                              : const Icon(
-                                  Icons.male_outlined,
-                                  color: Colors.blueAccent,
-                                  size: 20.0,
-                                ),
-                          const SizedBox(
-                            width: 4.0,
-                          ),
-                          Text(
-                            widget.model.gender == 'FEMALE' ? '여아' : '남아',
-                            style: widget.model.gender == 'FEMALE'
-                                ? const TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.pink,
-                                    fontWeight: FontWeight.w600,
-                                  )
-                                : const TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.blueAccent,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    widget.model.description,
-                    style: const TextStyle(
-                      fontSize: 16.0,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: ImageContainer(
+                      url: widget.model.profileImgKeyName == ""
+                          ? SAMPLE_BABY_IMAGE_URL
+                          : '$S3_BASE_URL${widget.model.profileImgKeyName}',
+                      width: 400,
+                      height: 300,
                     ),
-                  )
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 14.0,
+                      left: 14.0,
+                      right: 14.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.model.name,
+                          style: const TextStyle(
+                              fontSize: 26.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 3.0),
+                        ),
+                        InkWell(
+                          key: menuButtonKey,
+                          onTap: () {
+                            RenderBox renderBox = menuButtonKey.currentContext!
+                                .findRenderObject() as RenderBox;
+                            Offset buttonOffset =
+                                renderBox.localToGlobal(Offset.zero);
+                            _showPopupMenu(buttonOffset, context, widget.model);
+                            // await _diaryDetailMenuDialog(state);
+                          },
+                          child: Align(
+                              child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                border:
+                                    Border.all(width: 2, color: Colors.white)),
+                            child: const Icon(
+                              Icons.more_horiz,
+                              color: Colors.white,
+                            ),
+                          )),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${widget.model.dayOfBirth} ${widget.model.timeOfBirth}시',
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            widget.model.gender == 'FEMALE'
+                                ? const Icon(
+                                    Icons.female_outlined,
+                                    color: Colors.pink,
+                                    size: 20.0,
+                                  )
+                                : const Icon(
+                                    Icons.male_outlined,
+                                    color: Colors.blueAccent,
+                                    size: 20.0,
+                                  ),
+                            const SizedBox(
+                              width: 4.0,
+                            ),
+                            Text(
+                              widget.model.gender == 'FEMALE' ? '여아' : '남아',
+                              style: widget.model.gender == 'FEMALE'
+                                  ? const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.pink,
+                                      fontWeight: FontWeight.w600,
+                                    )
+                                  : const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.blueAccent,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12.0),
+                    Text(
+                      widget.model.description,
+                      maxLines: 3,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.goNamed(RootScreen.routeName);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        backgroundColor: PRIMARY_COLOR,
+                        elevation: 4,
+                      ),
+                      child: Text(
+                        "선택",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/baby/component/baby_card_two.dart';
 import 'package:tiny_human_app/baby/view/baby_register_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
-import '../component/baby_card_two.dart';
 import '../provider/baby_provider.dart';
 
 class BabyScreen extends ConsumerWidget {
@@ -23,7 +23,7 @@ class BabyScreen extends ConsumerWidget {
         SliverAppBar(
           backgroundColor: Colors.transparent,
           title: const Text(
-            "BABY",
+            "BABY HOME",
             style: TextStyle(
               color: Colors.deepOrange,
               fontWeight: FontWeight.w800,
@@ -43,21 +43,44 @@ class BabyScreen extends ConsumerWidget {
         ),
         if (data.isNotEmpty)
           SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height / 10,
             ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = data[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: BabyCardTwo(model: item),
-                  );
-                },
-                childCount: data.length,
+            sliver: SliverToBoxAdapter(
+                child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: data.length,
+                itemBuilder: (context, index) => SizedBox(
+                    width: MediaQuery.of(context).size.width / 1.1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 40.0),
+                      child: BabyCardTwo(model: data[index]),
+                    )),
               ),
-            ),
+            )
+                // SliverList(
+                //   delegate: SliverChildBuilderDelegate(
+                //     (context, index) {
+                //       return Padding(
+                //         padding: const EdgeInsets.only(bottom: 20.0),
+                //         child: SizedBox(
+                //           height: 500,
+                //           child: ListView.builder(
+                //             scrollDirection: Axis.horizontal,
+                //             itemCount: data.length,
+                //             itemBuilder: (context, index) => SizedBox(
+                //                 width: MediaQuery.of(context).size.width / 1.1,
+                //                 child: BabyCardTwo(model: data[index])),
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //     childCount: data.length,
+                //   ),
+                // ),
+                ),
           )
       ]),
     );
