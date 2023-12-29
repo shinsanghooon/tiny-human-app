@@ -24,6 +24,7 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('initial value $initialValue');
     const baseBorder = OutlineInputBorder(
         borderSide: BorderSide(
       color: INPUT_BORDER_COLOR,
@@ -35,18 +36,19 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obscureText,
       autofocus: autofocus,
       onSaved: onSaved,
+      initialValue: initialValue,
       validator: (value) {
-              if (value == null || value.isEmpty) {
-                return '필수 입력값입니다.';
-              }
+        if (value == null || value.isEmpty) {
+          return '필수 입력값입니다.';
+        }
 
-              if(keyName == 'email' && !isValidEmail(value)) {
-                print(value);
-                return '올바른 이메일 주소를 입력해주세요';
-              }
+        if (keyName == 'email' && !isValidEmail(value)) {
+          print(value);
+          return '올바른 이메일 주소를 입력해주세요';
+        }
 
-              return null;
-            },
+        return null;
+      },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20.0),
         hintText: hintText,
@@ -61,7 +63,6 @@ class CustomTextFormField extends StatelessWidget {
 
         // 기본으로 세팅한 보더를 넣어준다.
         enabledBorder: baseBorder,
-
         focusedBorder: baseBorder.copyWith(
             borderSide: baseBorder.borderSide.copyWith(color: PRIMARY_COLOR)),
       ),
