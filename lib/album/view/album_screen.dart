@@ -25,9 +25,9 @@ class AlbumScreen extends ConsumerStatefulWidget {
 
 class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   final GlobalKey _menuButtonKey = GlobalKey();
-
   double gridCount = 4;
   double endScale = 1.0;
+  bool isLoading = false;
 
   bool isSelectMode = false;
   List<int> selectedIds = List.empty();
@@ -40,10 +40,14 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     final albumPagination = ref.watch(albumPaginationProvider);
 
     if (albumPagination is CursorPaginationLoading) {
-      return const Center(
-          child: CircularProgressIndicator(
-        color: PRIMARY_COLOR,
-      ));
+      return Container(
+        color: Colors.white,
+        child: const Center(
+            child: CircularProgressIndicator(
+          color: PRIMARY_COLOR,
+          strokeWidth: 8.0,
+        )),
+      );
     }
 
     if (albumPagination is CursorPaginationError) {
@@ -148,80 +152,102 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                             ),
                             onPressed: () async {
                               List<XFile> selectedImages = await uploadImages();
+
+                              setState(() {
+                                isLoading = true;
+                              });
+
                               if (selectedImages.isNotEmpty) {
                                 albums.addAlbums(1, selectedImages);
                               }
+                              var duration =
+                                  Duration(seconds: 1 * selectedImages.length);
+                              await Future.delayed(duration);
+
                               ref
                                   .read(albumPaginationProvider.notifier)
                                   .addAlbums();
+
+                              setState(() {
+                                isLoading = false;
+                              });
                             },
                           ),
                   ],
                 )
               ],
             ),
-            SliverGrid(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (index + 1 > s3ImageUrls.length) {
-                  return null;
-                }
-                return Padding(
-                  padding: EdgeInsets.all(8 / gridCount),
-                  child: isSelectMode
-                      ? GestureDetector(
-                          onTap: () {
-                            final selectedModel =
-                                (data[index] as AlbumResponseModel);
-                            print('Select Model ID : ${selectedModel.id}');
-                            setState(() {
-                              if (selectedIds
-                                  .where((id) => id == data[index].id)
-                                  .isEmpty) {
-                                selectedIds = [
-                                  ...selectedIds,
-                                  selectedModel.id
-                                ];
-                              } else {
-                                selectedIds.remove(data[index].id);
-                              }
-                            });
-                            print('Selected IDs : ${selectedIds.toString()}');
-                          },
-                          child: ImageContainer(
-                            url: s3ImageUrls[index],
-                            width: null,
-                            height: null,
-                            selected: selectedIds
-                                .where((id) => id == data[index].id)
-                                .isNotEmpty,
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PhotoRoute(
-                                  image: s3ImageUrls[index],
+            isLoading
+                ? SliverToBoxAdapter(
+                    child: Container(
+                    height: MediaQuery.of(context).size.height -
+                        200, // sliver app bar default height
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: PRIMARY_COLOR,
+                      strokeWidth: 8.0,
+                    )),
+                  ))
+                : SliverGrid(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      if (index + 1 > s3ImageUrls.length) {
+                        return null;
+                      }
+                      return Padding(
+                        padding: EdgeInsets.all(8 / gridCount),
+                        child: isSelectMode
+                            ? GestureDetector(
+                                onTap: () {
+                                  final selectedModel =
+                                      (data[index] as AlbumResponseModel);
+                                  setState(() {
+                                    if (selectedIds
+                                        .where((id) => id == data[index].id)
+                                        .isEmpty) {
+                                      selectedIds = [
+                                        ...selectedIds,
+                                        selectedModel.id
+                                      ];
+                                    } else {
+                                      selectedIds.remove(data[index].id);
+                                    }
+                                  });
+                                },
+                                child: ImageContainer(
+                                  url: s3ImageUrls[index],
+                                  width: null,
+                                  height: null,
+                                  selected: selectedIds
+                                      .where((id) => id == data[index].id)
+                                      .isNotEmpty,
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PhotoRoute(
+                                        image: s3ImageUrls[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  child: ImageContainer(
+                                    url: s3ImageUrls[index],
+                                    width: null,
+                                    height: null,
+                                  ),
                                 ),
                               ),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6.0),
-                            child: ImageContainer(
-                              url: s3ImageUrls[index],
-                              width: null,
-                              height: null,
-                            ),
-                          ),
-                        ),
-                );
-              }),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: gridCount.toInt(),
-              ),
-            )
+                      );
+                    }),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: gridCount.toInt(),
+                    ),
+                  )
           ],
         ),
       ),
@@ -351,7 +377,11 @@ class PhotoRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return InteractiveViewer(
       child: Scaffold(
-        body: Center(child: CachedNetworkImage(imageUrl: image)),
+        appBar: AppBar(),
+        body: SizedBox(
+            height: MediaQuery.of(context).size.height -
+                200, // sliver app bar default height,
+            child: Center(child: CachedNetworkImage(imageUrl: image))),
       ),
     );
   }
