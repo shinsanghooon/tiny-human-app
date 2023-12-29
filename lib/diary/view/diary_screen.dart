@@ -25,10 +25,13 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
     final diaryPagination = ref.watch(diaryPaginationProvider);
 
     if (diaryPagination is CursorPaginationLoading) {
-      return const Center(
-          child: CircularProgressIndicator(
-        color: PRIMARY_COLOR,
-      ));
+      return Container(
+        color: Colors.white,
+        child: const Center(
+            child: CircularProgressIndicator(
+          color: PRIMARY_COLOR,
+        )),
+      );
     }
 
     if (diaryPagination is CursorPaginationError) {
@@ -72,7 +75,7 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => DiaryRegisterScreen(),
+                        builder: (_) => const DiaryRegisterScreen(),
                       ),
                     );
                   },

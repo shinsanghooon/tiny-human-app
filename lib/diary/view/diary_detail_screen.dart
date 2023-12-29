@@ -32,7 +32,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
   final dio = Dio();
 
   int photoCurrentIndex = 0;
-  UpdateDeleteMenu? updateDeleteSelection;
+  DiaryUpdateDeleteMenu? updateDeleteSelection;
 
   String? accessToken;
 
@@ -53,7 +53,11 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     final state = ref.watch(diaryDetailProvider(widget.model.id));
 
     if (state == null) {
-      return DefaultLayout(child: Center(child: CircularProgressIndicator()));
+      return const DefaultLayout(
+          child: Center(
+              child: CircularProgressIndicator(
+        color: PRIMARY_COLOR,
+      )));
     }
 
     return DefaultLayout(
@@ -128,7 +132,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               child: Text(
                 state.sentences.first.sentence,
                 style: const TextStyle(
-                  fontSize: 18.0,
+                  fontSize: 20.0,
                   height: 1.8,
                 ),
               ),
@@ -149,19 +153,16 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         Text(
           DataUtils.dateTimeToKoreanDateString(state.date),
           style: const TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.w600,
+            fontSize: 24.0,
+            fontWeight: FontWeight.w500,
             color: Colors.deepOrange,
           ),
         ),
-        const SizedBox(
-          height: 4.0,
-        ),
         Text(
-          '+ ${state.daysAfterBirth.toString()}일',
+          '+${state.daysAfterBirth.toString()}일',
           style: const TextStyle(
-            fontSize: 14.0,
-            fontWeight: FontWeight.w600,
+            fontSize: 20.0,
+            fontWeight: FontWeight.w500,
             color: Colors.deepOrange,
           ),
         ),
@@ -215,7 +216,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                 .read(diaryPaginationProvider.notifier)
                 .deleteDetail(id: state.id);
             if (mounted) {
-              // TODO: Go to DiaryScreen
               context.goNamed(DiaryScreen.routeName);
             }
           },
@@ -269,7 +269,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
           bottomRight: Radius.circular(14.0),
         ),
       ),
-      items: UpdateDeleteMenu.values
+      items: DiaryUpdateDeleteMenu.values
           .map(
             (value) => PopupMenuItem(
               value: value,
@@ -291,7 +291,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               onTap: () async {
                 https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
                 await Future.delayed(Duration.zero);
-                if (UpdateDeleteMenu.UPDATE == value) {
+                if (DiaryUpdateDeleteMenu.UPDATE == value) {
                   if (mounted) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -300,7 +300,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                       ),
                     );
                   }
-                } else if (UpdateDeleteMenu.DELETE == value) {
+                } else if (DiaryUpdateDeleteMenu.DELETE == value) {
                   await _checkDeleteMenuDialog(state);
                 }
               },

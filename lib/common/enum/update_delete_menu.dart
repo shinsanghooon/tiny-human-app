@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum UpdateDeleteMenu {
+enum DiaryUpdateDeleteMenu {
   UPDATE('update', '일기 수정', Icons.note_alt_outlined),
   DELETE('delete', '일기 삭제', Icons.delete_outlined);
 
@@ -8,7 +8,7 @@ enum UpdateDeleteMenu {
   final String displayName;
   final IconData disPlayIcon;
 
-  const UpdateDeleteMenu(this.name, this.displayName, this.disPlayIcon);
+  const DiaryUpdateDeleteMenu(this.name, this.displayName, this.disPlayIcon);
 }
 
 enum AlbumPopUpMenu {
@@ -19,4 +19,15 @@ enum AlbumPopUpMenu {
   final IconData disPlayIcon;
 
   const AlbumPopUpMenu(this.name, this.displayName, this.disPlayIcon);
+}
+
+enum BabyUpdateDeleteMenu {
+  UPDATE('update', '아기 정보 수정', Icons.note_alt_outlined),
+  DELETE('delete', '아기 삭제', Icons.delete_outlined);
+
+  final String name;
+  final String displayName;
+  final IconData disPlayIcon;
+
+  const BabyUpdateDeleteMenu(this.name, this.displayName, this.disPlayIcon);
 }

@@ -12,7 +12,7 @@ class PaginationProvider<T extends IModelWithId,
 
   PaginationProvider({
     required this.repository,
-  }) : super(CursorPaginationLoading()){
+  }) : super(CursorPaginationLoading()) {
     paginate();
   }
 
@@ -80,7 +80,6 @@ class PaginationProvider<T extends IModelWithId,
         cursorPaginationParams.copyWith(
           key: pState.body.last.id,
         );
-
       } else {
         // 데이터를 처음부터 가져오는 상황
         // 만약 기존 데이터가 있다면 기존 데이터를 보존한채로 Fetch 요청을 해야함
@@ -90,6 +89,7 @@ class PaginationProvider<T extends IModelWithId,
               nextCursorRequest: pState.nextCursorRequest, body: pState.body);
         } else {
           // 데이터를 유지할 필요가 없는 상황
+          print('here?');
           state = CursorPaginationLoading();
         }
       }

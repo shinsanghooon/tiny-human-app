@@ -71,7 +71,9 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
   void calculateDaysAfterBirth(DateTime selectedDate) {
     final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
+    daysAfterBirth = selectedDate
+        .difference(birthday)
+        .inDays + 1;
   }
 
   @override
@@ -82,8 +84,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       return const DefaultLayout(
           child: Center(
               child: CircularProgressIndicator(
-        color: PRIMARY_COLOR,
-      )));
+                color: PRIMARY_COLOR,
+              )));
     }
 
     if (saveModels.isEmpty) {
@@ -149,69 +151,83 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  GestureDetector _diaryImageCarousel(
-      BuildContext context,
+  GestureDetector _diaryImageCarousel(BuildContext context,
       List<PhotoWithSaveTypeModel> models,
       List<PhotoWithSaveTypeModel> deletedFiles) {
     return models.isEmpty
         ? GestureDetector(
-            onTap: () async {
-              List<XFile> selectedImages = await uploadImages();
-              if ((models.length + selectedImages.length) > 5) {
-                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-              }
+      onTap: () async {
+        List<XFile> selectedImages = await uploadImages();
+        if ((models.length + selectedImages.length) > 5) {
+          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+        }
 
-              setState(() {
-                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
-                }).toList();
+        setState(() {
+          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+            return PhotoWithSaveTypeModel(
+                type: SaveType.LOCAL, path: image.path, name: image.name);
+          }).toList();
 
-                saveModels = [
-                  ...models,
-                  ...temp,
-                ];
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.width / 1.2,
-              width: MediaQuery.of(context).size.width / 1.2,
-              color: Colors.deepOrange.shade500,
-              child: _uploadPhotoLabel(),
-            ),
-          )
+          saveModels = [
+            ...models,
+            ...temp,
+          ];
+        });
+      },
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        color: Colors.deepOrange.shade500,
+        child: _uploadPhotoLabel(),
+      ),
+    )
         : GestureDetector(
-            onTap: () async {
-              List<XFile> selectedImages = await uploadImages();
-              print('selected images length : ${selectedImages.length}');
+      onTap: () async {
+        List<XFile> selectedImages = await uploadImages();
+        print('selected images length : ${selectedImages.length}');
 
-              if ((models.length + selectedImages.length) > 5) {
-                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-              }
+        if ((models.length + selectedImages.length) > 5) {
+          throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+        }
 
-              setState(() {
-                List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
-                }).toList();
+        setState(() {
+          List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
+            return PhotoWithSaveTypeModel(
+                type: SaveType.LOCAL, path: image.path, name: image.name);
+          }).toList();
 
-                // 여기서 setState를 하니까 위젯이 다시 빌드되고 이미지는 다시 1개가 된다...
-                saveModels = [
-                  ...models,
-                  ...temp,
-                ];
-              });
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.width / 1.2,
-              width: MediaQuery.of(context).size.width / 1.2,
-              color: Colors.transparent,
-              child: _uploadPhotoCarousel(
-                  MediaQuery.of(context).size.width / 1.2,
-                  models,
-                  deletedFiles),
-            ),
-          );
+          // 여기서 setState를 하니까 위젯이 다시 빌드되고 이미지는 다시 1개가 된다...
+          saveModels = [
+            ...models,
+            ...temp,
+          ];
+        });
+      },
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        color: Colors.transparent,
+        child: _uploadPhotoCarousel(
+            MediaQuery
+                .of(context)
+                .size
+                .width / 1.2,
+            models,
+            deletedFiles),
+      ),
+    );
   }
 
   Future<List<XFile>> uploadImages() async {
@@ -252,17 +268,17 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                     borderRadius: BorderRadius.circular(16.0),
                     child: image.type == SaveType.LOCAL
                         ? Image.asset(
-                            image.path,
-                            width: size,
-                            height: size,
-                            fit: BoxFit.cover,
-                          )
+                      image.path,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    )
                         : Image.network(
-                            '$S3_BASE_URL${image.path}',
-                            width: size,
-                            height: size,
-                            fit: BoxFit.cover,
-                          ),
+                      '$S3_BASE_URL${image.path}',
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Positioned(
                     child: IconButton(
@@ -272,7 +288,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                       onPressed: () {
                         setState(() {
                           PhotoWithSaveTypeModel deleteModel =
-                              models.removeAt(photoCurrentIndex);
+                          models.removeAt(photoCurrentIndex);
                           deletedFiles.add(deleteModel);
                           if (deleteModel.type == SaveType.URL) {
                             print("삭제 요청 API를 호출한다");
@@ -315,8 +331,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   // 입력 폼 위젯 생성
-  Widget diaryTextCard(
-      int id, diaryLength, DiarySentenceModel originalSentence) {
+  Widget diaryTextCard(int id, diaryLength,
+      DiarySentenceModel originalSentence) {
     return SizedBox(
       height: 250,
       child: CustomLongTextFormField(
@@ -329,14 +345,16 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  SizedBox _updateDiaryActionButton(
-      BuildContext context,
+  SizedBox _updateDiaryActionButton(BuildContext context,
       DiaryResponseModel state,
       List<PhotoWithSaveTypeModel> models,
       List<PhotoWithSaveTypeModel> deletedFiles) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
@@ -363,14 +381,17 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             print(sentence);
             try {
               final response = await dio.patch(
-                'http://$ip/api/v1/diaries/$diaryId/sentences/${state.sentences.first.id}',
+                'http://$ip/api/v1/diaries/$diaryId/sentences/${state.sentences
+                    .first.id}',
                 options: Options(headers: {
                   'Authorization': 'Bearer $accessToken',
                 }),
                 data: SentenceRequestModel(sentence: sentence!),
               );
             } catch (e) {
-              showDialogWhenResponseFail(context);
+              if (mounted) {
+                showDialogWhenResponseFail(context);
+              }
             }
           }
 
@@ -405,7 +426,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
           // 이미지는 새로 업로드된 이미지만 수정
           List<PhotoWithSaveTypeModel> newImages =
-              models.where((image) => image.type == SaveType.LOCAL).toList();
+          models.where((image) => image.type == SaveType.LOCAL).toList();
           print('새로 업로드된 사진 ${newImages.length}개');
 
           try {
@@ -429,7 +450,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                 .toList();
 
             List<PhotoWithSaveTypeModel> localImages =
-                models.where((model) => model.type == SaveType.LOCAL).toList();
+            models.where((model) => model.type == SaveType.LOCAL).toList();
 
             for (int i = 0; i < localImages.length; i++) {
               File file = File(localImages[i].path!);
