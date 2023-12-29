@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/baby/component/baby_card_two.dart';
-import 'package:tiny_human_app/baby/view/baby_register_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
 import '../provider/baby_provider.dart';
+import 'baby_register_screen.dart';
 
 class BabyScreen extends ConsumerWidget {
   static String get routeName => 'baby';
@@ -19,70 +19,88 @@ class BabyScreen extends ConsumerWidget {
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
     return DefaultLayout(
-      child: CustomScrollView(slivers: [
-        SliverAppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            "BABY HOME",
-            style: TextStyle(
-              color: Colors.deepOrange,
-              fontWeight: FontWeight.w800,
+      appBar: AppBar(
+        title: const Text(
+          "BABY HOME",
+          style: TextStyle(
+            color: Colors.deepOrange,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.add, color: PRIMARY_COLOR),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const BabyRegisterScreen(),
+                  ),
+                );
+              })
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 100.0),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemCount: data.length,
+          itemBuilder: (context, index) => SizedBox(
+            width: MediaQuery.of(context).size.width / 1.1,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 40.0),
+              child: BabyCardTwo(model: data[index]),
             ),
           ),
-          actions: [
-            IconButton(
-                icon: const Icon(Icons.add, color: PRIMARY_COLOR),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const BabyRegisterScreen(),
-                    ),
-                  );
-                })
-          ],
         ),
-        if (data.isNotEmpty)
-          SliverPadding(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).size.height / 10,
-            ),
-            sliver: SliverToBoxAdapter(
-                child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: data.length,
-                itemBuilder: (context, index) => SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.1,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 40.0),
-                      child: BabyCardTwo(model: data[index]),
-                    )),
-              ),
-            )
-                // SliverList(
-                //   delegate: SliverChildBuilderDelegate(
-                //     (context, index) {
-                //       return Padding(
-                //         padding: const EdgeInsets.only(bottom: 20.0),
-                //         child: SizedBox(
-                //           height: 500,
-                //           child: ListView.builder(
-                //             scrollDirection: Axis.horizontal,
-                //             itemCount: data.length,
-                //             itemBuilder: (context, index) => SizedBox(
-                //                 width: MediaQuery.of(context).size.width / 1.1,
-                //                 child: BabyCardTwo(model: data[index])),
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //     childCount: data.length,
-                //   ),
-                // ),
-                ),
-          )
-      ]),
+      ),
     );
+
+    // return DefaultLayout(
+    //   child: CustomScrollView(slivers: [
+    //     SliverAppBar(
+    //       backgroundColor: Colors.transparent,
+    //       title: const Text(
+    //         "BABY HOME",
+    //         style: TextStyle(
+    //           color: Colors.deepOrange,
+    //           fontWeight: FontWeight.w800,
+    //         ),
+    //       ),
+    //       actions: [
+    //         IconButton(
+    //             icon: const Icon(Icons.add, color: PRIMARY_COLOR),
+    //             onPressed: () {
+    //               Navigator.of(context).push(
+    //                 MaterialPageRoute(
+    //                   builder: (_) => const BabyRegisterScreen(),
+    //                 ),
+    //               );
+    //             })
+    //       ],
+    //     ),
+    //     if (data.isNotEmpty)
+    //       SliverPadding(
+    //         padding: EdgeInsets.only(
+    //           top: MediaQuery.of(context).size.height / 10,
+    //         ),
+    //         sliver: SliverToBoxAdapter(
+    //           child: SizedBox(
+    //             height: MediaQuery.of(context).size.height,
+    //             child: ListView.builder(
+    //               scrollDirection: Axis.horizontal,
+    //               itemCount: data.length,
+    //               itemBuilder: (context, index) => SizedBox(
+    //                   width: MediaQuery.of(context).size.width / 1.1,
+    //                   child: Padding(
+    //                     padding: const EdgeInsets.only(left: 40.0),
+    //                     child: BabyCardTwo(model: data[index]),
+    //                   )),
+    //             ),
+    //           ),
+    //         ),
+    //       )
+    //   ]),
+    // );
   }
 }
