@@ -21,7 +21,6 @@ class DiaryScreen extends ConsumerStatefulWidget {
 class _DiaryScreenState extends ConsumerState<DiaryScreen> {
   @override
   Widget build(BuildContext context) {
-    print("diary screen");
     final diaryPagination = ref.watch(diaryPaginationProvider);
 
     if (diaryPagination is CursorPaginationLoading) {
@@ -64,10 +63,6 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                   color: Colors.deepOrange,
                   fontWeight: FontWeight.w800,
                 ),
-              ),
-              leading: IconButton(
-                icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-                onPressed: () => Navigator.of(context).pop(),
               ),
               actions: [
                 IconButton(

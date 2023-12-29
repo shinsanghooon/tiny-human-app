@@ -99,13 +99,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.home_outlined,
-                  color: PRIMARY_COLOR,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
               actions: [
                 Row(
                   children: [

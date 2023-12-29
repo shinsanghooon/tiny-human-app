@@ -18,9 +18,6 @@ class BabyScreen extends ConsumerWidget {
     // 이 화면에서든 어떤 화면에서든 한 번 불리면 프로바이더가 생성이 되고 계속 기억이 된다.
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
-
-    print(data);
-
     return DefaultLayout(
       child: CustomScrollView(slivers: [
         SliverAppBar(
@@ -31,10 +28,6 @@ class BabyScreen extends ConsumerWidget {
               color: Colors.deepOrange,
               fontWeight: FontWeight.w800,
             ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-            onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
             IconButton(
