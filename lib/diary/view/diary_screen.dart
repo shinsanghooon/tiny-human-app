@@ -82,35 +82,26 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                 )
               ],
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 16.0,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) =>
-                                  DiaryDetailScreen(model: data[index])));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: DiaryCard.fromDiaryModel(
-                            model: data[index],
-                          ),
-                        ),
-                      ),
-                    );
+            SliverList.separated(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => DiaryDetailScreen(model: data[index])));
                   },
-                  childCount: data.length,
-                ),
-              ),
-            )
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: DiaryCard.fromDiaryModel(
+                      model: data[index],
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return SizedBox(height: 12.0);
+              },
+            ),
           ],
         ),
       ),
