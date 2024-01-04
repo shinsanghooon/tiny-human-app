@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
-import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -71,15 +70,15 @@ class _RootScreenState extends State<RootScreen>
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.photo_outlined),
-              label: 'Photo',
+              label: 'Album',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.mark_chat_unread_outlined),
-              label: 'Help',
+              label: 'Help Chat',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.check_box_outlined),
-              label: 'Check',
+              label: 'Checklist',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outlined),
