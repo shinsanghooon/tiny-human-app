@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 
-class CustomCheckBox extends StatefulWidget {
-  const CustomCheckBox({super.key});
+class CustomCheckBox extends StatelessWidget {
+  final bool isChecked;
+  final ValueChanged<bool?> onCheckChanged;
 
-  @override
-  State<CustomCheckBox> createState() => _CustomCheckBoxState();
-}
-
-class _CustomCheckBoxState extends State<CustomCheckBox> {
-  bool? isChecked = true;
+  const CustomCheckBox({
+    required this.isChecked,
+    required this.onCheckChanged,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +21,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
       tristate: false,
       // - 표시 기능
       value: isChecked,
-      onChanged: (bool? value) {
-        setState(() {
-          isChecked = value;
-        });
-      },
+      onChanged: onCheckChanged,
     );
   }
 }
