@@ -5,7 +5,7 @@ part 'checklist_detail_model.g.dart';
 @JsonSerializable()
 class ChecklistDetailModel {
   final String content;
-  final bool isChecked;
+  bool isChecked;
 
   ChecklistDetailModel({
     required this.content,
@@ -14,4 +14,12 @@ class ChecklistDetailModel {
 
   factory ChecklistDetailModel.fromJson(Map<String, dynamic> json) =>
       _$ChecklistDetailModelFromJson(json);
+
+  void onCheck() {
+    isChecked = !isChecked;
+  }
+
+  void onCheckTrue() {
+    isChecked = true;
+  }
 }

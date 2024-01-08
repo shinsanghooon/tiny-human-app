@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
-import 'package:tiny_human_app/checklist/view/checklist_detail_screen.dart';
 
+import '../../common/component/checkbox.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
 import 'checklist_register_screen.dart';
@@ -17,7 +17,7 @@ class CheckListScreen extends StatefulWidget {
 class _CheckListScreenState extends State<CheckListScreen> {
   List<ChecklistModel> datas = [
     ChecklistModel(
-      title: '문화센터 갈 때',
+      title: '😀 문화센터 갈 때',
       checklist: [
         ChecklistDetailModel(content: '속옷', isChecked: true),
         ChecklistDetailModel(content: '기저귀', isChecked: false),
@@ -25,16 +25,7 @@ class _CheckListScreenState extends State<CheckListScreen> {
       ],
     ),
     ChecklistModel(
-      title: '놀러갈때',
-      checklist: [
-        ChecklistDetailModel(content: '속옷', isChecked: true),
-        ChecklistDetailModel(content: '기저귀', isChecked: false),
-        ChecklistDetailModel(content: '분유', isChecked: false),
-        ChecklistDetailModel(content: '홈캠', isChecked: false),
-      ],
-    ),
-    ChecklistModel(
-      title: '여행',
+      title: '🚗 멀리 여행갈 때',
       checklist: [
         ChecklistDetailModel(content: '속옷', isChecked: true),
         ChecklistDetailModel(content: '기저귀', isChecked: false),
@@ -42,6 +33,15 @@ class _CheckListScreenState extends State<CheckListScreen> {
         ChecklistDetailModel(content: '홈캠', isChecked: false),
         ChecklistDetailModel(content: '이불', isChecked: false),
         ChecklistDetailModel(content: '이유식', isChecked: false),
+      ],
+    ),
+    ChecklistModel(
+      title: '☕️ 동네 카페',
+      checklist: [
+        ChecklistDetailModel(content: '속옷', isChecked: true),
+        ChecklistDetailModel(content: '기저귀', isChecked: false),
+        ChecklistDetailModel(content: '우유', isChecked: false),
+        ChecklistDetailModel(content: '스티커', isChecked: false),
       ],
     )
   ];
@@ -57,6 +57,7 @@ class _CheckListScreenState extends State<CheckListScreen> {
               fontWeight: FontWeight.w800,
             ),
           ),
+          backgroundColor: Colors.white,
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -69,46 +70,159 @@ class _CheckListScreenState extends State<CheckListScreen> {
                 })
           ],
         ),
-        child: ListView.separated(
+        child: ListView.builder(
           itemBuilder: (context, index) {
-            return Container(
-              height: 80,
-              color: Colors.white,
-              child: InkWell(
-                onTap: () {
-                  print('$index');
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChecklistDetailScreen(
-                          checklist: datas[index].checklist)));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 28.0, vertical: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        datas[index].title,
-                        style: const TextStyle(
-                          fontSize: 24.0,
-                        ),
-                        maxLines: 1,
-                      ),
-                    ],
+            return Dismissible(
+              key: Key(datas[index].title),
+              background: Container(
+                width: 200,
+                color: Colors.red,
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 40.0),
+                    child: Icon(
+                      Icons.delete_outlined,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const Divider(
-              height: 1.0,
-              thickness: 0.8,
-              indent: 16.0,
-              endIndent: 16.0,
+              direction: DismissDirection.startToEnd,
+              onDismissed: (direction) {
+                //값을 완전히 삭제
+                setState(() {
+                  if (direction == DismissDirection.startToEnd) {
+                    datas.removeAt(index);
+                  }
+                });
+              },
+              child: ExpansionTile(
+                title: Text(
+                  datas[index].title,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                children: [
+                  ...checklistWidget(index, context),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _allCheckButton(index),
+                      _todoEditButton(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          right: 20.0,
+                        ),
+                        child: _todoDeleteButton(),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             );
           },
           itemCount: datas.length,
         ));
+  }
+
+  IconButton _todoDeleteButton() {
+    return IconButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: PRIMARY_COLOR,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+      ),
+      onPressed: () {},
+      icon: const Icon(
+        Icons.delete_outlined,
+        size: 28.0,
+      ),
+    );
+  }
+
+  IconButton _todoEditButton() {
+    return IconButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: PRIMARY_COLOR,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+      ),
+      onPressed: () {},
+      icon: const Icon(
+        Icons.edit,
+        size: 28.0,
+      ),
+    );
+  }
+
+  IconButton _allCheckButton(int index) {
+    final allChecklist =
+        datas[index].checklist.map((e) => e.isChecked).toList();
+    var isAllCheck =
+        allChecklist.where((element) => element == false).toList().isEmpty;
+
+    return IconButton(
+        style: ElevatedButton.styleFrom(
+          foregroundColor: PRIMARY_COLOR,
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+        ),
+        onPressed: () {
+          setState(
+            () {
+              isAllCheck
+                  ? datas[index].checklist.forEach((e) => e.onCheck())
+                  : datas[index].checklist.forEach((e) => e.onCheckTrue());
+            },
+          );
+        },
+        icon: const Icon(
+          Icons.checklist,
+          size: 28.0,
+        ));
+  }
+
+  List<Padding> checklistWidget(int index, BuildContext context) {
+    return datas[index].checklist.map((e) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomCheckBox(
+              isChecked: e.isChecked,
+              onCheckChanged: (bool? newValue) {
+                setState(() {
+                  e.isChecked = !e.isChecked;
+                });
+              },
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 1.3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    e.content,
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 }

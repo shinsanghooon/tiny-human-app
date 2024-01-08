@@ -8,7 +8,7 @@ part 'checklist_model.g.dart';
 @JsonSerializable()
 class ChecklistModel {
   final String title;
-  final List<ChecklistDetailModel> checklist;
+  List<ChecklistDetailModel> checklist;
   @JsonKey(
     fromJson: DataUtils.stringToDateTime,
   )
