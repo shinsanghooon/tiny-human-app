@@ -72,58 +72,32 @@ class _CheckListScreenState extends State<CheckListScreen> {
         ),
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return Dismissible(
-              key: Key(datas[index].title),
-              background: Container(
-                width: 200,
-                color: Colors.red,
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 40.0),
-                    child: Icon(
-                      Icons.delete_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
+            return ExpansionTile(
+              title: Text(
+                datas[index].title,
+                style: const TextStyle(
+                  fontSize: 20.0,
                 ),
               ),
-              direction: DismissDirection.startToEnd,
-              onDismissed: (direction) {
-                //값을 완전히 삭제
-                setState(() {
-                  if (direction == DismissDirection.startToEnd) {
-                    datas.removeAt(index);
-                  }
-                });
-              },
-              child: ExpansionTile(
-                title: Text(
-                  datas[index].title,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                children: [
-                  ...checklistWidget(index, context),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      _allCheckButton(index),
-                      _todoEditButton(),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 20.0,
-                        ),
-                        child: _todoDeleteButton(),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              children: [
+                ...checklistWidget(index, context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _allCheckButton(index),
+                    _todoEditButton(),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: 20.0,
                       ),
-                    ],
-                  )
-                ],
-              ),
+                      child: _todoDeleteButton(),
+                    ),
+                  ],
+                )
+              ],
             );
           },
           itemCount: datas.length,
@@ -137,7 +111,9 @@ class _CheckListScreenState extends State<CheckListScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
       ),
-      onPressed: () {},
+      onPressed: () {
+        print('edit checklist');
+      },
       icon: const Icon(
         Icons.delete_outlined,
         size: 28.0,
@@ -152,7 +128,9 @@ class _CheckListScreenState extends State<CheckListScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
       ),
-      onPressed: () {},
+      onPressed: () {
+        print('edit checklist');
+      },
       icon: const Icon(
         Icons.edit,
         size: 28.0,

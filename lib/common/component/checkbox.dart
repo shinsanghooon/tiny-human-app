@@ -14,9 +14,10 @@ class CustomCheckBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Checkbox(
-      fillColor: MaterialStateProperty.all<Color>(PRIMARY_COLOR),
+      fillColor: MaterialStateProperty.all<Color>(Colors.white),
       activeColor: PRIMARY_COLOR,
-      side: const BorderSide(color: Colors.transparent),
+      side: const BorderSide(color: PRIMARY_COLOR),
+      checkColor: PRIMARY_COLOR,
       isError: true,
       tristate: false,
       // - 표시 기능
