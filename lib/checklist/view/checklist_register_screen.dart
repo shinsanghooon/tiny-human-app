@@ -14,12 +14,12 @@ class ChecklistRegisterScreen extends StatefulWidget {
 }
 
 class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
-  List<Widget> checklists = [];
+  String? title;
+  List<String> checklists = [];
 
   @override
   void initState() {
-    checklists.add(checklistTextCard(1));
-
+    checklists.add('');
     super.initState();
   }
 
@@ -45,7 +45,14 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
                 "Checklist",
                 style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
               ),
-              ...checklists,
+              ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return checklistTextCard(index, checklists[index]);
+                },
+                itemCount: checklists.length,
+              ),
+              // ...checklistsWidgets,
               const SizedBox(
                 height: 8.0,
               ),
@@ -64,7 +71,7 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
                       child: IconButton(
                         onPressed: () {
                           setState(() {
-                            checklists.add(checklistTextCard(1));
+                            checklists.add('');
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -108,19 +115,31 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
       child: CustomTextTitleFormField(
         keyName: 'checklist_$id',
         // textEditingController: textEditingController,
-        onSaved: (String? value) {},
+        onChanged: (String? value) {
+          title = value;
+        },
+        onSaved: (String? value) {
+          print('checklist title onSaved');
+          title = value;
+        },
         hintText: "체크리스트 제목을 입력해주세요.",
         initialValue: '',
       ),
     );
   }
 
-  Widget checklistTextCard(int id) {
+  Widget checklistTextCard(int id, String? content) {
     return Padding(
       padding: const EdgeInsets.only(left: 12.0),
       child: CustomTextChecklistFormField(
         keyName: 'checklist_detail_$id',
-        onSaved: (String? value) {},
+        onChanged: (String? value) {
+          checklists[id] = value!;
+          print(checklists);
+        },
+        onSaved: (String? value) {
+          print('checklist onSaved');
+        },
         hintText: "체크할 항목을 입력해주세요.",
         initialValue: '',
       ),
@@ -130,6 +149,8 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
+        print('체크리스트를 등록하자.');
+
         Navigator.of(context).pop();
       },
       style: ElevatedButton.styleFrom(
