@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 
@@ -111,13 +113,62 @@ class _CheckListScreenState extends State<CheckListScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
       ),
-      onPressed: () {
-        print('edit checklist');
+      onPressed: () async {
+        await Future.delayed(Duration.zero);
+        await _checkDeleteMenuDialog();
       },
       icon: const Icon(
         Icons.delete_outlined,
         size: 28.0,
       ),
+    );
+  }
+
+  Future<void> _checkDeleteMenuDialog() async {
+    const msgTextStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 20.0,
+      fontWeight: FontWeight.w500,
+    );
+
+    const buttonTextStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+      fontSize: 18.0,
+    );
+
+    return Dialogs.materialDialog(
+      msg: '체크리스트를 삭제하시겠습니까?',
+      msgStyle: msgTextStyle,
+      title: "체크리스트 삭제",
+      titleStyle: msgTextStyle.copyWith(fontWeight: FontWeight.w600),
+      color: Colors.white,
+      context: context,
+      actions: [
+        IconsButton(
+          onPressed: () {
+            if (mounted) {
+              // TODO: Go to DiaryDetailScreen
+              Navigator.of(context).pop();
+            }
+          },
+          text: '돌아가기',
+          color: PRIMARY_COLOR,
+          iconData: Icons.cancel_outlined,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+        IconsButton(
+          onPressed: () async {
+            // todo delete request
+          },
+          text: '삭제하기',
+          iconData: Icons.delete,
+          color: PRIMARY_COLOR,
+          textStyle: buttonTextStyle,
+          iconColor: Colors.white,
+        ),
+      ],
     );
   }
 
