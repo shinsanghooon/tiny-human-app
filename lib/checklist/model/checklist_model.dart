@@ -7,6 +7,7 @@ part 'checklist_model.g.dart';
 
 @JsonSerializable()
 class ChecklistModel {
+  final int id;
   final String title;
   List<ChecklistDetailModel> checklist;
   @JsonKey(
@@ -19,7 +20,8 @@ class ChecklistModel {
   final DateTime? updatedAt;
 
   ChecklistModel(
-      {required this.title,
+      {required this.id,
+      required this.title,
       required this.checklist,
       this.createdAt,
       this.updatedAt});
