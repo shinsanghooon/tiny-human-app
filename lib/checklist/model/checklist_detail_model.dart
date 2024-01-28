@@ -4,10 +4,12 @@ part 'checklist_detail_model.g.dart';
 
 @JsonSerializable()
 class ChecklistDetailModel {
+  final int id;
   final String content;
   bool isChecked;
 
   ChecklistDetailModel({
+    required this.id,
     required this.content,
     this.isChecked = false,
   });
