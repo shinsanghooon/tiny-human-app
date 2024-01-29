@@ -9,7 +9,7 @@ part 'checklist_model.g.dart';
 class ChecklistModel {
   final int id;
   final String title;
-  List<ChecklistDetailModel> checklist;
+  List<ChecklistDetailModel> checklistDetail;
   @JsonKey(
     fromJson: DataUtils.stringToDateTime,
   )
@@ -22,7 +22,7 @@ class ChecklistModel {
   ChecklistModel(
       {required this.id,
       required this.title,
-      required this.checklist,
+      required this.checklistDetail,
       this.createdAt,
       this.updatedAt});
 

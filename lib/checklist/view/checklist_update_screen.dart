@@ -55,9 +55,9 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return checklistTextCard(
-                        index, updateChecklist.checklist[index].content);
+                        index, updateChecklist.checklistDetail[index].contents);
                   },
-                  itemCount: updateChecklist.checklist.length),
+                  itemCount: updateChecklist.checklistDetail.length),
               // ...checklistsWidgets,
               const SizedBox(
                 height: 8.0,

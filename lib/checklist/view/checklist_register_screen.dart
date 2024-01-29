@@ -82,7 +82,7 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
                 ],
               ),
               const SizedBox(
-                height: 20.0,
+                height: 36.0,
               ),
               registerActionButton(context, '등록'),
             ],

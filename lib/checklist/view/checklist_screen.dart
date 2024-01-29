@@ -1,55 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
+import 'package:tiny_human_app/checklist/view/checklist_update_screen.dart';
 
 import '../../common/component/checkbox.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
+import '../provider/checklist_provider.dart';
 import 'checklist_register_screen.dart';
 
-class CheckListScreen extends StatefulWidget {
+class CheckListScreen extends ConsumerStatefulWidget {
   const CheckListScreen({super.key});
 
   @override
-  State<CheckListScreen> createState() => _CheckListScreenState();
+  ConsumerState<CheckListScreen> createState() => _CheckListScreenState();
 }
 
-class _CheckListScreenState extends State<CheckListScreen> {
-  List<ChecklistModel> datas = [
-    ChecklistModel(
-      title: '😀 문화센터 갈 때',
-      checklist: [
-        ChecklistDetailModel(content: '속옷', isChecked: true),
-        ChecklistDetailModel(content: '기저귀', isChecked: false),
-        ChecklistDetailModel(content: '분유', isChecked: false),
-      ],
-    ),
-    ChecklistModel(
-      title: '🚗 멀리 여행갈 때',
-      checklist: [
-        ChecklistDetailModel(content: '속옷', isChecked: true),
-        ChecklistDetailModel(content: '기저귀', isChecked: false),
-        ChecklistDetailModel(content: '분유', isChecked: false),
-        ChecklistDetailModel(content: '홈캠', isChecked: false),
-        ChecklistDetailModel(content: '이불', isChecked: false),
-        ChecklistDetailModel(content: '이유식', isChecked: false),
-      ],
-    ),
-    ChecklistModel(
-      title: '☕️ 동네 카페',
-      checklist: [
-        ChecklistDetailModel(content: '속옷', isChecked: true),
-        ChecklistDetailModel(content: '기저귀', isChecked: false),
-        ChecklistDetailModel(content: '우유', isChecked: false),
-        ChecklistDetailModel(content: '스티커', isChecked: false),
-      ],
-    )
-  ];
-
+class _CheckListScreenState extends ConsumerState<CheckListScreen> {
   @override
   Widget build(BuildContext context) {
+    final List<ChecklistModel> datas = ref.read(checklistProvider);
+
     return DefaultLayout(
         appBar: AppBar(
           title: const Text(
@@ -85,12 +58,12 @@ class _CheckListScreenState extends State<CheckListScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               children: [
-                ...checklistWidget(index, context),
+                ...checklistWidget(datas[index], context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _allCheckButton(index),
-                    _todoEditButton(),
+                    _allCheckButton(datas[index]),
+                    _todoEditButton(datas[index]),
                     Padding(
                       padding: const EdgeInsets.only(
                         right: 20.0,
@@ -148,7 +121,6 @@ class _CheckListScreenState extends State<CheckListScreen> {
         IconsButton(
           onPressed: () {
             if (mounted) {
-              // TODO: Go to DiaryDetailScreen
               Navigator.of(context).pop();
             }
           },
@@ -172,7 +144,7 @@ class _CheckListScreenState extends State<CheckListScreen> {
     );
   }
 
-  IconButton _todoEditButton() {
+  IconButton _todoEditButton(ChecklistModel data) {
     return IconButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
@@ -181,6 +153,8 @@ class _CheckListScreenState extends State<CheckListScreen> {
       ),
       onPressed: () {
         print('edit checklist');
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => ChecklistUpdateScreen(id: data.id)));
       },
       icon: const Icon(
         Icons.edit,
@@ -189,9 +163,8 @@ class _CheckListScreenState extends State<CheckListScreen> {
     );
   }
 
-  IconButton _allCheckButton(int index) {
-    final allChecklist =
-        datas[index].checklist.map((e) => e.isChecked).toList();
+  IconButton _allCheckButton(ChecklistModel model) {
+    final allChecklist = model.checklistDetail.map((e) => e.isChecked).toList();
     var isAllCheck =
         allChecklist.where((element) => element == false).toList().isEmpty;
 
@@ -205,8 +178,8 @@ class _CheckListScreenState extends State<CheckListScreen> {
           setState(
             () {
               isAllCheck
-                  ? datas[index].checklist.forEach((e) => e.onCheck())
-                  : datas[index].checklist.forEach((e) => e.onCheckTrue());
+                  ? model.checklistDetail.forEach((e) => e.onCheck())
+                  : model.checklistDetail.forEach((e) => e.onCheckTrue());
             },
           );
         },
@@ -216,8 +189,8 @@ class _CheckListScreenState extends State<CheckListScreen> {
         ));
   }
 
-  List<Padding> checklistWidget(int index, BuildContext context) {
-    return datas[index].checklist.map((e) {
+  List<Padding> checklistWidget(ChecklistModel model, BuildContext context) {
+    return model.checklistDetail.map((e) {
       return Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,
@@ -241,7 +214,7 @@ class _CheckListScreenState extends State<CheckListScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    e.content,
+                    e.contents,
                     style: const TextStyle(
                       fontSize: 18.0,
                     ),
