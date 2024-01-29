@@ -8,8 +8,9 @@ part of 'checklist_model.dart';
 
 ChecklistModel _$ChecklistModelFromJson(Map<String, dynamic> json) =>
     ChecklistModel(
+      id: json['id'] as int,
       title: json['title'] as String,
-      checklist: (json['checklist'] as List<dynamic>)
+      checklistDetail: (json['checklistDetail'] as List<dynamic>)
           .map((e) => ChecklistDetailModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: DataUtils.stringToDateTime(json['createdAt'] as String?),
@@ -18,8 +19,9 @@ ChecklistModel _$ChecklistModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ChecklistModelToJson(ChecklistModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'title': instance.title,
-      'checklist': instance.checklist,
+      'checklistDetail': instance.checklistDetail,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
