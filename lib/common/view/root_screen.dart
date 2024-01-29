@@ -4,7 +4,6 @@ import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
-import 'package:tiny_human_app/help/view/help_screen.dart';
 import 'package:tiny_human_app/user/view/setting_screen.dart';
 
 class RootScreen extends StatefulWidget {
@@ -31,7 +30,7 @@ class _RootScreenState extends State<RootScreen>
     // 렌더링 엔진에서 필요한 것 컨트롤러를 선언하는 현재 스테이트를 넣어주면 된다.
     // this가 특정 기능을 가지고 있어야 한다.
     // SingleTickerProviderStateMixin를 넣어주고 this를 해줘야한다.
-    controller = TabController(length: 5, vsync: this);
+    controller = TabController(length: 4, vsync: this);
 
     // 컨트롤러에서 변화가 있을 때마다 tabListener 함수를 실행한다.
     controller.addListener(tabListener);
@@ -72,10 +71,10 @@ class _RootScreenState extends State<RootScreen>
               icon: Icon(Icons.photo_outlined),
               label: 'Album',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.mark_chat_unread_outlined),
-              label: 'Help Chat',
-            ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.mark_chat_unread_outlined),
+            //   label: 'Help Chat',
+            // ),
             BottomNavigationBarItem(
               icon: Icon(Icons.check_box_outlined),
               label: 'Checklist',
@@ -92,7 +91,7 @@ class _RootScreenState extends State<RootScreen>
           children: [
             DiaryScreen(),
             AlbumScreen(),
-            HelpScreen(),
+            // HelpScreen(),
             CheckListScreen(),
             SettingScreen(),
           ],
