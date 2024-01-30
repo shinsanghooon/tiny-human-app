@@ -62,8 +62,8 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _allCheckButton(data[index]),
-                    _todoEditButton(data[index]),
+                    _toggleAllChecklistDetailButton(data[index]),
+                    _checklistEditButton(data[index]),
                     Padding(
                       padding: const EdgeInsets.only(
                         right: 20.0,
@@ -144,7 +144,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
     );
   }
 
-  IconButton _todoEditButton(ChecklistModel data) {
+  IconButton _checklistEditButton(ChecklistModel data) {
     return IconButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
@@ -163,11 +163,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
     );
   }
 
-  IconButton _allCheckButton(ChecklistModel model) {
-    final allChecklist = model.checklistDetail.map((e) => e.isChecked).toList();
-    var isAllCheck =
-        allChecklist.where((element) => element == false).toList().isEmpty;
-
+  IconButton _toggleAllChecklistDetailButton(ChecklistModel checklist) {
     return IconButton(
         style: ElevatedButton.styleFrom(
           foregroundColor: PRIMARY_COLOR,
@@ -175,13 +171,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           surfaceTintColor: Colors.white,
         ),
         onPressed: () {
-          setState(
-            () {
-              isAllCheck
-                  ? model.checklistDetail.forEach((e) => e.onCheck())
-                  : model.checklistDetail.forEach((e) => e.onCheckTrue());
-            },
-          );
+          ref
+              .read(checklistProvider.notifier)
+              .toggleAllChecklistDetail(checklist.id);
         },
         icon: const Icon(
           Icons.checklist,
@@ -205,7 +197,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               onCheckChanged: (bool? newValue) {
                 ref
                     .read(checklistProvider.notifier)
-                    .toggleChecklist(checklistModel.id, checkDetail.id);
+                    .toggleChecklistDetail(checklistModel.id, checkDetail.id);
               },
             ),
             SizedBox(

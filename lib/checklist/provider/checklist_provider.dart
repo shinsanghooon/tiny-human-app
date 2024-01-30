@@ -25,7 +25,10 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
     state = [...state, model];
   }
 
-  void toggleChecklist(int checklistId, int checklistDetailId) async {
+  void toggleChecklistDetail(int checklistId, int checklistDetailId) async {
+    await repository.toggleChecklistDetail(
+        checklistId: checklistId, checklistDetailId: checklistDetailId);
+
     state = state.map((e) {
       return ChecklistModel(
           id: e.id,
@@ -40,9 +43,30 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
                   : c)
               .toList());
     }).toList();
+  }
 
-    await repository.toggleChecklistDetail(
-        checklistId: checklistId, checklistDetailId: checklistDetailId);
+  void toggleAllChecklistDetail(int checklistId) async {
+    await repository.toggleAllChecklistDetail(checklistId: checklistId);
+
+    ChecklistModel checklist = state.where((cl) => cl.id == checklistId).first;
+    final checkedList =
+        checklist.checklistDetail.map((e) => e.isChecked).toList();
+    bool isAllChecklistDetailChecked =
+        checkedList.where((e) => e == false).toList().isEmpty;
+    bool targetChecked = isAllChecklistDetailChecked ? true : false;
+
+    state = state.map((e) {
+      return ChecklistModel(
+          id: e.id,
+          title: e.title,
+          checklistDetail: e.checklistDetail
+              .map((c) => ChecklistDetailModel(
+                  id: c.id,
+                  contents: c.contents,
+                  reason: c.reason,
+                  isChecked: targetChecked))
+              .toList());
+    }).toList();
   }
 
   void updateChecklist(ChecklistModel updatedModel) {

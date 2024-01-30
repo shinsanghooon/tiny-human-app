@@ -19,11 +19,4 @@ class ChecklistDetailModel {
   factory ChecklistDetailModel.fromJson(Map<String, dynamic> json) =>
       _$ChecklistDetailModelFromJson(json);
 
-  void onCheck() {
-    isChecked = !isChecked;
-  }
-
-  void onCheckTrue() {
-    isChecked = true;
-  }
 }
