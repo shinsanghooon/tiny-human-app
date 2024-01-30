@@ -68,16 +68,18 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
         toggleAllUpdateRequest: toggleAllUpdateRequest);
 
     state = state.map((e) {
-      return ChecklistModel(
-          id: e.id,
-          title: e.title,
-          checklistDetail: e.checklistDetail
-              .map((c) => ChecklistDetailModel(
-                  id: c.id,
-                  contents: c.contents,
-                  reason: c.reason,
-                  isChecked: targetChecked))
-              .toList());
+      return e.id == checklistId
+          ? ChecklistModel(
+              id: e.id,
+              title: e.title,
+              checklistDetail: e.checklistDetail
+                  .map((c) => ChecklistDetailModel(
+                      id: c.id,
+                      contents: c.contents,
+                      reason: c.reason,
+                      isChecked: targetChecked))
+                  .toList())
+          : e;
     }).toList();
   }
 
