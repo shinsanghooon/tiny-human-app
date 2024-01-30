@@ -85,7 +85,7 @@ class _ChecklistRepository implements ChecklistRepository {
     )
         .compose(
           _dio.options,
-          '${checklistId}',
+          '/${checklistId}',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -110,7 +110,7 @@ class _ChecklistRepository implements ChecklistRepository {
     )
         .compose(
           _dio.options,
-          '${checklistId}/detail/${checklistDetailId}/toggle',
+          '/${checklistId}/detail/${checklistDetailId}/toggle',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -132,7 +132,7 @@ class _ChecklistRepository implements ChecklistRepository {
     )
         .compose(
           _dio.options,
-          '${checklistId}/toggle-all',
+          '/${checklistId}/toggle-all',
           queryParameters: queryParameters,
           data: _data,
         )

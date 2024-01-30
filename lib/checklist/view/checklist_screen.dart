@@ -21,7 +21,7 @@ class CheckListScreen extends ConsumerStatefulWidget {
 class _CheckListScreenState extends ConsumerState<CheckListScreen> {
   @override
   Widget build(BuildContext context) {
-    final List<ChecklistModel> datas = ref.read(checklistProvider);
+    final List<ChecklistModel> data = ref.watch(checklistProvider);
 
     return DefaultLayout(
         appBar: AppBar(
@@ -49,7 +49,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           itemBuilder: (context, index) {
             return ExpansionTile(
               title: Text(
-                datas[index].title,
+                data[index].title,
                 style: const TextStyle(
                   fontSize: 20.0,
                 ),
@@ -58,12 +58,12 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               children: [
-                ...checklistWidget(datas[index], context),
+                ...checklistWidget(data[index], context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _allCheckButton(datas[index]),
-                    _todoEditButton(datas[index]),
+                    _allCheckButton(data[index]),
+                    _todoEditButton(data[index]),
                     Padding(
                       padding: const EdgeInsets.only(
                         right: 20.0,
@@ -75,7 +75,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               ],
             );
           },
-          itemCount: datas.length,
+          itemCount: data.length,
         ));
   }
 
@@ -189,8 +189,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         ));
   }
 
-  List<Padding> checklistWidget(ChecklistModel model, BuildContext context) {
-    return model.checklistDetail.map((e) {
+  List<Padding> checklistWidget(
+      ChecklistModel checklistModel, BuildContext context) {
+    return checklistModel.checklistDetail.map((checkDetail) {
       return Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,
@@ -200,11 +201,11 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomCheckBox(
-              isChecked: e.isChecked,
+              isChecked: checkDetail.isChecked,
               onCheckChanged: (bool? newValue) {
-                setState(() {
-                  e.isChecked = !e.isChecked;
-                });
+                ref
+                    .read(checklistProvider.notifier)
+                    .toggleChecklist(checklistModel.id, checkDetail.id);
               },
             ),
             SizedBox(
@@ -214,7 +215,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    e.contents,
+                    checkDetail.contents,
                     style: const TextStyle(
                       fontSize: 18.0,
                     ),

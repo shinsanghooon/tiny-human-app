@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 
 import '../model/checklist_model.dart';
 import '../repository/checklist_repository.dart';
@@ -24,6 +25,26 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
     state = [...state, model];
   }
 
+  void toggleChecklist(int checklistId, int checklistDetailId) async {
+    state = state.map((e) {
+      return ChecklistModel(
+          id: e.id,
+          title: e.title,
+          checklistDetail: e.checklistDetail
+              .map((c) => c.id == checklistDetailId
+                  ? ChecklistDetailModel(
+                      id: c.id,
+                      contents: c.contents,
+                      reason: c.reason,
+                      isChecked: !c.isChecked)
+                  : c)
+              .toList());
+    }).toList();
+
+    await repository.toggleChecklistDetail(
+        checklistId: checklistId, checklistDetailId: checklistDetailId);
+  }
+
   void updateChecklist(ChecklistModel updatedModel) {
     state = state
         .map((e) => e.id == updatedModel.id
@@ -44,8 +65,8 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
   }
 
   Future<void> getMyChecklist() async {
-    print('getMyChecklist');
     final response = await repository.getChecklists();
     state = response;
+    // state = [];
   }
 }

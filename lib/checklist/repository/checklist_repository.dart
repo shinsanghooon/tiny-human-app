@@ -31,13 +31,13 @@ abstract class ChecklistRepository {
   Future<List<ChecklistModel>> registerChecklist(
       {@Body() required ChecklistCreateModel body});
 
-  @PATCH('{checklistId}')
+  @PATCH('/{checklistId}')
   @Headers({
     'accessToken': 'true',
   })
   Future<void> updateChecklist({@Path('checklistId') required int checklistId});
 
-  @PATCH('{checklistId}/detail/{checklistDetailId}/toggle')
+  @PATCH('/{checklistId}/detail/{checklistDetailId}/toggle')
   @Headers({
     'accessToken': 'true',
   })
@@ -45,7 +45,7 @@ abstract class ChecklistRepository {
       {@Path('checklistId') required int checklistId,
       @Path('checklistDetailId') required int checklistDetailId});
 
-  @PATCH('{checklistId}/toggle-all')
+  @PATCH('/{checklistId}/toggle-all')
   @Headers({
     'accessToken': 'true',
   })
