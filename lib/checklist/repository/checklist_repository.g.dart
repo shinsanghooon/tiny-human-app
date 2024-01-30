@@ -119,12 +119,16 @@ class _ChecklistRepository implements ChecklistRepository {
   }
 
   @override
-  Future<void> toggleAllChecklistDetail({required checklistId}) async {
+  Future<void> toggleAllChecklistDetail({
+    required checklistId,
+    required toggleAllUpdateRequest,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
+    _data.addAll(toggleAllUpdateRequest.toJson());
     await _dio.fetch<void>(_setStreamType<void>(Options(
       method: 'PATCH',
       headers: _headers,

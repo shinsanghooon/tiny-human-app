@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
+import 'package:tiny_human_app/checklist/model/toggle_all_update_request.dart';
 import 'package:tiny_human_app/common/dio/dio.dart';
 
 import '../../common/constant/data.dart';
@@ -50,7 +51,8 @@ abstract class ChecklistRepository {
     'accessToken': 'true',
   })
   Future<void> toggleAllChecklistDetail(
-      {@Path('checklistId') required int checklistId});
+      {@Path('checklistId') required int checklistId,
+      @Body() required ToggleAllUpdateRequest toggleAllUpdateRequest});
 
   @DELETE('/{checklistId}')
   @Headers({

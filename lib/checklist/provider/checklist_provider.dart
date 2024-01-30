@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 
 import '../model/checklist_model.dart';
+import '../model/toggle_all_update_request.dart';
 import '../repository/checklist_repository.dart';
 
 final checklistProvider =
@@ -46,14 +47,25 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
   }
 
   void toggleAllChecklistDetail(int checklistId) async {
-    await repository.toggleAllChecklistDetail(checklistId: checklistId);
-
     ChecklistModel checklist = state.where((cl) => cl.id == checklistId).first;
     final checkedList =
         checklist.checklistDetail.map((e) => e.isChecked).toList();
-    bool isAllChecklistDetailChecked =
-        checkedList.where((e) => e == false).toList().isEmpty;
-    bool targetChecked = isAllChecklistDetailChecked ? true : false;
+
+    // 모든 항목이 체크된 경우를 제외하고는 targetChecked는 true이다.
+    int isCheckedItemLength =
+        checkedList.where((e) => e == true).toList().length;
+
+    bool targetChecked = true;
+    if (checkedList.length == isCheckedItemLength) {
+      targetChecked = false;
+    }
+
+    final toggleAllUpdateRequest =
+        ToggleAllUpdateRequest(targetChecked: targetChecked);
+
+    await repository.toggleAllChecklistDetail(
+        checklistId: checklistId,
+        toggleAllUpdateRequest: toggleAllUpdateRequest);
 
     state = state.map((e) {
       return ChecklistModel(
