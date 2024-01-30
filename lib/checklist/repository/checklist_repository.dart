@@ -36,7 +36,9 @@ abstract class ChecklistRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<void> updateChecklist({@Path('checklistId') required int checklistId});
+  Future<void> updateChecklist(
+      {@Path('checklistId') required int checklistId,
+      @Body() required ChecklistModel updateChecklist});
 
   @PATCH('/{checklistId}/detail/{checklistDetailId}/toggle')
   @Headers({

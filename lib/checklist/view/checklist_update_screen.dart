@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 import 'package:tiny_human_app/checklist/provider/checklist_provider.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -10,10 +13,10 @@ import '../../common/constant/colors.dart';
 
 class ChecklistUpdateScreen extends ConsumerStatefulWidget {
   // TODO id 받아서 모델을 조회 해오거나 캐싱을 조회하는 방식으로 변경
-  final int id;
+  final ChecklistModel model;
 
   const ChecklistUpdateScreen({
-    required this.id,
+    required this.model,
     super.key,
   });
 
@@ -23,45 +26,58 @@ class ChecklistUpdateScreen extends ConsumerStatefulWidget {
 }
 
 class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey();
+
   String? title;
   String? originalTitle;
+  List<ChecklistDetailModel> newChecklistDetails = [];
+  late ChecklistModel updateChecklist;
+
+  @override
+  void initState() {
+    super.initState();
+    updateChecklist = widget.model; // 부모로부터 전달받은 값을 사용하여 상태 초기화
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ChecklistModel updateChecklist =
-        ref.read(checklistProvider.notifier).getChecklist(widget.id);
-
     return DefaultLayout(
       appBar: checklistAppbar(context),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Title",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              titleTextCard(1, updateChecklist.title),
-              const SizedBox(
-                height: 20.0,
-              ),
-              const Text(
-                "Checklist",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return checklistTextCard(
-                        index, updateChecklist.checklistDetail[index].contents);
-                  },
-                  itemCount: updateChecklist.checklistDetail.length),
-              // ...checklistsWidgets,
-              const SizedBox(
-                height: 8.0,
-              ),
+              Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "제목",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    titleTextCard(updateChecklist.id, updateChecklist.title),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    const Text(
+                      "체크리스트",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return checklistTextCard(index);
+                      },
+                      itemCount: updateChecklist.checklistDetail.length,
+                    ),
+                  ],
+                ),
+              ), // ...checklistsWidgets,
               Stack(
                 alignment: AlignmentDirectional.center,
                 children: [
@@ -76,8 +92,20 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                       color: Colors.white,
                       child: IconButton(
                         onPressed: () {
+                          int maxId = get_detail_max_id();
+
                           setState(() {
-                            print('update');
+                            updateChecklist = ChecklistModel(
+                                id: updateChecklist.id,
+                                title: updateChecklist.title,
+                                checklistDetail: [
+                                  ...updateChecklist.checklistDetail,
+                                  ChecklistDetailModel(
+                                    id: Random().nextInt(1000) + (maxId + 1),
+                                    contents: '',
+                                    reason: '',
+                                  ),
+                                ]);
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -98,10 +126,17 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     );
   }
 
+  int get_detail_max_id() {
+    int maxId = updateChecklist.checklistDetail
+        .map((item) => item.id)
+        .fold(0, (currentMax, id) => id > currentMax ? id : currentMax);
+    return maxId;
+  }
+
   AppBar checklistAppbar(BuildContext context) {
     return AppBar(
       title: const Text(
-        "체크리스트 등록",
+        "체크리스트 수정",
         style: TextStyle(
           color: Colors.deepOrange,
           fontWeight: FontWeight.w800,
@@ -120,12 +155,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     return SizedBox(
       child: CustomTextTitleFormField(
         keyName: 'checklist_update_$id',
-        // textEditingController: textEditingController,
-        onChanged: (String? value) {
-          title = value;
-        },
         onSaved: (String? value) {
-          print('checklist title onSaved');
           title = value;
         },
         hintText: "체크리스트 제목을 입력해주세요.",
@@ -134,46 +164,54 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     );
   }
 
-  Widget checklistTextCard(int id, String? content) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: SizedBox(
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Container(
-                  color: Colors.blue,
-                  child: CustomTextChecklistFormField(
-                    keyName: 'checklist_detail_update_$id',
-                    onChanged: (String? value) {
-                      print(value);
-                    },
-                    onSaved: (String? value) {
-                      print('checklist onSaved');
-                    },
-                    hintText: "체크할 항목을 입력해주세요.",
-                    initialValue: content!,
-                  ),
+  Widget checklistTextCard(int index) {
+    ChecklistDetailModel checklistDetail =
+        updateChecklist.checklistDetail[index];
+
+    return SizedBox(
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: CustomTextChecklistFormField(
+                  keyName: 'checklist_detail_update_${checklistDetail.id}',
+                  onSaved: (String? value) {
+                    int maxId = get_detail_max_id();
+                    newChecklistDetails.add(ChecklistDetailModel(
+                      id: Random().nextInt(1000) + (maxId + 1),
+                      contents: value!,
+                      reason: '',
+                    ));
+                  },
+                  hintText: "체크할 항목을 입력해주세요.",
+                  initialValue: checklistDetail.contents,
                 ),
               ),
-              Container(
-                width: 50,
-                color: Colors.green,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.delete_outlined,
-                    color: Colors.black38,
-                  ),
-                  onPressed: () {
-                    // TODO: Delete Item
-                    print('delete item');
-                  },
+            ),
+            Container(
+              width: 50,
+              color: Colors.white,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.delete_outlined,
+                  color: Colors.black38,
                 ),
-              )
-            ],
-          ),
+                onPressed: () {
+                  setState(() {
+                    updateChecklist = ChecklistModel(
+                        id: updateChecklist.id,
+                        title: updateChecklist.title,
+                        checklistDetail: updateChecklist.checklistDetail
+                            .where((detail) => detail.id != checklistDetail.id)
+                            .toList());
+                  });
+                },
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -182,7 +220,25 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
-        print('체크리스트를 등록하자.');
+        // create new model
+        // and request API!
+        // cache reset!
+        if (formKey.currentState == null) {
+          return null;
+        }
+
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
+        } else {
+          return null;
+        }
+
+        updateChecklist = ChecklistModel(
+            id: updateChecklist.id,
+            title: title!,
+            checklistDetail: [...newChecklistDetails]);
+
+        ref.read(checklistProvider.notifier).updateChecklist(updateChecklist);
 
         Navigator.of(context).pop();
       },

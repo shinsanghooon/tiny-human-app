@@ -6,7 +6,7 @@ class CustomTextChecklistFormField extends StatelessWidget {
   final bool obscureText;
   final bool autofocus;
   final FormFieldSetter<String> onSaved;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
   final String? hintText;
   final String? errorText;
   final String initialValue;
@@ -16,7 +16,7 @@ class CustomTextChecklistFormField extends StatelessWidget {
     this.obscureText = false,
     this.autofocus = false,
     required this.onSaved,
-    required this.onChanged,
+    this.onChanged,
     this.hintText,
     this.errorText,
     required this.initialValue,
@@ -44,7 +44,7 @@ class CustomTextChecklistFormField extends StatelessWidget {
         return null;
       },
       style: const TextStyle(
-        fontSize: 18.0,
+        fontSize: 20.0,
       ),
       decoration: InputDecoration(
         icon: const Icon(
@@ -56,7 +56,7 @@ class CustomTextChecklistFormField extends StatelessWidget {
         errorText: errorText,
         hintStyle: const TextStyle(
           color: BODY_TEXT_COLOR,
-          fontSize: 18.0,
+          fontSize: 20.0,
         ),
         fillColor: INPUT_BG_COLOR,
         filled: true,

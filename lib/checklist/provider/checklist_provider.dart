@@ -83,7 +83,10 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
     }).toList();
   }
 
-  void updateChecklist(ChecklistModel updatedModel) {
+  void updateChecklist(ChecklistModel updatedModel) async {
+    // await repository.updateChecklist(
+    //     checklistId: updatedModel.id, updateChecklist: updatedModel);
+
     state = state
         .map((e) => e.id == updatedModel.id
             ? ChecklistModel(
@@ -94,8 +97,9 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
         .toList();
   }
 
-  void deleteChecklist(int id) {
-    state = state.where((e) => e.id != id).toList();
+  void deleteChecklist(int id) async {
+    await repository.deleteChecklist(checklistId: id);
+    getMyChecklist();
   }
 
   ChecklistModel getChecklist(int id) {
@@ -103,8 +107,6 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
   }
 
   Future<void> getMyChecklist() async {
-    final response = await repository.getChecklists();
-    state = response;
-    // state = [];
+    state = await repository.getChecklists();
   }
 }

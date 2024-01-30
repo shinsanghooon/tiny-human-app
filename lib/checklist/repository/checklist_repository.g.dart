@@ -72,12 +72,15 @@ class _ChecklistRepository implements ChecklistRepository {
   }
 
   @override
-  Future<void> updateChecklist({required checklistId}) async {
+  Future<void> updateChecklist({
+    required checklistId,
+    required updateChecklist,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
+    final _data = updateChecklist;
     await _dio.fetch<void>(_setStreamType<void>(Options(
       method: 'PATCH',
       headers: _headers,
