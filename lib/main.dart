@@ -22,6 +22,7 @@ class _App extends ConsumerWidget {
         useMaterial3: true,
         dialogBackgroundColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,
+        // colorScheme: ColorScheme(brightness: brightness, primary: primary, onPrimary: onPrimary, secondary: secondary, onSecondary: onSecondary, error: error, onError: onError, background: background, onBackground: onBackground, surface: surface, onSurface: onSurface),
         dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
       ),
       debugShowCheckedModeBanner: false,

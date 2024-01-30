@@ -356,6 +356,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
       ),
