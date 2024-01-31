@@ -28,4 +28,6 @@ class ChecklistModel {
 
   factory ChecklistModel.fromJson(Map<String, dynamic> json) =>
       _$ChecklistModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ChecklistModelToJson(this);
 }

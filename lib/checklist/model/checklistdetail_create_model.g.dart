@@ -9,13 +9,13 @@ part of 'checklistdetail_create_model.dart';
 ChecklistDetailCreateModel _$ChecklistDetailCreateModelFromJson(
         Map<String, dynamic> json) =>
     ChecklistDetailCreateModel(
-      content: json['content'] as String,
+      contents: json['contents'] as String,
       reason: json['reason'] as String,
     );
 
 Map<String, dynamic> _$ChecklistDetailCreateModelToJson(
         ChecklistDetailCreateModel instance) =>
     <String, dynamic>{
-      'content': instance.content,
+      'contents': instance.contents,
       'reason': instance.reason,
     };

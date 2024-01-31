@@ -45,15 +45,16 @@ class _ChecklistRepository implements ChecklistRepository {
   }
 
   @override
-  Future<List<ChecklistModel>> registerChecklist({required body}) async {
+  Future<ChecklistModel> registerChecklist(
+      {required checklistCreateModel}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
+    _data.addAll(checklistCreateModel.toJson());
     final _result = await _dio
-        .fetch<List<dynamic>>(_setStreamType<List<ChecklistModel>>(Options(
+        .fetch<Map<String, dynamic>>(_setStreamType<ChecklistModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -65,22 +66,18 @@ class _ChecklistRepository implements ChecklistRepository {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    var value = _result.data!
-        .map((dynamic i) => ChecklistModel.fromJson(i as Map<String, dynamic>))
-        .toList();
+    final value = ChecklistModel.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<void> updateChecklist({
-    required checklistId,
-    required updateChecklist,
-  }) async {
+  Future<void> updateChecklist({required updateChecklist}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
-    final _data = updateChecklist;
+    final _data = <String, dynamic>{};
+    _data.addAll(updateChecklist.toJson());
     await _dio.fetch<void>(_setStreamType<void>(Options(
       method: 'PATCH',
       headers: _headers,
@@ -88,7 +85,7 @@ class _ChecklistRepository implements ChecklistRepository {
     )
         .compose(
           _dio.options,
-          '/${checklistId}',
+          '',
           queryParameters: queryParameters,
           data: _data,
         )

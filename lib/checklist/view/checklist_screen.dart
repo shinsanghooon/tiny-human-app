@@ -156,7 +156,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       onPressed: () {
         print('edit checklist');
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => ChecklistUpdateScreen(model: data)));
+            builder: (_) => ChecklistUpdateScreen(
+                  model: data,
+                )));
       },
       icon: const Icon(
         Icons.edit,
