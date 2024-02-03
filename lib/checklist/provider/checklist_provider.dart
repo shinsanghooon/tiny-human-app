@@ -86,17 +86,9 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
     }).toList();
   }
 
-  void updateChecklist(ChecklistModel updatedModel) async {
+  void updateChecklist(ChecklistCreateModel updatedModel) async {
     await repository.updateChecklist(updateChecklist: updatedModel);
-
-    state = state
-        .map((e) => e.id == updatedModel.id
-            ? ChecklistModel(
-                id: updatedModel.id,
-                title: updatedModel.title,
-                checklistDetail: updatedModel.checklistDetail)
-            : e)
-        .toList();
+    getMyChecklist();
   }
 
   void deleteChecklist(int id) async {

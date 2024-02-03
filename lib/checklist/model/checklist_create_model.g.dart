@@ -9,6 +9,7 @@ part of 'checklist_create_model.dart';
 ChecklistCreateModel _$ChecklistCreateModelFromJson(
         Map<String, dynamic> json) =>
     ChecklistCreateModel(
+      id: json['id'] as int?,
       title: json['title'] as String,
       checklistDetailCreate: (json['checklistDetailCreate'] as List<dynamic>)
           .map((e) =>
@@ -19,6 +20,7 @@ ChecklistCreateModel _$ChecklistCreateModelFromJson(
 Map<String, dynamic> _$ChecklistCreateModelToJson(
         ChecklistCreateModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'title': instance.title,
       'checklistDetailCreate': instance.checklistDetailCreate,
     };

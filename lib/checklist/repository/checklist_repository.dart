@@ -37,7 +37,7 @@ abstract class ChecklistRepository {
     'accessToken': 'true',
   })
   Future<void> updateChecklist(
-      {@Body() required ChecklistModel updateChecklist});
+      {@Body() required ChecklistCreateModel updateChecklist});
 
   @PATCH('/{checklistId}/detail/{checklistDetailId}/toggle')
   @Headers({
