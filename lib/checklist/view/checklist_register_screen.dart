@@ -37,11 +37,11 @@ class _ChecklistRegisterScreenState
         padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Form(
                 key: formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       "Title",
