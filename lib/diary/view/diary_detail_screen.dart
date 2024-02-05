@@ -41,7 +41,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     super.initState();
     // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
-    ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.model.id);
   }
 
   void checkToken() async {
@@ -263,12 +262,9 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       position:
           RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 5, 25, 0),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(14.0),
-          bottomLeft: Radius.circular(14.0),
-          bottomRight: Radius.circular(14.0),
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(18.0)),
       ),
+      surfaceTintColor: Colors.white,
       items: DiaryUpdateDeleteMenu.values
           .map(
             (value) => PopupMenuItem(
@@ -290,6 +286,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               ),
               onTap: () async {
                 https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
+
                 await Future.delayed(Duration.zero);
                 if (DiaryUpdateDeleteMenu.UPDATE == value) {
                   if (mounted) {

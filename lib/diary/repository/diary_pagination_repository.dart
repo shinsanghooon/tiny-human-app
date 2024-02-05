@@ -4,10 +4,12 @@ import 'package:retrofit/http.dart';
 import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/common/repository/base_pagination_repository.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
+import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 
 import '../../common/constant/data.dart';
 import '../../common/model/cursor_pagination_model.dart';
 import '../../common/model/cursor_pagination_params.dart';
+import '../model/date_request_model.dart';
 
 part 'diary_pagination_repository.g.dart';
 
@@ -34,4 +36,17 @@ abstract class DiaryPaginationRepository
   @GET('/{diaryId}')
   @Headers({'accessToken': 'true'})
   Future<DiaryResponseModel> getDetail({@Path('diaryId') required int id});
+
+  @PATCH('/{diaryId}/sentences/{sentenceId}')
+  @Headers({'accessToken': 'true'})
+  Future<DiaryResponseModel> updateSentence(
+      {@Path('diaryId') required int diaryId,
+      @Path('sentenceId') required int sentenceId,
+      @Body() required SentenceRequestModel model});
+
+  @PATCH('/{diaryId}/date')
+  @Headers({'accessToken': 'true'})
+  Future<DiaryResponseModel> updateDate(
+      {@Path('diaryId') required int diaryId,
+      @Body() required DateRequestModel model});
 }

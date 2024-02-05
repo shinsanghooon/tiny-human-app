@@ -4,7 +4,10 @@ import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
+import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
+
+import '../model/date_request_model.dart';
 
 final diaryDetailProvider =
     Provider.family<DiaryResponseModel?, int>((ref, id) {
@@ -13,7 +16,6 @@ final diaryDetailProvider =
   if (state is! CursorPagination) {
     return null;
   }
-
   return state.body.firstWhereOrNull((diary) => diary.id == id);
 });
 
@@ -96,5 +98,24 @@ class DiaryPaginationStateNotifier
     state = paginationState.copyWith(body: <DiaryResponseModel>[
       ...paginationState.body.where((diary) => diary.id != id).toList()
     ]);
+  }
+
+  Future<DiaryResponseModel> updateSentence(
+      {required int diaryId,
+      required int sentenceId,
+      required SentenceRequestModel model}) {
+    final response = repository.updateSentence(
+        diaryId: diaryId, sentenceId: sentenceId, model: model);
+
+    // TODO: state update
+    return response;
+  }
+
+  Future<DiaryResponseModel> updateDate(
+      {required int diaryId, required DateRequestModel model}) {
+    final response = repository.updateDate(diaryId: diaryId, model: model);
+
+    // TODO: state update
+    return response;
   }
 }
