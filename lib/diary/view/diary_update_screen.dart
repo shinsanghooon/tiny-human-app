@@ -22,6 +22,7 @@ import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
+import '../model/diary_response_with_presigned_model.dart';
 import '../model/photo_with_savetype_model.dart';
 
 class DiaryUpdateScreen extends ConsumerStatefulWidget {
@@ -374,68 +375,53 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
           // 기존에 삭제된 이미지는 서버에 삭제 요청
           for (var deletedFile in deletedFiles) {
-            try {
-              final response = await dio.delete(
-                'http://$ip/api/v1/diaries/$diaryId/pictures/${deletedFile.id}',
-                options: Options(headers: {
-                  'Authorization': 'Bearer $accessToken',
-                }),
-              );
-
-              if (response.statusCode != 204) {
-                throw Exception("요청 결과를 확인해주세요.");
-              }
-            } catch (e) {
-              if (mounted) {
-                _showDialogWhenResponseFail(context);
-              }
-            }
+            print("삭제 이미지 존재");
+            ref
+                .read(diaryPaginationProvider.notifier)
+                .deleteImages(diaryId: diaryId, imageId: deletedFile.id!);
           }
 
           // 이미지는 새로 업로드된 이미지만 수정
           List<PhotoWithSaveTypeModel> newImages =
               models.where((image) => image.type == SaveType.LOCAL).toList();
 
-          try {
-            Response response = await dio.post(
-              'http://$ip/api/v1/diaries/$diaryId/pictures',
-              options: Options(headers: {
-                'Authorization': 'Bearer $accessToken',
-              }),
-              data: newImages
-                  .map((image) => DiaryFileModel(fileName: image.name!))
-                  .toList(),
-            );
+          if (newImages.isNotEmpty) {
+            print("신규 이미지 존재");
+            DiaryResponseWithPresignedModel preSignedUrlResponse =
+                await ref.read(diaryPaginationProvider.notifier).addImages(
+                      diaryId: diaryId,
+                      diaryFileModels: newImages
+                          .map((image) => DiaryFileModel(fileName: image.name!))
+                          .toList(),
+                    );
 
-            if (response.statusCode != 201) {
-              throw Exception("요청에 문제가 발생했습니다.");
-            }
-
-            List<String> preSignedUrls = (response.data['pictures'] as List)
-                .where((e) => e['preSignedUrl'] != null)
-                .map((e) => e['preSignedUrl'] as String)
+            List<String> preSignedUrls = preSignedUrlResponse.pictures
+                .where((e) => e.preSignedUrl != null)
+                .map((res) => res.preSignedUrl)
                 .toList();
 
             List<PhotoWithSaveTypeModel> localImages =
                 models.where((model) => model.type == SaveType.LOCAL).toList();
 
             for (int i = 0; i < localImages.length; i++) {
-              File file = File(localImages[i].path!);
+              File file = File(localImages[i].path);
 
               String? mimeType = lookupMimeType(file.path);
-
-              await dio.put(preSignedUrls[i],
-                  data: file.openRead(),
-                  options: Options(
-                    headers: {
-                      Headers.contentLengthHeader: file.lengthSync(),
-                    },
-                    contentType: mimeType,
-                  ));
-            }
-          } catch (e) {
-            if (mounted) {
-              _showDialogWhenResponseFail(context);
+              try {
+                // TODO 이건 어떻게 해야하지?
+                await dio.put(preSignedUrls[i],
+                    data: file.openRead(),
+                    options: Options(
+                      headers: {
+                        Headers.contentLengthHeader: file.lengthSync(),
+                      },
+                      contentType: mimeType,
+                    ));
+              } catch (e) {
+                if (mounted) {
+                  _showDialogWhenResponseFail(context);
+                }
+              }
             }
           }
           if (mounted) {
