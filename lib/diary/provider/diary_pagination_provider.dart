@@ -3,14 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
+import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
 
 import '../model/date_request_model.dart';
+import '../model/diary_response_with_presigned_model.dart';
 
 final diaryDetailProvider =
-    Provider.family<DiaryResponseModel?, int>((ref, id) {
+Provider.family<DiaryResponseModel?, int>((ref, id) {
   final state = ref.watch(diaryPaginationProvider);
 
   if (state is! CursorPagination) {
@@ -20,14 +22,14 @@ final diaryDetailProvider =
 });
 
 final diaryPaginationProvider =
-    StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>(
+StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>(
         (ref) {
-  final repo = ref.watch(diaryPaginationRepositoryProvider);
-  int id = 1;
-  String order = 'uploadedAt';
-  return DiaryPaginationStateNotifier(
-      babyId: id, order: order, repository: repo);
-});
+      final repo = ref.watch(diaryPaginationRepositoryProvider);
+      int id = 1;
+      String order = 'uploadedAt';
+      return DiaryPaginationStateNotifier(
+          babyId: id, order: order, repository: repo);
+    });
 
 class DiaryPaginationStateNotifier
     extends PaginationProvider<DiaryResponseModel, DiaryPaginationRepository> {
@@ -68,7 +70,9 @@ class DiaryPaginationStateNotifier
     final paginationState = state as CursorPagination;
     final response = await repository.getDetail(id: id);
 
-    if (paginationState.body.where((diary) => diary.id == id).isEmpty) {
+    if (paginationState.body
+        .where((diary) => diary.id == id)
+        .isEmpty) {
       // 데이터가 없을 때는 캐시의 끝에다가 데이터를 추가해도 된다.
       state = paginationState.copyWith(body: <DiaryResponseModel>[
         ...paginationState.body,
@@ -100,22 +104,49 @@ class DiaryPaginationStateNotifier
     ]);
   }
 
-  Future<DiaryResponseModel> updateSentence(
-      {required int diaryId,
-      required int sentenceId,
-      required SentenceRequestModel model}) {
-    final response = repository.updateSentence(
+  Future<DiaryResponseModel> updateSentence({required int diaryId,
+    required int sentenceId,
+    required SentenceRequestModel model}) async {
+    final response = await repository.updateSentence(
         diaryId: diaryId, sentenceId: sentenceId, model: model);
 
     // TODO: state update
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body
+          .map((diary) => diary.id == diaryId ? response : diary)
+          .toList()
+    ]);
+
     return response;
   }
 
   Future<DiaryResponseModel> updateDate(
-      {required int diaryId, required DateRequestModel model}) {
-    final response = repository.updateDate(diaryId: diaryId, model: model);
+      {required int diaryId, required DateRequestModel model}) async {
+    final response =
+    await repository.updateDate(diaryId: diaryId, model: model);
 
     // TODO: state update
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body
+          .map((diary) => diary.id == diaryId ? response : diary)
+          .toList()
+    ]);
+
     return response;
+  }
+
+  Future<void> deleteImages(
+      {required int diaryId, required int imageId}) async {
+    await repository.deleteImages(diaryId: diaryId, imageId: imageId);
+  }
+
+  Future<DiaryResponseWithPresignedModel> addImages({required int diaryId,
+    required List<DiaryFileModel> diaryFileModels}) async {
+    return await repository.addImages(
+        diaryId: diaryId, models: diaryFileModels);
   }
 }

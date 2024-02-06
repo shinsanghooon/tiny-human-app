@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -335,20 +337,16 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
-          // 서버에 요청을 보낸다.
-          print('[Request] Update Diary');
-          print(accessToken);
-
           if (formKey.currentState == null) {
             return;
           }
-
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
           } else {
             return;
           }
 
+          // TODO Provider
           int userId = 1;
           int babyId = 1;
           int diaryId = state.id;
@@ -357,7 +355,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           // TODO sentence onSaved 함수로 이동
           if (isSentenceChanged()) {
             print("일기 글(${state.sentences.first.id})이 수정됨.");
-            print(sentence);
             ref.read(diaryPaginationProvider.notifier).updateSentence(
                 diaryId: diaryId,
                 sentenceId: state.sentences.first.id,
@@ -367,7 +364,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           // 날짜가 수정된 경우
           if (isDateChanged()) {
             print("날짜가 수정됨.");
-            // TODO: 백엔드 API 개발 필요함.
             ref.read(diaryPaginationProvider.notifier).updateDate(
                 diaryId: diaryId,
                 model: DateRequestModel(updatedDate: diaryDate!));

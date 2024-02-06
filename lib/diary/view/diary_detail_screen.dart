@@ -49,6 +49,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('detail build');
     final state = ref.watch(diaryDetailProvider(widget.model.id));
 
     if (state == null) {
@@ -286,7 +287,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               ),
               onTap: () async {
                 https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
-
                 await Future.delayed(Duration.zero);
                 if (DiaryUpdateDeleteMenu.UPDATE == value) {
                   if (mounted) {
