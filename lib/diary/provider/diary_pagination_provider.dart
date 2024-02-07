@@ -50,29 +50,46 @@ class DiaryPaginationStateNotifier
     required CursorPaginationParams cursorPaginationParams,
   }) {}
 
+  /// 페이지 새로고침
   void refreshPagination() {
     paginate(forceRefetch: true);
   }
 
+  /// 일기 등록
   Future<DiaryResponseWithPresignedModel> addDiary(
       DiaryCreateModel model) async {
     final response = await repository.addDiary(model: model);
     return response;
   }
 
+  /// 일기 삭제
+  Future<void> deleteDiary({required int diaryId}) async {
+    await repository.deleteDiary(diaryId: diaryId);
+
+    if (state is! CursorPagination) {
+      return;
+    }
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
+    ]);
+  }
+
+  /// 일기 상세 조회
   void getDetail({required int id}) async {
-    // 만약 CursorPagination이 아니면 아무것도 없음 or 에러이니까
-    // paginate함수를 통해 초기화를 해준다.
+    /// 만약 CursorPagination이 아니면 아무것도 없음 or 에러이니까
+    /// paginate함수를 통해 초기화를 해준다.
     if (state is! CursorPagination) {
       await paginate(fetchCount: 20);
     }
 
-    // 초기화를 시도했는데도 문제가 발생하면 빈값을 리턴해준다.
+    /// 초기화를 시도했는데도 문제가 발생하면 빈값을 리턴해준다.
     if (state is! CursorPagination) {
       return;
     }
 
-    // state를 CursorPagination으로 캐스팅해준다.
+    /// state를 CursorPagination으로 캐스팅해준다.
     final paginationState = state as CursorPagination;
     final response = await repository.getDetail(id: id);
 
@@ -95,17 +112,6 @@ class DiaryPaginationStateNotifier
             .toList(),
       );
     }
-  }
-
-  void deleteDetail({required int diaryId}) {
-    if (state is! CursorPagination) {
-      return;
-    }
-    final paginationState = state as CursorPagination;
-
-    state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
-    ]);
   }
 
   Future<DiaryResponseModel> updateSentence(

@@ -194,7 +194,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         IconsButton(
           onPressed: () {
             if (mounted) {
-              // TODO: Go to DiaryDetailScreen
               Navigator.of(context).pop();
             }
           },
@@ -206,15 +205,9 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            final response = await dio.delete(
-              'http://$ip/api/v1/diaries/${state.id}',
-              options: Options(headers: {
-                'Authorization': 'Bearer $accessToken',
-              }),
-            );
             ref
                 .read(diaryPaginationProvider.notifier)
-                .deleteDetail(diaryId: state.id);
+                .deleteDiary(diaryId: state.id);
             if (mounted) {
               context.goNamed(DiaryScreen.routeName);
             }

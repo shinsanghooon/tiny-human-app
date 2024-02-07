@@ -44,7 +44,12 @@ abstract class DiaryPaginationRepository
     @Queries() CursorPaginationParams? cursorPaginationParams,
   });
 
-  /// 다이어리 정보를 요청합니다.
+  /// 일기를 삭제합니다.
+  @DELETE('/{diaryId}')
+  @Headers({'accessToken': 'true'})
+  Future<void> deleteDiary({@Path('diaryId') required int diaryId});
+
+  /// 일기 상세 정보를 요청합니다.
   @GET('/{diaryId}')
   @Headers({'accessToken': 'true'})
   Future<DiaryResponseModel> getDetail({@Path('diaryId') required int id});
