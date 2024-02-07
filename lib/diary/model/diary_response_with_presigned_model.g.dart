@@ -13,7 +13,6 @@ DiaryResponseWithPresignedModel _$DiaryResponseWithPresignedModelFromJson(
       daysAfterBirth: json['daysAfterBirth'] as int,
       writer: json['writer'] as String,
       likeCount: json['likeCount'] as int,
-      isDeleted: json['isDeleted'] as bool,
       date: DateTime.parse(json['date'] as String),
       sentences: (json['sentences'] as List<dynamic>)
           .map((e) => DiarySentenceModel.fromJson(e as Map<String, dynamic>))
@@ -31,7 +30,6 @@ Map<String, dynamic> _$DiaryResponseWithPresignedModelToJson(
       'daysAfterBirth': instance.daysAfterBirth,
       'writer': instance.writer,
       'likeCount': instance.likeCount,
-      'isDeleted': instance.isDeleted,
       'date': instance.date.toIso8601String(),
       'sentences': instance.sentences,
       'pictures': instance.pictures,

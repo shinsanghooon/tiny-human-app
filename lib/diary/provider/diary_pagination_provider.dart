@@ -12,7 +12,7 @@ import '../model/date_request_model.dart';
 import '../model/diary_response_with_presigned_model.dart';
 
 final diaryDetailProvider =
-Provider.family<DiaryResponseModel?, int>((ref, id) {
+    Provider.family<DiaryResponseModel?, int>((ref, id) {
   final state = ref.watch(diaryPaginationProvider);
 
   if (state is! CursorPagination) {
@@ -22,14 +22,14 @@ Provider.family<DiaryResponseModel?, int>((ref, id) {
 });
 
 final diaryPaginationProvider =
-StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>(
+    StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>(
         (ref) {
-      final repo = ref.watch(diaryPaginationRepositoryProvider);
-      int id = 1;
-      String order = 'uploadedAt';
-      return DiaryPaginationStateNotifier(
-          babyId: id, order: order, repository: repo);
-    });
+  final repo = ref.watch(diaryPaginationRepositoryProvider);
+  int id = 1;
+  String order = 'uploadedAt';
+  return DiaryPaginationStateNotifier(
+      babyId: id, order: order, repository: repo);
+});
 
 class DiaryPaginationStateNotifier
     extends PaginationProvider<DiaryResponseModel, DiaryPaginationRepository> {
@@ -70,9 +70,7 @@ class DiaryPaginationStateNotifier
     final paginationState = state as CursorPagination;
     final response = await repository.getDetail(id: id);
 
-    if (paginationState.body
-        .where((diary) => diary.id == id)
-        .isEmpty) {
+    if (paginationState.body.where((diary) => diary.id == id).isEmpty) {
       // 데이터가 없을 때는 캐시의 끝에다가 데이터를 추가해도 된다.
       state = paginationState.copyWith(body: <DiaryResponseModel>[
         ...paginationState.body,
@@ -93,24 +91,24 @@ class DiaryPaginationStateNotifier
     }
   }
 
-  void deleteDetail({required int id}) {
+  void deleteDetail({required int diaryId}) {
     if (state is! CursorPagination) {
       return;
     }
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body.where((diary) => diary.id != id).toList()
+      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
     ]);
   }
 
-  Future<DiaryResponseModel> updateSentence({required int diaryId,
-    required int sentenceId,
-    required SentenceRequestModel model}) async {
+  Future<DiaryResponseModel> updateSentence(
+      {required int diaryId,
+      required int sentenceId,
+      required SentenceRequestModel model}) async {
     final response = await repository.updateSentence(
         diaryId: diaryId, sentenceId: sentenceId, model: model);
 
-    // TODO: state update
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
@@ -125,9 +123,8 @@ class DiaryPaginationStateNotifier
   Future<DiaryResponseModel> updateDate(
       {required int diaryId, required DateRequestModel model}) async {
     final response =
-    await repository.updateDate(diaryId: diaryId, model: model);
+        await repository.updateDate(diaryId: diaryId, model: model);
 
-    // TODO: state update
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
@@ -142,11 +139,23 @@ class DiaryPaginationStateNotifier
   Future<void> deleteImages(
       {required int diaryId, required int imageId}) async {
     await repository.deleteImages(diaryId: diaryId, imageId: imageId);
+
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
+    ]);
   }
 
-  Future<DiaryResponseWithPresignedModel> addImages({required int diaryId,
-    required List<DiaryFileModel> diaryFileModels}) async {
-    return await repository.addImages(
-        diaryId: diaryId, models: diaryFileModels);
+  Future<DiaryResponseWithPresignedModel> addImages(
+      {required int diaryId,
+      required List<DiaryFileModel> diaryFileModels}) async {
+    final response =
+        await repository.addImages(diaryId: diaryId, models: diaryFileModels);
+
+    // TODO: 나중에 처리하기. state만 변경하도록
+    paginate(forceRefetch: true);
+
+    return response;
   }
 }

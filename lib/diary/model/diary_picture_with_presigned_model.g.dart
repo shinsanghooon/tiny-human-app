@@ -12,9 +12,9 @@ DiaryPictureWithPresignedModel _$DiaryPictureWithPresignedModelFromJson(
       id: json['id'] as int,
       isMainPicture: json['isMainPicture'] as bool,
       contentType: $enumDecode(_$FileTypeEnumMap, json['contentType']),
-      fileName: json['fileName'] as String,
+      fileName: json['fileName'] as String?,
       keyName: json['keyName'] as String,
-      preSignedUrl: json['preSignedUrl'] as String,
+      preSignedUrl: json['preSignedUrl'] as String?,
     );
 
 Map<String, dynamic> _$DiaryPictureWithPresignedModelToJson(

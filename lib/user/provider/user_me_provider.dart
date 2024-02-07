@@ -34,19 +34,20 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
     getMe();
   }
 
-  Future<void> getMe() async {
+  Future<UserModel> getMe() async {
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
 
     if (refreshToken == null || accessToken == null) {
       state = null;
-      return;
+      throw Exception("사용자 정보를 찾을 수 없습니다.");
     }
 
     final jwt = JWT.decode(accessToken);
     final response = await repository.getMe(id: jwt.payload['userId'] as int);
 
     state = response;
+    return response;
   }
 
   Future<UserModelBase> login(

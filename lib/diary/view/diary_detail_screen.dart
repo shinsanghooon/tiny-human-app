@@ -214,7 +214,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
             );
             ref
                 .read(diaryPaginationProvider.notifier)
-                .deleteDetail(id: state.id);
+                .deleteDetail(diaryId: state.id);
             if (mounted) {
               context.goNamed(DiaryScreen.routeName);
             }

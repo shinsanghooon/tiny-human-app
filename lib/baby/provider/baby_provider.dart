@@ -19,9 +19,10 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
     getMyBabies();
   }
 
-  Future<void> getMyBabies() async {
+  Future<List<BabyModel>> getMyBabies() async {
     final response = await repository.getMyBabies();
     state = response;
+    return response;
   }
 
   void addBaby(BabyModel baby) {

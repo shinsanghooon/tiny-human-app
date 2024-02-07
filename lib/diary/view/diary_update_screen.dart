@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tiny_human_app/baby/model/baby_model.dart';
+import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/diary/enum/save_type.dart';
 import 'package:tiny_human_app/diary/model/date_request_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
@@ -18,6 +20,8 @@ import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
+import 'package:tiny_human_app/user/model/user_model.dart';
+import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -346,9 +350,13 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             return;
           }
 
-          // TODO Provider
-          int userId = 1;
-          int babyId = 1;
+          UserModel user = await ref.read(userMeProvider.notifier).getMe();
+          int userId = user.id;
+
+          List<BabyModel> babies =
+              await ref.read(babyProvider.notifier).getMyBabies();
+          int babyId = babies[0].id;
+
           int diaryId = state.id;
 
           // 기존 데이터와 비교해서 달라졌으면 Patch 요청
@@ -393,7 +401,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
             List<String> preSignedUrls = preSignedUrlResponse.pictures
                 .where((e) => e.preSignedUrl != null)
-                .map((res) => res.preSignedUrl)
+                .map((res) => res.preSignedUrl!)
                 .toList();
 
             List<PhotoWithSaveTypeModel> localImages =
@@ -452,7 +460,12 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
         });
   }
 
-  bool isDateChanged() => baseDiaryDate != diaryDate;
+  bool isDateChanged() {
+    if (diaryDate == null) {
+      return false;
+    }
+    return baseDiaryDate != diaryDate;
+  }
 
   bool isSentenceChanged() => baseSentence.first.sentence != sentence;
 

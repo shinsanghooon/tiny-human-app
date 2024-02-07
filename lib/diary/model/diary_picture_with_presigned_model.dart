@@ -11,9 +11,9 @@ class DiaryPictureWithPresignedModel implements IModelWithId {
   final int id;
   final bool isMainPicture;
   final FileType contentType;
-  final String fileName;
+  final String? fileName;
   final String keyName;
-  final String preSignedUrl;
+  final String? preSignedUrl;
 
   DiaryPictureWithPresignedModel(
       {required this.id,

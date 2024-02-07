@@ -13,7 +13,6 @@ class DiaryResponseWithPresignedModel implements IModelWithId {
   final int daysAfterBirth;
   final String writer;
   final int likeCount;
-  final bool isDeleted;
   final DateTime date;
   final List<DiarySentenceModel> sentences;
   final List<DiaryPictureWithPresignedModel> pictures;
@@ -23,7 +22,6 @@ class DiaryResponseWithPresignedModel implements IModelWithId {
     required this.daysAfterBirth,
     required this.writer,
     required this.likeCount,
-    required this.isDeleted,
     required this.date,
     required this.sentences,
     required this.pictures,
