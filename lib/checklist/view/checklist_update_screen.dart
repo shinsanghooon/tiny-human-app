@@ -1,19 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
+import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
-import 'package:tiny_human_app/checklist/provider/checklist_provider.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 
 import '../../common/component/custom_text_checklist_form_field.dart';
 import '../../common/component/custom_text_title_form_field.dart';
 import '../../common/constant/colors.dart';
+import '../provider/checklist_provider.dart';
 
 class ChecklistUpdateScreen extends ConsumerStatefulWidget {
-  // TODO id 받아서 모델을 조회 해오거나 캐싱을 조회하는 방식으로 변경
-  final int id;
+  final ChecklistModel model;
 
   const ChecklistUpdateScreen({
-    required this.id,
+    required this.model,
     super.key,
   });
 
@@ -23,45 +26,76 @@ class ChecklistUpdateScreen extends ConsumerStatefulWidget {
 }
 
 class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey();
+
   String? title;
-  String? originalTitle;
+  List<ChecklistDetailModel> newChecklistDetails = [];
+  List<int> deleteChecklistDetails = [];
+  List<int> originalChecklistDetailIds = [];
+  late ChecklistModel originalChecklist;
+
+  @override
+  void initState() {
+    super.initState();
+    originalChecklist = widget.model; // 부모로부터 전달받은 값을 사용하여 상태 초기화
+    originalChecklistDetailIds =
+        originalChecklist.checklistDetail.map((e) => e.id).toList();
+  }
+
+  int generateTemporaryId() {
+    List<ChecklistDetailModel> targetList = [
+      ...originalChecklist.checklistDetail,
+      ...newChecklistDetails
+    ];
+    List<int> existingIds = targetList.map((e) => e.id).toList();
+    if (existingIds.isEmpty) {
+      return 1; // 리스트가 비어있을 경우 기본값으로 1을 사용
+    }
+    return existingIds.reduce(max) +
+        1 +
+        Random().nextInt(10000); // 가장 큰 id 값에 1을 더함
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ChecklistModel updateChecklist =
-        ref.read(checklistProvider.notifier).getChecklist(widget.id);
-
     return DefaultLayout(
-      appBar: checklistAppbar(context),
+      appBar: _checklistAppbar(context),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Title",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              titleTextCard(1, updateChecklist.title),
-              const SizedBox(
-                height: 20.0,
-              ),
-              const Text(
-                "Checklist",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              ListView.builder(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return checklistTextCard(
-                        index, updateChecklist.checklistDetail[index].contents);
-                  },
-                  itemCount: updateChecklist.checklistDetail.length),
-              // ...checklistsWidgets,
-              const SizedBox(
-                height: 8.0,
-              ),
+              Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "제목",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    _titleTextCard(
+                        originalChecklist.id, originalChecklist.title),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    const Text(
+                      "체크리스트",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return _checklistTextCard(index);
+                      },
+                      itemCount: originalChecklist.checklistDetail.length,
+                    ),
+                  ],
+                ),
+              ), // ...checklistsWidgets,
               Stack(
                 alignment: AlignmentDirectional.center,
                 children: [
@@ -76,8 +110,21 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                       color: Colors.white,
                       child: IconButton(
                         onPressed: () {
+                          // 신규 리스트 생성
+                          final newChecklistDetail = ChecklistDetailModel(
+                            id: generateTemporaryId(),
+                            contents: '',
+                            reason: '',
+                          );
+                          newChecklistDetails.add(newChecklistDetail);
                           setState(() {
-                            print('update');
+                            originalChecklist = ChecklistModel(
+                                id: originalChecklist.id,
+                                title: originalChecklist.title,
+                                checklistDetail: [
+                                  ...originalChecklist.checklistDetail,
+                                  newChecklistDetail,
+                                ]);
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -90,7 +137,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
               const SizedBox(
                 height: 36.0,
               ),
-              registerActionButton(context, '등록'),
+              registerActionButton(context, '수정하기'),
             ],
           ),
         ),
@@ -98,10 +145,10 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     );
   }
 
-  AppBar checklistAppbar(BuildContext context) {
+  AppBar _checklistAppbar(BuildContext context) {
     return AppBar(
       title: const Text(
-        "체크리스트 등록",
+        "체크리스트 수정",
         style: TextStyle(
           color: Colors.deepOrange,
           fontWeight: FontWeight.w800,
@@ -116,17 +163,15 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     );
   }
 
-  Widget titleTextCard(int id, String? originalTitle) {
+  Widget _titleTextCard(int id, String? originalTitle) {
     return SizedBox(
       child: CustomTextTitleFormField(
-        keyName: 'checklist_update_$id',
-        // textEditingController: textEditingController,
-        onChanged: (String? value) {
-          title = value;
-        },
+        keyName: 'checklist_update_${id}_${UniqueKey()}',
         onSaved: (String? value) {
-          print('checklist title onSaved');
-          title = value;
+          originalChecklist = ChecklistModel(
+              id: originalChecklist.id,
+              title: value!,
+              checklistDetail: originalChecklist.checklistDetail);
         },
         hintText: "체크리스트 제목을 입력해주세요.",
         initialValue: originalTitle!,
@@ -134,46 +179,74 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     );
   }
 
-  Widget checklistTextCard(int id, String? content) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: SizedBox(
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Container(
-                  color: Colors.blue,
-                  child: CustomTextChecklistFormField(
-                    keyName: 'checklist_detail_update_$id',
-                    onChanged: (String? value) {
-                      print(value);
-                    },
-                    onSaved: (String? value) {
-                      print('checklist onSaved');
-                    },
-                    hintText: "체크할 항목을 입력해주세요.",
-                    initialValue: content!,
-                  ),
+  Widget _checklistTextCard(int index) {
+    ChecklistDetailModel checklistDetail =
+        originalChecklist.checklistDetail[index];
+
+    return SizedBox(
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: CustomTextChecklistFormField(
+                  keyName: '${checklistDetail.id}_${UniqueKey()}',
+                  onSaved: (String? value) {
+                    setState(() {
+                      originalChecklist = ChecklistModel(
+                          id: originalChecklist.id,
+                          title: originalChecklist.title,
+                          checklistDetail: originalChecklist.checklistDetail
+                              .map((e) => e.id == checklistDetail.id
+                                  ? ChecklistDetailModel(
+                                      id: e.id,
+                                      contents: value!,
+                                      reason: e.reason,
+                                      isChecked: e.isChecked,
+                                    )
+                                  : e)
+                              .toList());
+                    });
+                  },
+                  hintText: "체크할 항목을 입력해주세요.",
+                  initialValue: checklistDetail.contents,
                 ),
               ),
-              Container(
-                width: 50,
-                color: Colors.green,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.delete_outlined,
-                    color: Colors.black38,
-                  ),
-                  onPressed: () {
-                    // TODO: Delete Item
-                    print('delete item');
-                  },
+            ),
+            Container(
+              width: 50,
+              color: Colors.white,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.delete_outlined,
+                  color: Colors.black38,
                 ),
-              )
-            ],
-          ),
+                onPressed: () {
+                  // 기존 존재하는 detail 중에 삭제된 것
+                  if (originalChecklistDetailIds.contains(checklistDetail.id)) {
+                    deleteChecklistDetails.add(checklistDetail.id);
+                  }
+                  print(deleteChecklistDetails);
+
+                  // 새로 추가한 detail list 중에서 삭제되면 여기서 제외
+                  newChecklistDetails = newChecklistDetails
+                      .where((element) => element.id != checklistDetail.id)
+                      .toList();
+
+                  setState(() {
+                    originalChecklist = ChecklistModel(
+                        id: originalChecklist.id,
+                        title: originalChecklist.title,
+                        checklistDetail: originalChecklist.checklistDetail
+                            .where((detail) => detail.id != checklistDetail.id)
+                            .toList());
+                  });
+                },
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -182,7 +255,25 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
-        print('체크리스트를 등록하자.');
+        // create new model
+        // and request API!
+        // cache reset!
+        if (formKey.currentState == null) {
+          return null;
+        }
+
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
+        } else {
+          return null;
+        }
+
+        ChecklistCreateModel updatedModel =
+            ChecklistCreateModel.fromModel(originalChecklist);
+
+        ref.read(checklistProvider.notifier).updateChecklist(updatedModel);
+
+        // delete 도 따로 해줘야하나? ㅇㅇ
 
         Navigator.of(context).pop();
       },

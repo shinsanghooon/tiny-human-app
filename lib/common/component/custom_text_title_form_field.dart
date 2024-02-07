@@ -7,7 +7,7 @@ class CustomTextTitleFormField extends StatelessWidget {
   final bool obscureText;
   final bool autofocus;
   final FormFieldSetter<String> onSaved;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
   final String? hintText;
   final String? errorText;
   final String initialValue;
@@ -17,7 +17,7 @@ class CustomTextTitleFormField extends StatelessWidget {
     this.obscureText = false,
     this.autofocus = false,
     required this.onSaved,
-    required this.onChanged,
+    this.onChanged,
     this.hintText,
     this.errorText,
     required this.initialValue,

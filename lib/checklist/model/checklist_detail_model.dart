@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'checklistdetail_create_model.dart';
+
 part 'checklist_detail_model.g.dart';
 
 @JsonSerializable()
@@ -19,4 +21,5 @@ class ChecklistDetailModel {
   factory ChecklistDetailModel.fromJson(Map<String, dynamic> json) =>
       _$ChecklistDetailModelFromJson(json);
 
+  Map<String, dynamic> toJson() => _$ChecklistDetailModelToJson(this);
 }

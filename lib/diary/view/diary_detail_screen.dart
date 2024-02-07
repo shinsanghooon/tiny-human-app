@@ -41,7 +41,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     super.initState();
     // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
-    ref.read(diaryPaginationProvider.notifier).getDetail(id: widget.model.id);
   }
 
   void checkToken() async {
@@ -50,6 +49,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('detail build');
     final state = ref.watch(diaryDetailProvider(widget.model.id));
 
     if (state == null) {
@@ -194,7 +194,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         IconsButton(
           onPressed: () {
             if (mounted) {
-              // TODO: Go to DiaryDetailScreen
               Navigator.of(context).pop();
             }
           },
@@ -206,15 +205,9 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            final response = await dio.delete(
-              'http://$ip/api/v1/diaries/${state.id}',
-              options: Options(headers: {
-                'Authorization': 'Bearer $accessToken',
-              }),
-            );
             ref
                 .read(diaryPaginationProvider.notifier)
-                .deleteDetail(id: state.id);
+                .deleteDiary(diaryId: state.id);
             if (mounted) {
               context.goNamed(DiaryScreen.routeName);
             }
@@ -263,12 +256,9 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       position:
           RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 5, 25, 0),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(14.0),
-          bottomLeft: Radius.circular(14.0),
-          bottomRight: Radius.circular(14.0),
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(18.0)),
       ),
+      surfaceTintColor: Colors.white,
       items: DiaryUpdateDeleteMenu.values
           .map(
             (value) => PopupMenuItem(

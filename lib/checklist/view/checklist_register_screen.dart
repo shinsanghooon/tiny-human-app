@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
+import 'package:tiny_human_app/checklist/model/checklistdetail_create_model.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 
 import '../../common/component/custom_text_checklist_form_field.dart';
 import '../../common/component/custom_text_title_form_field.dart';
 import '../../common/constant/colors.dart';
+import '../provider/checklist_provider.dart';
 
-class ChecklistRegisterScreen extends StatefulWidget {
+class ChecklistRegisterScreen extends ConsumerStatefulWidget {
   const ChecklistRegisterScreen({super.key});
 
   @override
-  State<ChecklistRegisterScreen> createState() =>
+  ConsumerState<ChecklistRegisterScreen> createState() =>
       _ChecklistRegisterScreenState();
 }
 
-class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
-  String? title;
-  List<String> checklists = [];
+class _ChecklistRegisterScreenState
+    extends ConsumerState<ChecklistRegisterScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey();
+  String title = '';
+  List<ChecklistDetailCreateModel> checklistDetails = [];
 
   @override
   void initState() {
-    checklists.add('');
+    checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
     super.initState();
   }
 
@@ -31,26 +37,35 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
         padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Title",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              titleTextCard(1),
-              const SizedBox(
-                height: 20.0,
-              ),
-              const Text(
-                "Checklist",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return checklistTextCard(index, checklists[index]);
-                },
-                itemCount: checklists.length,
+              Form(
+                key: formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Title",
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.w600),
+                    ),
+                    titleTextCard(),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    const Text(
+                      "Checklist",
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.w600),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return checklistTextCard(index);
+                      },
+                      itemCount: checklistDetails.length,
+                    ),
+                  ],
+                ),
               ),
               // ...checklistsWidgets,
               const SizedBox(
@@ -71,7 +86,8 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
                       child: IconButton(
                         onPressed: () {
                           setState(() {
-                            checklists.add('');
+                            checklistDetails.add(ChecklistDetailCreateModel(
+                                contents: '', reason: ''));
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -110,17 +126,12 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
     );
   }
 
-  Widget titleTextCard(int id) {
+  Widget titleTextCard() {
     return SizedBox(
       child: CustomTextTitleFormField(
-        keyName: 'checklist_$id',
-        // textEditingController: textEditingController,
-        onChanged: (String? value) {
-          title = value;
-        },
+        keyName: 'checklist_new_title',
         onSaved: (String? value) {
-          print('checklist title onSaved');
-          title = value;
+          title = value!;
         },
         hintText: "체크리스트 제목을 입력해주세요.",
         initialValue: '',
@@ -128,17 +139,14 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
     );
   }
 
-  Widget checklistTextCard(int id, String? content) {
+  Widget checklistTextCard(int idx) {
     return Padding(
       padding: const EdgeInsets.only(left: 12.0),
       child: CustomTextChecklistFormField(
-        keyName: 'checklist_detail_$id',
-        onChanged: (String? value) {
-          checklists[id] = value!;
-          print(checklists);
-        },
+        keyName: 'checklist_detail_$idx',
         onSaved: (String? value) {
-          print('checklist onSaved');
+          checklistDetails[idx] =
+              ChecklistDetailCreateModel(contents: value!, reason: '');
         },
         hintText: "체크할 항목을 입력해주세요.",
         initialValue: '',
@@ -150,6 +158,22 @@ class _ChecklistRegisterScreenState extends State<ChecklistRegisterScreen> {
     return TextButton(
       onPressed: () {
         print('체크리스트를 등록하자.');
+        if (formKey.currentState == null) {
+          return null;
+        }
+
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
+        } else {
+          return null;
+        }
+
+        ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
+          title: title,
+          checklistDetailCreate: checklistDetails,
+        );
+
+        ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
 
         Navigator.of(context).pop();
       },

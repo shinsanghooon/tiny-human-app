@@ -27,8 +27,8 @@ class DiaryCard extends StatelessWidget {
       id: model.id,
       image: ImageContainer(
         url: '$S3_BASE_URL${model.pictures.first.keyName}',
-        width: 160,
-        height: 160,
+        width: 120,
+        height: 120,
       ),
       detail: model.sentences.first.sentence,
       createdAt: model.date,

@@ -3,8 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
+import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
+import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
+
+import '../model/date_request_model.dart';
+import '../model/diary_create_model.dart';
+import '../model/diary_response_with_presigned_model.dart';
 
 final diaryDetailProvider =
     Provider.family<DiaryResponseModel?, int>((ref, id) {
@@ -13,7 +19,6 @@ final diaryDetailProvider =
   if (state is! CursorPagination) {
     return null;
   }
-
   return state.body.firstWhereOrNull((diary) => diary.id == id);
 });
 
@@ -38,31 +43,53 @@ class DiaryPaginationStateNotifier
     required super.repository,
   });
 
-  void getDiaries({
+  // TODO 일기 페이지네이션 조회
+  void getDiariesPagination({
     required int id, // babyId
     required String order,
     required CursorPaginationParams cursorPaginationParams,
   }) {}
 
-  void addDiary() {
+  /// 페이지 새로고침
+  void refreshPagination() {
     paginate(forceRefetch: true);
   }
 
-  void getDetail({required int id}) async {
-    print('diary pagination state notifier - getDetail');
+  /// 일기 등록
+  Future<DiaryResponseWithPresignedModel> addDiary(
+      DiaryCreateModel model) async {
+    final response = await repository.addDiary(model: model);
+    return response;
+  }
 
-    // 만약 CursorPagination이 아니면 아무것도 없음 or 에러이니까
-    // paginate함수를 통해 초기화를 해준다.
+  /// 일기 삭제
+  Future<void> deleteDiary({required int diaryId}) async {
+    await repository.deleteDiary(diaryId: diaryId);
+
+    if (state is! CursorPagination) {
+      return;
+    }
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
+    ]);
+  }
+
+  /// 일기 상세 조회
+  void getDetail({required int id}) async {
+    /// 만약 CursorPagination이 아니면 아무것도 없음 or 에러이니까
+    /// paginate함수를 통해 초기화를 해준다.
     if (state is! CursorPagination) {
       await paginate(fetchCount: 20);
     }
 
-    // 초기화를 시도했는데도 문제가 발생하면 빈값을 리턴해준다.
+    /// 초기화를 시도했는데도 문제가 발생하면 빈값을 리턴해준다.
     if (state is! CursorPagination) {
       return;
     }
 
-    // state를 CursorPagination으로 캐스팅해준다.
+    /// state를 CursorPagination으로 캐스팅해준다.
     final paginationState = state as CursorPagination;
     final response = await repository.getDetail(id: id);
 
@@ -87,14 +114,60 @@ class DiaryPaginationStateNotifier
     }
   }
 
-  void deleteDetail({required int id}) {
-    if (state is! CursorPagination) {
-      return;
-    }
+  Future<DiaryResponseModel> updateSentence(
+      {required int diaryId,
+      required int sentenceId,
+      required SentenceRequestModel model}) async {
+    final response = await repository.updateSentence(
+        diaryId: diaryId, sentenceId: sentenceId, model: model);
+
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body.where((diary) => diary.id != id).toList()
+      ...paginationState.body
+          .map((diary) => diary.id == diaryId ? response : diary)
+          .toList()
     ]);
+
+    return response;
+  }
+
+  Future<DiaryResponseModel> updateDate(
+      {required int diaryId, required DateRequestModel model}) async {
+    final response =
+        await repository.updateDate(diaryId: diaryId, model: model);
+
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body
+          .map((diary) => diary.id == diaryId ? response : diary)
+          .toList()
+    ]);
+
+    return response;
+  }
+
+  Future<void> deleteImages(
+      {required int diaryId, required int imageId}) async {
+    await repository.deleteImages(diaryId: diaryId, imageId: imageId);
+
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[
+      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
+    ]);
+  }
+
+  Future<DiaryResponseWithPresignedModel> addImages(
+      {required int diaryId,
+      required List<DiaryFileModel> diaryFileModels}) async {
+    final response =
+        await repository.addImages(diaryId: diaryId, models: diaryFileModels);
+
+    // TODO: 나중에 처리하기. state만 변경하도록
+    paginate(forceRefetch: true);
+
+    return response;
   }
 }

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiny_human_app/common/view/splash_screen.dart';
-import 'package:tiny_human_app/user/view/login_screen.dart';
 
-import 'album/view/album_screen.dart';
 import 'common/provider/route_provider.dart';
 
 void main() {
@@ -21,6 +18,13 @@ class _App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routeProvider);
     return MaterialApp.router(
+      theme: ThemeData(
+        useMaterial3: true,
+        dialogBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        // colorScheme: ColorScheme(brightness: brightness, primary: primary, onPrimary: onPrimary, secondary: secondary, onSecondary: onSecondary, error: error, onError: onError, background: background, onBackground: onBackground, surface: surface, onSurface: onSurface),
+        dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
+      ),
       debugShowCheckedModeBanner: false,
       routerConfig: router,
     );

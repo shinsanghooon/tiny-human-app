@@ -33,6 +33,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
             ),
           ),
           backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -68,7 +69,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                       padding: const EdgeInsets.only(
                         right: 20.0,
                       ),
-                      child: _todoDeleteButton(),
+                      child: _todoDeleteButton(data[index].id),
                     ),
                   ],
                 )
@@ -79,7 +80,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         ));
   }
 
-  IconButton _todoDeleteButton() {
+  IconButton _todoDeleteButton(int checklistId) {
     return IconButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
@@ -88,7 +89,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       ),
       onPressed: () async {
         await Future.delayed(Duration.zero);
-        await _checkDeleteMenuDialog();
+        await _checkDeleteMenuDialog(checklistId);
       },
       icon: const Icon(
         Icons.delete_outlined,
@@ -97,7 +98,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
     );
   }
 
-  Future<void> _checkDeleteMenuDialog() async {
+  Future<void> _checkDeleteMenuDialog(int checklistId) async {
     const msgTextStyle = TextStyle(
       color: Colors.black,
       fontSize: 20.0,
@@ -132,7 +133,8 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            // todo delete request
+            ref.read(checklistProvider.notifier).deleteChecklist(checklistId);
+            Navigator.of(context).pop();
           },
           text: '삭제하기',
           iconData: Icons.delete,
@@ -154,7 +156,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       onPressed: () {
         print('edit checklist');
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => ChecklistUpdateScreen(id: data.id)));
+            builder: (_) => ChecklistUpdateScreen(
+                  model: data,
+                )));
       },
       icon: const Icon(
         Icons.edit,
