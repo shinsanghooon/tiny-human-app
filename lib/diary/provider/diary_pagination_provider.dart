@@ -9,6 +9,7 @@ import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
 
 import '../model/date_request_model.dart';
+import '../model/diary_create_model.dart';
 import '../model/diary_response_with_presigned_model.dart';
 
 final diaryDetailProvider =
@@ -42,19 +43,24 @@ class DiaryPaginationStateNotifier
     required super.repository,
   });
 
-  void getDiaries({
+  // TODO 일기 페이지네이션 조회
+  void getDiariesPagination({
     required int id, // babyId
     required String order,
     required CursorPaginationParams cursorPaginationParams,
   }) {}
 
-  void addDiary() {
+  void refreshPagination() {
     paginate(forceRefetch: true);
   }
 
-  void getDetail({required int id}) async {
-    print('diary pagination state notifier - getDetail');
+  Future<DiaryResponseWithPresignedModel> addDiary(
+      DiaryCreateModel model) async {
+    final response = await repository.addDiary(model: model);
+    return response;
+  }
 
+  void getDetail({required int id}) async {
     // 만약 CursorPagination이 아니면 아무것도 없음 or 에러이니까
     // paginate함수를 통해 초기화를 해준다.
     if (state is! CursorPagination) {

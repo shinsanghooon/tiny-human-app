@@ -10,8 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tiny_human_app/baby/model/baby_model.dart';
-import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/diary/enum/save_type.dart';
 import 'package:tiny_human_app/diary/model/date_request_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
@@ -20,8 +18,6 @@ import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
-import 'package:tiny_human_app/user/model/user_model.dart';
-import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -78,7 +74,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   void calculateDaysAfterBirth(DateTime selectedDate) {
-    // TODO: From Baby Datetime
+    // TODO: After Baby Provider
     final birthday = DateTime(2022, 9, 27);
     daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
   }
@@ -350,13 +346,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             return;
           }
 
-          UserModel user = await ref.read(userMeProvider.notifier).getMe();
-          int userId = user.id;
-
-          List<BabyModel> babies =
-              await ref.read(babyProvider.notifier).getMyBabies();
-          int babyId = babies[0].id;
-
           int diaryId = state.id;
 
           // 기존 데이터와 비교해서 달라졌으면 Patch 요청
@@ -409,10 +398,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
             for (int i = 0; i < localImages.length; i++) {
               File file = File(localImages[i].path);
-
               String? mimeType = lookupMimeType(file.path);
               try {
-                // TODO 이건 어떻게 해야하지?
                 await dio.put(preSignedUrls[i],
                     data: file.openRead(),
                     options: Options(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retrofit/http.dart';
 import 'package:tiny_human_app/common/dio/dio.dart';
 import 'package:tiny_human_app/common/repository/base_pagination_repository.dart';
+import 'package:tiny_human_app/diary/model/diary_create_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
@@ -26,6 +27,12 @@ abstract class DiaryPaginationRepository
     implements IBasePaginationRepository<DiaryResponseModel> {
   factory DiaryPaginationRepository(Dio dio, {String baseUrl}) =
       _DiaryPaginationRepository;
+
+  /// 일기를 등록합니다.
+  @POST('')
+  @Headers({'accessToken': 'true'})
+  Future<DiaryResponseWithPresignedModel> addDiary(
+      {@Body() required DiaryCreateModel model});
 
   /// 일기 리스트를 요청합니다.
   /// 페이지네이션 응답을 리턴합니다.

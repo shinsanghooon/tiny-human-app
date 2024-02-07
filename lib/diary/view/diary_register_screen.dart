@@ -8,14 +8,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tiny_human_app/diary/model/diary_create_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 
-import '../../common/component/alert_dialog.dart';
+import '../../baby/model/baby_model.dart';
+import '../../baby/provider/baby_provider.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
+import '../../user/model/user_model.dart';
+import '../../user/provider/user_me_provider.dart';
+import '../model/diary_response_with_presigned_model.dart';
 import '../model/sentence_request_model.dart';
 
 class DiaryRegisterScreen extends ConsumerStatefulWidget {
@@ -36,12 +41,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   XFile? pickedFile;
   List<XFile> pickedImages = [];
   String? pickedFilePath;
-
-  // String? name;
-  // String? nickname;
-
   int? daysAfterBirth;
-
   DateTime? diaryDate = DateTime.now();
   List<String> fileNames = [];
   String? sentence;
@@ -50,7 +50,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   @override
   void initState() {
     super.initState();
-    // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
     diaryDate = DateTime.now();
     calculateDaysAfterBirth(diaryDate!);
@@ -61,14 +60,15 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   }
 
   void calculateDaysAfterBirth(DateTime selectedDate) {
+    // TODO: After Baby Provider
     final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
+    daysAfterBirth = selectedDate
+        .difference(birthday)
+        .inDays + 1;
   }
 
   @override
   Widget build(BuildContext context) {
-    final diaries = ref.watch(diaryPaginationProvider);
-
     return DefaultLayout(
       appBar: diaryAppBar(context),
       child: SafeArea(
@@ -79,60 +79,69 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
               children: [
                 pickedImages.isEmpty
                     ? GestureDetector(
-                        onTap: () async {
-                          List<XFile> selectedImages = await uploadImages();
-                          if (selectedImages!.isNotEmpty) {
-                            print('selected image is not emtpy');
-                          }
+                  onTap: () async {
+                    List<XFile> selectedImages = await uploadImages();
 
-                          if ((pickedImages.length + selectedImages.length) >
-                              5) {
-                            throw const Expanded(
-                                child: Text("사진은 5장까지만 선택이 가능합니다."));
-                          }
+                    if ((pickedImages.length + selectedImages.length) >
+                        5) {
+                      throw const Expanded(
+                          child: Text("사진은 5장까지만 선택이 가능합니다."));
+                    }
 
-                          setState(() {
-                            pickedImages = selectedImages;
-                            fileNames = pickedImages
-                                .map((image) => image.name)
-                                .toList();
-                          });
-                        },
-                        child: Container(
-                          height: MediaQuery.of(context).size.width / 1.2,
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          color: Colors.deepOrange.shade500,
-                          child: _uploadPhotoLabel(),
-                        ),
-                      )
+                    setState(() {
+                      pickedImages = selectedImages;
+                      fileNames = pickedImages
+                          .map((image) => image.name)
+                          .toList();
+                    });
+                  },
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 1.2,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 1.2,
+                    color: Colors.deepOrange.shade500,
+                    child: _uploadPhotoLabel(),
+                  ),
+                )
                     : GestureDetector(
-                        onTap: () async {
-                          List<XFile> selectedImages = await uploadImages();
-                          if (selectedImages!.isNotEmpty) {
-                            print('selected image is not emtpy');
-                          }
+                  onTap: () async {
+                    List<XFile> selectedImages = await uploadImages();
 
-                          if ((pickedImages.length + selectedImages.length) >
-                              5) {
-                            throw const Expanded(
-                                child: Text("사진은 5장까지만 선택이 가능합니다."));
-                          }
+                    if ((pickedImages.length + selectedImages.length) >
+                        5) {
+                      throw const Expanded(
+                          child: Text("사진은 5장까지만 선택이 가능합니다."));
+                    }
 
-                          setState(() {
-                            pickedImages = [...pickedImages, ...selectedImages];
-                            fileNames = pickedImages
-                                .map((image) => image.name)
-                                .toList();
-                          });
-                        },
-                        child: Container(
-                          height: MediaQuery.of(context).size.width / 1.2,
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          color: Colors.transparent,
-                          child: _uploadPhotoCarousel(
-                              MediaQuery.of(context).size.width / 1.2),
-                        ),
-                      ),
+                    setState(() {
+                      pickedImages = [...pickedImages, ...selectedImages];
+                      fileNames = pickedImages
+                          .map((image) => image.name)
+                          .toList();
+                    });
+                  },
+                  child: Container(
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 1.2,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width / 1.2,
+                    color: Colors.transparent,
+                    child: _uploadPhotoCarousel(
+                        MediaQuery
+                            .of(context)
+                            .size
+                            .width / 1.2),
+                  ),
+                ),
                 const SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,9 +176,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   }
 
   Future<List<XFile>> uploadImages() async {
-    print("Diary Image upload button is pressed.");
     List<XFile>? images = await imagePicker.pickMultipleMedia();
-    print('selected images count: ${images.length}');
     return images;
   }
 
@@ -215,7 +222,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                       icon: const Icon(Icons.cancel),
                       color: Colors.deepOrange.withOpacity(0.9),
                       onPressed: () {
-                        print('Delete Diary Photo');
                         setState(() {
                           pickedImages.removeAt(photoCurrentIndex);
                           fileNames =
@@ -232,7 +238,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 viewportFraction: 1.0,
                 onPageChanged: (index, _) {
                   setState(() {
-                    print("new index $index");
                     photoCurrentIndex = index;
                   });
                 })),
@@ -275,63 +280,50 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   SizedBox registerDiaryActionButton(BuildContext context) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: ElevatedButton(
         onPressed: () async {
-          // 서버에 요청을 보낸다.
-          print('---------- Request to register diary ----------');
-          print(accessToken);
-
           if (formKey.currentState == null) {
-            return null;
+            return;
           }
-
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
           } else {
-            return null;
+            return;
           }
 
-          print('daysAfterBirth');
-          print(daysAfterBirth);
-          final response = await dio.post(
-            'http://$ip/api/v1/diaries',
-            options: Options(headers: {
-              'Authorization': 'Bearer $accessToken',
-            }),
-            data: {
-              "userId": 1,
-              "babyId": 1,
-              "daysAfterBirth": daysAfterBirth,
-              "likeCount": 0,
-              "date": DateFormat('yyyy-MM-dd').format(diaryDate!).toString(),
-              "sentences": [SentenceRequestModel(sentence: sentence!)],
-              "files": fileNames
-                  .map((fileName) => DiaryFileModel(fileName: fileName))
-                  .toList(),
-            },
+          UserModel user = await ref.read(userMeProvider.notifier).getMe();
+          int userId = user.id;
+
+          List<BabyModel> babies =
+          await ref.read(babyProvider.notifier).getMyBabies();
+          int babyId = babies[0].id;
+
+          DiaryCreateModel diaryCreateModel = DiaryCreateModel(
+            userId: userId,
+            babyId: babyId,
+            daysAfterBirth: daysAfterBirth!,
+            likeCount: 0,
+            date: diaryDate!,
+            sentences: [SentenceRequestModel(sentence: sentence!)],
+            files: fileNames
+                .map((fileName) => DiaryFileModel(fileName: fileName))
+                .toList(),
           );
 
-          if (response.statusCode != 201) {
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return CustomAlertDialog(
-                    title: '등록 실패',
-                    content: '등록에 실패하였습니다. 잠시 후에 다시 시도해주세요.',
-                    buttonText: '확인',
-                  );
-                });
-          }
+          DiaryResponseWithPresignedModel preSignedUrlResponse = await ref
+              .read(diaryPaginationProvider.notifier)
+              .addDiary(diaryCreateModel);
 
-          List<String> preSignedUrls = (response.data['pictures'] as List)
-              .map((pictureInfo) => pictureInfo['preSignedUrl'] as String)
+          List<String> preSignedUrls = preSignedUrlResponse.pictures
+              .map((res) => res.preSignedUrl!)
               .toList();
 
           for (int i = 0; i < pickedImages.length; i++) {
             File file = File(pickedImages[i].path!);
-
             String? mimeType = lookupMimeType(file.path);
 
             await dio.put(preSignedUrls[i],
@@ -344,9 +336,11 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
-          ref.read(diaryPaginationProvider.notifier).addDiary();
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
 
-          Navigator.of(context).pop();
+          ref.read(diaryPaginationProvider.notifier).refreshPagination();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
