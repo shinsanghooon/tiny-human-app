@@ -163,8 +163,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               });
 
                               if (selectedImages.isNotEmpty) {
-                                List<AlbumModel> albumsWithPreSignedUrl =
-                                    await ref.read(albumPaginationProvider.notifier).addAlbums(1, selectedImages);
+                                List<BabyModel> baby = await ref.read(babyProvider.notifier).getMyBabies();
+                                List<AlbumModel> albumsWithPreSignedUrl = await ref
+                                    .read(albumPaginationProvider.notifier)
+                                    .addAlbums(baby[0].id, selectedImages);
 
                                 final dio = ref.watch(dioProvider);
                                 for (int i = 0; i < selectedImages.length; i++) {

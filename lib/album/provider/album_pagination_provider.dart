@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
@@ -5,6 +6,8 @@ import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
+import 'package:tiny_human_app/common/utils/data_utils.dart';
+import 'package:tiny_human_app/common/utils/exif_extractor.dart';
 
 import '../model/album_create_model.dart';
 import '../model/album_model.dart';
@@ -34,7 +37,20 @@ class AlbumPaginationStateNotifier extends PaginationProvider<AlbumResponseModel
   }) {}
 
   Future<List<AlbumModel>> addAlbums(int babyId, List<XFile> uploadImages) async {
-    List<AlbumCreateModel> models = uploadImages.map((image) => AlbumCreateModel(fileName: image.name)).toList();
+    Map<String, String?> imageWithExifDates = {};
+    for (XFile image in uploadImages) {
+      String? exifDate = await ExifExtractor.getDate(image.path);
+      imageWithExifDates[image.name] = exifDate;
+    }
+
+    List<AlbumCreateModel> models = [];
+    for (var entry in imageWithExifDates.entries) {
+      models.add(AlbumCreateModel(
+        fileName: entry.key,
+        originalCreatedAt: DataUtils.stringToDateTime(entry.value),
+      ));
+    }
+
     // TODO 리턴값에 keyName 넣어줘서 state를 업데이트 할 수 있도록 변경
     return await repository.addAlbum(babyId: babyId, albums: models);
   }

@@ -4,8 +4,7 @@ import 'package:tiny_human_app/baby/model/baby_model.dart';
 import '../model/baby_model_with_presigned.dart';
 import '../repository/baby_repository.dart';
 
-final babyProvider =
-    StateNotifierProvider<BabyNotifier, List<BabyModel>>((ref) {
+final babyProvider = StateNotifierProvider<BabyNotifier, List<BabyModel>>((ref) {
   final repository = ref.watch(babyRepositoryProvider);
   return BabyNotifier(repository: repository);
 });
@@ -19,6 +18,11 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
     getMyBabies();
   }
 
+  // TODO 교체!
+  BabyModel selectedBaby({required int babyId}) {
+    return state.where((baby) => baby.id == babyId).first;
+  }
+
   Future<List<BabyModel>> getMyBabies() async {
     final response = await repository.getMyBabies();
     state = response;
@@ -29,15 +33,13 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
     state = [...state, baby];
   }
 
-  Future<BabyModel> updateBaby(
-      {required int babyId, required Map<String, dynamic> body}) async {
+  Future<BabyModel> updateBaby({required int babyId, required Map<String, dynamic> body}) async {
     final response = await repository.updateBaby(id: babyId, body: body);
     getMyBabies();
     return response;
   }
 
-  Future<BabyModelWithPreSigned> updateBabyProfile(
-      {required int babyId, required Map<String, dynamic> body}) async {
+  Future<BabyModelWithPreSigned> updateBabyProfile({required int babyId, required Map<String, dynamic> body}) async {
     return await repository.updateBabyProfile(id: babyId, body: body);
   }
 
