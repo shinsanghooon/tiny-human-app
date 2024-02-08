@@ -8,7 +8,7 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
-import 'package:tiny_human_app/common/utils/data_utils.dart';
+import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
@@ -123,8 +123,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: _diaryDateTitle(state),
             ),
             Padding(
@@ -151,7 +150,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          DataUtils.dateTimeToKoreanDateString(state.date),
+          DateConvertor.dateTimeToKoreanDateString(state.date),
           style: const TextStyle(
             fontSize: 24.0,
             fontWeight: FontWeight.w500,
@@ -205,9 +204,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            ref
-                .read(diaryPaginationProvider.notifier)
-                .deleteDiary(diaryId: state.id);
+            ref.read(diaryPaginationProvider.notifier).deleteDiary(diaryId: state.id);
             if (mounted) {
               context.goNamed(DiaryScreen.routeName);
             }
@@ -235,8 +232,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         key: _menuButtonKey,
         padding: const EdgeInsets.only(bottom: 0.0),
         onPressed: () async {
-          RenderBox renderBox =
-              _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
+          RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
           Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
           _showPopupMenu(buttonOffset, context, state);
           // await _diaryDetailMenuDialog(state);
@@ -249,12 +245,10 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     );
   }
 
-  void _showPopupMenu(
-      Offset buttonOffset, BuildContext context, DiaryResponseModel state) {
+  void _showPopupMenu(Offset buttonOffset, BuildContext context, DiaryResponseModel state) {
     showMenu(
       context: context,
-      position:
-          RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 5, 25, 0),
+      position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 5, 25, 0),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(18.0)),
       ),

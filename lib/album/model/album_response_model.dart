@@ -1,20 +1,19 @@
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tiny_human_app/common/model/model_with_id.dart';
 
-import '../../common/utils/data_utils.dart';
+import '../../common/utils/date_convertor.dart';
 
 part 'album_response_model.g.dart';
 
 @JsonSerializable()
-class AlbumResponseModel implements IModelWithId{
+class AlbumResponseModel implements IModelWithId {
   @override
   final int id;
   final int babyId;
   final String contentType;
   final String keyName;
   @JsonKey(
-    fromJson: DataUtils.stringToDateTime,
+    fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? originalCreatedAt;
 
@@ -26,6 +25,5 @@ class AlbumResponseModel implements IModelWithId{
     this.originalCreatedAt,
   });
 
-  factory AlbumResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$AlbumResponseModelFromJson(json);
+  factory AlbumResponseModel.fromJson(Map<String, dynamic> json) => _$AlbumResponseModelFromJson(json);
 }

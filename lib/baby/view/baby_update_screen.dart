@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
-import 'package:tiny_human_app/common/utils/data_utils.dart';
+import 'package:tiny_human_app/common/utils/date_convertor.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -75,7 +75,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
     gender = widget.model.gender == 'MALE' ? genderList[0] : genderList[1];
     _selectedGender = genderList.map((e) => e == gender).toList();
     timeOfBirth = widget.model.timeOfBirth;
-    dayOfBirth = DataUtils.stringToDateTime(widget.model.dayOfBirth);
+    dayOfBirth = DateConvertor.stringToDateTime(widget.model.dayOfBirth);
     description = widget.model.description;
     baseImageUrl = '${S3_BASE_URL}${widget.model.profileImgKeyName}';
   }
@@ -164,8 +164,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
     return (baseImageUrl == null)
         ? GestureDetector(
             onTap: () async {
-              final XFile? pickedFile =
-                  await picker.pickImage(source: ImageSource.gallery);
+              final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
               if (pickedFile != null) {
                 setState(() {
                   pickedFilePath = pickedFile.path;
@@ -183,8 +182,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           )
         : GestureDetector(
             onTap: () async {
-              final XFile? pickedFile =
-                  await picker.pickImage(source: ImageSource.gallery);
+              final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
               if (pickedFile != null) {
                 setState(() {
                   pickedFilePath = pickedFile.path;
@@ -263,8 +261,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
               body: {
                 "name": name,
                 "gender": gender == '남자 아기' ? 'MALE' : 'FEMALE',
-                "dayOfBirth":
-                    DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
+                "dayOfBirth": DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
                 "timeOfBirth": timeOfBirth,
                 "nickName": nickname,
                 "keyName": fileName,
@@ -290,10 +287,8 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
 
           // 이미지 업로드
           if (fileName != null) {
-            final response = await ref
-                .read(babyProvider.notifier)
-                .updateBabyProfile(
-                    babyId: babyId, body: {"fileName": fileName});
+            final response =
+                await ref.read(babyProvider.notifier).updateBabyProfile(babyId: babyId, body: {"fileName": fileName});
 
             String preSignedUrl = response.preSignedUrl;
             File file = File(pickedFilePath!);
@@ -359,8 +354,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return ToggleButtons(
-            constraints:
-                BoxConstraints.expand(width: (constraints.maxWidth - 4) / 2),
+            constraints: BoxConstraints.expand(width: (constraints.maxWidth - 4) / 2),
             onPressed: (int index) {
               setState(() {
                 gender = genderList[index];
@@ -483,9 +477,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
                 width: 5.0,
               ),
               Text(
-                timeOfBirth != null
-                    ? '${timeOfBirth.toString().split(" ")[0]}시'
-                    : '태어난 시간',
+                timeOfBirth != null ? '${timeOfBirth.toString().split(" ")[0]}시' : '태어난 시간',
                 style: const TextStyle(
                   fontSize: 14.0,
                   color: Colors.black,

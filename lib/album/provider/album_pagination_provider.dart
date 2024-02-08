@@ -6,7 +6,7 @@ import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
-import 'package:tiny_human_app/common/utils/data_utils.dart';
+import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/common/utils/exif_extractor.dart';
 
 import '../model/album_create_model.dart';
@@ -47,7 +47,7 @@ class AlbumPaginationStateNotifier extends PaginationProvider<AlbumResponseModel
     for (var entry in imageWithExifDates.entries) {
       models.add(AlbumCreateModel(
         fileName: entry.key,
-        originalCreatedAt: DataUtils.exifDateToDateTime(entry.value),
+        originalCreatedAt: DateConvertor.exifDateToDateTime(entry.value),
       ));
     }
 

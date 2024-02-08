@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 
-import '../../common/utils/data_utils.dart';
+import '../../common/utils/date_convertor.dart';
 
 part 'checklist_model.g.dart';
 
@@ -11,23 +11,18 @@ class ChecklistModel {
   final String title;
   List<ChecklistDetailModel> checklistDetail;
   @JsonKey(
-    fromJson: DataUtils.stringToDateTime,
+    fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? createdAt;
   @JsonKey(
-    fromJson: DataUtils.stringToDateTime,
+    fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? updatedAt;
 
   ChecklistModel(
-      {required this.id,
-      required this.title,
-      required this.checklistDetail,
-      this.createdAt,
-      this.updatedAt});
+      {required this.id, required this.title, required this.checklistDetail, this.createdAt, this.updatedAt});
 
-  factory ChecklistModel.fromJson(Map<String, dynamic> json) =>
-      _$ChecklistModelFromJson(json);
+  factory ChecklistModel.fromJson(Map<String, dynamic> json) => _$ChecklistModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChecklistModelToJson(this);
 }

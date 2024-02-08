@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class DataUtils {
+class DateConvertor {
   static DateTime? stringToDateTime(String? value) {
     print(value);
 

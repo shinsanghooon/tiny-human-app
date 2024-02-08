@@ -12,13 +12,11 @@ AlbumModel _$AlbumModelFromJson(Map<String, dynamic> json) => AlbumModel(
       contentType: json['contentType'] as String,
       filename: json['filename'] as String,
       preSignedUrl: json['preSignedUrl'] as String,
-      originalCreatedAt:
-          DataUtils.stringToDateTime(json['originalCreatedAt'] as String?),
-      createdAt: DataUtils.stringToDateTime(json['createdAt'] as String?),
+      originalCreatedAt: DateConvertor.stringToDateTime(json['originalCreatedAt'] as String?),
+      createdAt: DateConvertor.stringToDateTime(json['createdAt'] as String?),
     );
 
-Map<String, dynamic> _$AlbumModelToJson(AlbumModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$AlbumModelToJson(AlbumModel instance) => <String, dynamic>{
       'id': instance.id,
       'babyId': instance.babyId,
       'contentType': instance.contentType,
