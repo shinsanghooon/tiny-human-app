@@ -47,7 +47,7 @@ class AlbumPaginationStateNotifier extends PaginationProvider<AlbumResponseModel
     for (var entry in imageWithExifDates.entries) {
       models.add(AlbumCreateModel(
         fileName: entry.key,
-        originalCreatedAt: DataUtils.stringToDateTime(entry.value),
+        originalCreatedAt: DataUtils.exifDateToDateTime(entry.value),
       ));
     }
 
