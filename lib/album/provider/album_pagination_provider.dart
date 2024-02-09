@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
@@ -6,9 +5,9 @@ import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
-import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/common/utils/exif_extractor.dart';
 
+import '../../common/utils/date_convertor.dart';
 import '../model/album_create_model.dart';
 import '../model/album_model.dart';
 import '../repository/album_pagination_repository.dart';
@@ -47,7 +46,7 @@ class AlbumPaginationStateNotifier extends PaginationProvider<AlbumResponseModel
     for (var entry in imageWithExifDates.entries) {
       models.add(AlbumCreateModel(
         fileName: entry.key,
-        originalCreatedAt: DateConvertor.exifDateToDateTime(entry.value),
+        originalCreatedAt: DateConvertor.exifDateToDateTime(entry.value) ?? DateTime.now(),
       ));
     }
 
