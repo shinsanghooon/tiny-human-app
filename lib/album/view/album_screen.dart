@@ -12,7 +12,6 @@ import 'package:mime/mime.dart';
 import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
-import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
@@ -163,10 +162,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               });
 
                               if (selectedImages.isNotEmpty) {
-                                List<BabyModel> baby = await ref.read(babyProvider.notifier).getMyBabies();
-                                List<AlbumModel> albumsWithPreSignedUrl = await ref
-                                    .read(albumPaginationProvider.notifier)
-                                    .addAlbums(baby[0].id, selectedImages);
+                                int babyId = ref.read(selectedBabyProvider.notifier).state;
+
+                                List<AlbumModel> albumsWithPreSignedUrl =
+                                    await ref.read(albumPaginationProvider.notifier).addAlbums(babyId, selectedImages);
 
                                 final dio = ref.watch(dioProvider);
                                 for (int i = 0; i < selectedImages.length; i++) {
@@ -346,9 +345,9 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            List<BabyModel> baby = await ref.read(babyProvider.notifier).getMyBabies();
+            int babyId = ref.read(selectedBabyProvider.notifier).state;
             ref.read(albumPaginationProvider.notifier).deleteAlbums(
-                  baby[0].id,
+                  babyId,
                   AlbumDeleteRequestModel(ids: selectedIds),
                 );
 

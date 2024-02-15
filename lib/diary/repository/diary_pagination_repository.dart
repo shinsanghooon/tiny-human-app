@@ -16,23 +16,19 @@ import '../model/diary_response_with_presigned_model.dart';
 
 part 'diary_pagination_repository.g.dart';
 
-final diaryPaginationRepositoryProvider =
-    Provider<DiaryPaginationRepository>((ref) {
+final diaryPaginationRepositoryProvider = Provider<DiaryPaginationRepository>((ref) {
   final dio = ref.watch(dioProvider);
   return DiaryPaginationRepository(dio, baseUrl: "http://$ip/api/v1/diaries");
 });
 
 @RestApi()
-abstract class DiaryPaginationRepository
-    implements IBasePaginationRepository<DiaryResponseModel> {
-  factory DiaryPaginationRepository(Dio dio, {String baseUrl}) =
-      _DiaryPaginationRepository;
+abstract class DiaryPaginationRepository implements IBasePaginationRepository<DiaryResponseModel> {
+  factory DiaryPaginationRepository(Dio dio, {String baseUrl}) = _DiaryPaginationRepository;
 
   /// 일기를 등록합니다.
   @POST('')
   @Headers({'accessToken': 'true'})
-  Future<DiaryResponseWithPresignedModel> addDiary(
-      {@Body() required DiaryCreateModel model});
+  Future<DiaryResponseWithPresignedModel> addDiary({@Body() required DiaryCreateModel model});
 
   /// 일기 리스트를 요청합니다.
   /// 페이지네이션 응답을 리턴합니다.
@@ -66,8 +62,7 @@ abstract class DiaryPaginationRepository
   @PATCH('/{diaryId}/date')
   @Headers({'accessToken': 'true'})
   Future<DiaryResponseModel> updateDate(
-      {@Path('diaryId') required int diaryId,
-      @Body() required DateRequestModel model});
+      {@Path('diaryId') required int diaryId, @Body() required DateRequestModel model});
 
   /// 사진을 삭제합니다.
   @DELETE('/{diaryId}/pictures/{deletedImageId}')
@@ -81,6 +76,5 @@ abstract class DiaryPaginationRepository
   @POST('/{diaryId}/pictures')
   @Headers({'accessToken': 'true'})
   Future<DiaryResponseWithPresignedModel> addImages(
-      {@Path('diaryId') required int diaryId,
-      @Body() required List<DiaryFileModel> models});
+      {@Path('diaryId') required int diaryId, @Body() required List<DiaryFileModel> models});
 }

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
@@ -12,8 +13,7 @@ import '../model/date_request_model.dart';
 import '../model/diary_create_model.dart';
 import '../model/diary_response_with_presigned_model.dart';
 
-final diaryDetailProvider =
-    Provider.family<DiaryResponseModel?, int>((ref, id) {
+final diaryDetailProvider = Provider.family<DiaryResponseModel?, int>((ref, id) {
   final state = ref.watch(diaryPaginationProvider);
 
   if (state is! CursorPagination) {
@@ -22,30 +22,26 @@ final diaryDetailProvider =
   return state.body.firstWhereOrNull((diary) => diary.id == id);
 });
 
-final diaryPaginationProvider =
-    StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>(
-        (ref) {
+final diaryPaginationProvider = StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(diaryPaginationRepositoryProvider);
-  int id = 1;
+  final babyId = ref.watch(selectedBabyProvider);
+
   String order = 'uploadedAt';
-  return DiaryPaginationStateNotifier(
-      babyId: id, order: order, repository: repo);
+  return DiaryPaginationStateNotifier(order: order, repository: repo, id: babyId);
 });
 
-class DiaryPaginationStateNotifier
-    extends PaginationProvider<DiaryResponseModel, DiaryPaginationRepository> {
-  final int babyId;
+class DiaryPaginationStateNotifier extends PaginationProvider<DiaryResponseModel, DiaryPaginationRepository> {
   final String order;
 
   DiaryPaginationStateNotifier({
-    required this.babyId,
     required this.order,
     required super.repository,
+    required super.id,
   });
 
   // TODO 일기 페이지네이션 조회
   void getDiariesPagination({
-    required int id, // babyId
+    required int babyId, // babyId
     required String order,
     required CursorPaginationParams cursorPaginationParams,
   }) {}
@@ -56,8 +52,7 @@ class DiaryPaginationStateNotifier
   }
 
   /// 일기 등록
-  Future<DiaryResponseWithPresignedModel> addDiary(
-      DiaryCreateModel model) async {
+  Future<DiaryResponseWithPresignedModel> addDiary(DiaryCreateModel model) async {
     final response = await repository.addDiary(model: model);
     return response;
   }
@@ -71,9 +66,8 @@ class DiaryPaginationStateNotifier
     }
     final paginationState = state as CursorPagination;
 
-    state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
-    ]);
+    state = paginationState
+        .copyWith(body: <DiaryResponseModel>[...paginationState.body.where((diary) => diary.id != diaryId).toList()]);
   }
 
   /// 일기 상세 조회
@@ -106,64 +100,48 @@ class DiaryPaginationStateNotifier
       // getDetail(id: 2)
       // [model(1), detailModel(2), model(3)]
       state = paginationState.copyWith(
-        body: paginationState.body
-            .map<DiaryResponseModel>(
-                (diary) => diary.id == id ? response : diary)
-            .toList(),
+        body: paginationState.body.map<DiaryResponseModel>((diary) => diary.id == id ? response : diary).toList(),
       );
     }
   }
 
   Future<DiaryResponseModel> updateSentence(
-      {required int diaryId,
-      required int sentenceId,
-      required SentenceRequestModel model}) async {
-    final response = await repository.updateSentence(
-        diaryId: diaryId, sentenceId: sentenceId, model: model);
+      {required int diaryId, required int sentenceId, required SentenceRequestModel model}) async {
+    final response = await repository.updateSentence(diaryId: diaryId, sentenceId: sentenceId, model: model);
 
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body
-          .map((diary) => diary.id == diaryId ? response : diary)
-          .toList()
+      ...paginationState.body.map((diary) => diary.id == diaryId ? response : diary).toList()
     ]);
 
     return response;
   }
 
-  Future<DiaryResponseModel> updateDate(
-      {required int diaryId, required DateRequestModel model}) async {
-    final response =
-        await repository.updateDate(diaryId: diaryId, model: model);
+  Future<DiaryResponseModel> updateDate({required int diaryId, required DateRequestModel model}) async {
+    final response = await repository.updateDate(diaryId: diaryId, model: model);
 
     final paginationState = state as CursorPagination;
 
     state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body
-          .map((diary) => diary.id == diaryId ? response : diary)
-          .toList()
+      ...paginationState.body.map((diary) => diary.id == diaryId ? response : diary).toList()
     ]);
 
     return response;
   }
 
-  Future<void> deleteImages(
-      {required int diaryId, required int imageId}) async {
+  Future<void> deleteImages({required int diaryId, required int imageId}) async {
     await repository.deleteImages(diaryId: diaryId, imageId: imageId);
 
     final paginationState = state as CursorPagination;
 
-    state = paginationState.copyWith(body: <DiaryResponseModel>[
-      ...paginationState.body.where((diary) => diary.id != diaryId).toList()
-    ]);
+    state = paginationState
+        .copyWith(body: <DiaryResponseModel>[...paginationState.body.where((diary) => diary.id != diaryId).toList()]);
   }
 
   Future<DiaryResponseWithPresignedModel> addImages(
-      {required int diaryId,
-      required List<DiaryFileModel> diaryFileModels}) async {
-    final response =
-        await repository.addImages(diaryId: diaryId, models: diaryFileModels);
+      {required int diaryId, required List<DiaryFileModel> diaryFileModels}) async {
+    final response = await repository.addImages(diaryId: diaryId, models: diaryFileModels);
 
     // TODO: 나중에 처리하기. state만 변경하도록
     paginate(forceRefetch: true);
