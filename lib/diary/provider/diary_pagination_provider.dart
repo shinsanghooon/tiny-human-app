@@ -25,7 +25,6 @@ final diaryDetailProvider = Provider.family<DiaryResponseModel?, int>((ref, id) 
 final diaryPaginationProvider = StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(diaryPaginationRepositoryProvider);
   final babyId = ref.watch(selectedBabyProvider);
-
   String order = 'uploadedAt';
   return DiaryPaginationStateNotifier(order: order, repository: repo, id: babyId);
 });
@@ -37,7 +36,7 @@ class DiaryPaginationStateNotifier extends PaginationProvider<DiaryResponseModel
     required this.order,
     required super.repository,
     required super.id,
-  });
+  }) : super(order: order);
 
   // TODO 일기 페이지네이션 조회
   void getDiariesPagination({

@@ -13,11 +13,12 @@ import '../model/album_create_model.dart';
 import '../model/album_model.dart';
 import '../repository/album_pagination_repository.dart';
 
+final albumOrderByProvider = StateProvider<String>((ref) => 'uploadedAt');
+
 final albumPaginationProvider = StateNotifierProvider<AlbumPaginationStateNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(albumPaginationRepositoryProvider);
   final babyId = ref.watch(selectedBabyProvider);
-  
-  String order = 'uploadedAt';
+  String order = ref.watch(albumOrderByProvider);
   return AlbumPaginationStateNotifier(order: order, repository: repo, id: babyId);
 });
 
@@ -28,7 +29,7 @@ class AlbumPaginationStateNotifier extends PaginationProvider<AlbumResponseModel
     required this.order,
     required super.repository,
     required super.id,
-  }) : super();
+  }) : super(order: order);
 
   void getAlbums({
     required int id,

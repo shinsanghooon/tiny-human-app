@@ -9,10 +9,12 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
     extends StateNotifier<CursorPaginationBase> {
   final int id;
   final U repository;
+  final String order;
 
   PaginationProvider({
     required this.id,
     required this.repository,
+    required this.order,
   }) : super(CursorPaginationLoading()) {
     paginate();
   }
@@ -86,12 +88,14 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
         }
       }
 
+      print('!!');
       final response = await repository.paginateWithId(
-        // TODO selected BAby Id 넣어야 함
         id: this.id,
-        order: 'uploadedAt', // fixed values until update something
+        order: this.order, // fixed values until update something
         cursorPaginationParams: cursorPaginationParams,
       );
+
+      print('??');
 
       if (state is CursorPaginationFetchingMore<T>) {
         final pState = state as CursorPaginationFetchingMore<T>;
@@ -103,7 +107,6 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
         state = response;
       }
     } catch (e) {
-      print(e);
       state = CursorPaginationError(message: '데이터를 가져오지 못했습니다.');
     }
   }

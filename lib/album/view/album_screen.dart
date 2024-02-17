@@ -46,6 +46,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   @override
   Widget build(BuildContext context) {
     final albumList = ref.watch(albumPaginationProvider);
+    String orderBy = ref.read(albumPaginationProvider.notifier).order;
 
     if (albumList is CursorPaginationLoading) {
       return Container(
@@ -66,7 +67,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
     final cp = albumList as CursorPagination;
     final data = cp.body;
-
     final s3ImageUrls = data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
 
     void onScaleUpdate(ScaleUpdateDetails details) {
@@ -116,6 +116,56 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
               actions: [
                 Row(
                   children: [
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet<void>(
+                            backgroundColor: Colors.white,
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            builder: (BuildContext context) {
+                              return SizedBox(
+                                height: 150,
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: ListTile(
+                                        onTap: () {
+                                          if (orderBy != 'uploadedAt') {
+                                            ref.read(albumOrderByProvider.notifier).update((state) => 'uploadedAt');
+                                          }
+
+                                          Navigator.of(context).pop();
+                                        },
+                                        title: orderBy == 'uploadedAt'
+                                            ? const Text('업로드 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                            : const Text('업로드 날짜 순'),
+                                      ),
+                                    ),
+                                    ListTile(
+                                        onTap: () {
+                                          if (orderBy != 'createdAt') {
+                                            ref.read(albumOrderByProvider.notifier).update((state) => 'createdAt');
+                                          }
+                                          Navigator.of(context).pop();
+                                        },
+                                        title: orderBy == 'createdAt'
+                                            ? const Text('사진 찍은 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                            : const Text('사진 찍은 날짜 순')),
+                                  ],
+                                ),
+                              );
+                            },
+                          ).then((value) {
+                            setState(() {});
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.sort_outlined,
+                          color: PRIMARY_COLOR,
+                        )),
                     IconButton(
                       onPressed: () {
                         setState(() {
