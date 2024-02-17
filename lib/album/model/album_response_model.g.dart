@@ -13,7 +13,7 @@ AlbumResponseModel _$AlbumResponseModelFromJson(Map<String, dynamic> json) =>
       contentType: json['contentType'] as String,
       keyName: json['keyName'] as String,
       originalCreatedAt:
-          DataUtils.stringToDateTime(json['originalCreatedAt'] as String?),
+          DateConvertor.stringToDateTime(json['originalCreatedAt'] as String?),
     );
 
 Map<String, dynamic> _$AlbumResponseModelToJson(AlbumResponseModel instance) =>

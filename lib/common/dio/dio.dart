@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tiny_human_app/user/provider/auth_provider.dart';
@@ -8,11 +9,8 @@ import '../secure_storage/secure_storage.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();
-
   final storage = ref.watch(secureStorageProvider);
-
   dio.interceptors.add(CustomInterceptor(storage: storage, ref: ref));
-
   return dio;
 });
 
@@ -24,10 +22,9 @@ class CustomInterceptor extends Interceptor {
 
   // 1) 요청을 보낼때
   @override
-  void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
-    print('[REQ] [${options.method}] ${options.uri}');
-    print('[REQ] [BODY] [${options.data}]');
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    debugPrint('[REQ] [${options.method}] ${options.uri}');
+    debugPrint('[REQ] [BODY] [${options.data}]');
 
     // 만약에 요청의 Header에 accessToken, true 값이 있다면
     // 실제 토큰을 storage에서 가져와서 헤더를 변경한다.
@@ -35,7 +32,7 @@ class CustomInterceptor extends Interceptor {
       options.headers.remove('accessToken');
 
       final token = await storage.read(key: ACCESS_TOKEN_KEY);
-      print('[ACCESS TOKEN] $token');
+      debugPrint('[ACCESS TOKEN] $token');
       options.headers.addAll({
         'Authorization': 'Bearer $token',
       });
@@ -45,7 +42,7 @@ class CustomInterceptor extends Interceptor {
       options.headers.remove('refreshToken');
 
       final token = await storage.read(key: REFRESH_TOKEN_KEY);
-      print('[REFRESH TOKEN] ${token}');
+      debugPrint('[REFRESH TOKEN] ${token}');
       options.headers.addAll({
         'Authorization': 'Bearer $token',
       });
@@ -61,9 +58,9 @@ class CustomInterceptor extends Interceptor {
     // 401에러가 났을 때
     // 토큰을 재발급 받는 시도를 하고 토큰이 재발급되면
     // 다시 새로운 토큰으로 요청을 한다.
-    print('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
-    print('[ERROR] [${err.message}]');
-    print('[ERROR] [${err}]');
+    debugPrint('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
+    debugPrint('[ERROR] [${err.message}]');
+    debugPrint('[ERROR] [${err}]');
 
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
 
@@ -79,7 +76,7 @@ class CustomInterceptor extends Interceptor {
     final isPathRefresh = err.requestOptions.path == '/auth/token';
 
     if (isStatus401 && !isPathRefresh) {
-      print('[ERROR] RefreshToken Error');
+      debugPrint('[ERROR] RefreshToken Error');
       final dio = Dio();
 
       try {
@@ -118,9 +115,8 @@ class CustomInterceptor extends Interceptor {
   // 2. 응답을 받을 때
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    print(
-        '[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
-    print('[RES] [${response.data}]');
+    debugPrint('[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
+    debugPrint('[RES] [${response.data}]');
 
     return super.onResponse(response, handler);
   }

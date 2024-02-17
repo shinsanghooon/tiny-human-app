@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiny_human_app/baby/component/baby_card_two.dart';
+import 'package:tiny_human_app/baby/component/baby_card.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
@@ -49,58 +49,11 @@ class BabyScreen extends ConsumerWidget {
             width: MediaQuery.of(context).size.width / 1.1,
             child: Padding(
               padding: const EdgeInsets.only(left: 40.0),
-              child: BabyCardTwo(model: data[index]),
+              child: BabyCard(model: data[index]),
             ),
           ),
         ),
       ),
     );
-
-    // return DefaultLayout(
-    //   child: CustomScrollView(slivers: [
-    //     SliverAppBar(
-    //       backgroundColor: Colors.transparent,
-    //       title: const Text(
-    //         "BABY HOME",
-    //         style: TextStyle(
-    //           color: Colors.deepOrange,
-    //           fontWeight: FontWeight.w800,
-    //         ),
-    //       ),
-    //       actions: [
-    //         IconButton(
-    //             icon: const Icon(Icons.add, color: PRIMARY_COLOR),
-    //             onPressed: () {
-    //               Navigator.of(context).push(
-    //                 MaterialPageRoute(
-    //                   builder: (_) => const BabyRegisterScreen(),
-    //                 ),
-    //               );
-    //             })
-    //       ],
-    //     ),
-    //     if (data.isNotEmpty)
-    //       SliverPadding(
-    //         padding: EdgeInsets.only(
-    //           top: MediaQuery.of(context).size.height / 10,
-    //         ),
-    //         sliver: SliverToBoxAdapter(
-    //           child: SizedBox(
-    //             height: MediaQuery.of(context).size.height,
-    //             child: ListView.builder(
-    //               scrollDirection: Axis.horizontal,
-    //               itemCount: data.length,
-    //               itemBuilder: (context, index) => SizedBox(
-    //                   width: MediaQuery.of(context).size.width / 1.1,
-    //                   child: Padding(
-    //                     padding: const EdgeInsets.only(left: 40.0),
-    //                     child: BabyCardTwo(model: data[index]),
-    //                   )),
-    //             ),
-    //           ),
-    //         ),
-    //       )
-    //   ]),
-    // );
   }
 }

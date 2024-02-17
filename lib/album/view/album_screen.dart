@@ -12,7 +12,6 @@ import 'package:mime/mime.dart';
 import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
-import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
@@ -47,6 +46,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   @override
   Widget build(BuildContext context) {
     final albumList = ref.watch(albumPaginationProvider);
+    String orderBy = ref.read(albumPaginationProvider.notifier).order;
 
     if (albumList is CursorPaginationLoading) {
       return Container(
@@ -67,7 +67,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
     final cp = albumList as CursorPagination;
     final data = cp.body;
-
     final s3ImageUrls = data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
 
     void onScaleUpdate(ScaleUpdateDetails details) {
@@ -118,6 +117,56 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 Row(
                   children: [
                     IconButton(
+                        onPressed: () {
+                          showModalBottomSheet<void>(
+                            backgroundColor: Colors.white,
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            builder: (BuildContext context) {
+                              return SizedBox(
+                                height: 150,
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: ListTile(
+                                        onTap: () {
+                                          if (orderBy != 'uploadedAt') {
+                                            ref.read(albumOrderByProvider.notifier).update((state) => 'uploadedAt');
+                                          }
+
+                                          Navigator.of(context).pop();
+                                        },
+                                        title: orderBy == 'uploadedAt'
+                                            ? const Text('업로드 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                            : const Text('업로드 날짜 순'),
+                                      ),
+                                    ),
+                                    ListTile(
+                                        onTap: () {
+                                          if (orderBy != 'createdAt') {
+                                            ref.read(albumOrderByProvider.notifier).update((state) => 'createdAt');
+                                          }
+                                          Navigator.of(context).pop();
+                                        },
+                                        title: orderBy == 'createdAt'
+                                            ? const Text('사진 찍은 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                            : const Text('사진 찍은 날짜 순')),
+                                  ],
+                                ),
+                              );
+                            },
+                          ).then((value) {
+                            setState(() {});
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.sort_outlined,
+                          color: PRIMARY_COLOR,
+                        )),
+                    IconButton(
                       onPressed: () {
                         setState(() {
                           isSelectMode = !isSelectMode;
@@ -163,8 +212,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               });
 
                               if (selectedImages.isNotEmpty) {
+                                int babyId = ref.read(selectedBabyProvider.notifier).state;
+
                                 List<AlbumModel> albumsWithPreSignedUrl =
-                                    await ref.read(albumPaginationProvider.notifier).addAlbums(1, selectedImages);
+                                    await ref.read(albumPaginationProvider.notifier).addAlbums(babyId, selectedImages);
 
                                 final dio = ref.watch(dioProvider);
                                 for (int i = 0; i < selectedImages.length; i++) {
@@ -344,9 +395,9 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            List<BabyModel> baby = await ref.read(babyProvider.notifier).getMyBabies();
+            int babyId = ref.read(selectedBabyProvider.notifier).state;
             ref.read(albumPaginationProvider.notifier).deleteAlbums(
-                  baby[0].id,
+                  babyId,
                   AlbumDeleteRequestModel(ids: selectedIds),
                 );
 

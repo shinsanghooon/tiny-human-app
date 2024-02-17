@@ -59,6 +59,8 @@ dependencies:
   material_dialogs: ^1.1.4
 
   mime: ^1.0.4
+  exif: ^3.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

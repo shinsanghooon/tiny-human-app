@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../common/utils/data_utils.dart';
+import '../../common/utils/date_convertor.dart';
 
 part 'album_model.g.dart';
 
@@ -13,11 +13,11 @@ class AlbumModel {
   final String filename;
   final String preSignedUrl;
   @JsonKey(
-    fromJson: DataUtils.stringToDateTime,
+    fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? originalCreatedAt;
   @JsonKey(
-    fromJson: DataUtils.stringToDateTime,
+    fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? createdAt;
 
@@ -31,8 +31,5 @@ class AlbumModel {
     this.createdAt,
   });
 
-  factory AlbumModel.fromJson(Map<String, dynamic> json) =>
-      _$AlbumModelFromJson(json);
-
-
+  factory AlbumModel.fromJson(Map<String, dynamic> json) => _$AlbumModelFromJson(json);
 }

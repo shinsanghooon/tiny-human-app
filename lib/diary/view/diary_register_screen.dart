@@ -12,7 +12,6 @@ import 'package:tiny_human_app/diary/model/diary_create_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 
-import '../../baby/model/baby_model.dart';
 import '../../baby/provider/baby_provider.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
@@ -297,10 +296,9 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
 
           UserModel user = await ref.read(userMeProvider.notifier).getMe();
           int userId = user.id;
-
-          List<BabyModel> babies =
-          await ref.read(babyProvider.notifier).getMyBabies();
-          int babyId = babies[0].id;
+          int babyId = ref
+              .read(selectedBabyProvider.notifier)
+              .state;
 
           DiaryCreateModel diaryCreateModel = DiaryCreateModel(
             userId: userId,
