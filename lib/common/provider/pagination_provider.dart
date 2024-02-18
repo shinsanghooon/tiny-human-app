@@ -88,15 +88,12 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
         }
       }
 
-      print('!!');
       final response = await repository.paginateWithId(
         id: this.id,
         order: this.order, // fixed values until update something
         cursorPaginationParams: cursorPaginationParams,
       );
-
-      print('??');
-
+      
       if (state is CursorPaginationFetchingMore<T>) {
         final pState = state as CursorPaginationFetchingMore<T>;
 

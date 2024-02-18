@@ -26,4 +26,22 @@ class DateConvertor {
 
     return DateTime.parse(DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime));
   }
+
+  static String convertoToRelativeTime(DateTime date) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(date);
+
+    if (difference.inDays >= 7) {
+      int week = (difference.inDays / 7).floor();
+      return '$week주 전';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays}일 전';
+    } else if (difference.inHours >= 1) {
+      return '${difference.inHours}시간 전';
+    } else if (difference.inMinutes >= 1) {
+      return '${difference.inMinutes}분 전';
+    } else {
+      return '방금 전';
+    }
+  }
 }

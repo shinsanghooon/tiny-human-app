@@ -48,11 +48,8 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
       child: RefreshIndicator(
         edgeOffset: 120.0, // TODO: AppBar 높이 알아내서 반영하기
         color: PRIMARY_COLOR,
-
         onRefresh: () async {
-          ref
-              .read(diaryPaginationProvider.notifier)
-              .paginate(forceRefetch: true);
+          ref.read(diaryPaginationProvider.notifier).paginate(forceRefetch: true);
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -87,8 +84,8 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => DiaryDetailScreen(model: data[index])));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => DiaryDetailScreen(model: data[index])));
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
