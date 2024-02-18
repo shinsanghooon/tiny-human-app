@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "288839383676",
+    "project_id": "tiny-human",
+    "storage_bucket": "tiny-human.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288839383676:android:01195cba0bebdb30e967f9",
+        "android_client_info": {
+          "package_name": "com.example.tiny_human_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIbt-YvqC9iZA8CPueUmNZ57Oe-8WKTEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
