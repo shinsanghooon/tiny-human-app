@@ -6,7 +6,7 @@ import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/view/root_screen.dart';
 import 'package:tiny_human_app/common/view/splash_screen.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
-import 'package:tiny_human_app/helpchat/view/help_chat_screen.dart';
+import 'package:tiny_human_app/helpchat/view/helpchat_screen.dart';
 import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 

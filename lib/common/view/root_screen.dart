@@ -6,7 +6,7 @@ import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
 import 'package:tiny_human_app/user/view/setting_screen.dart';
 
-import '../../helpchat/view/help_chat_screen.dart';
+import '../../helpchat/view/helpchat_screen.dart';
 
 class RootScreen extends StatefulWidget {
   static String get routeName => 'home';
@@ -53,6 +53,7 @@ class _RootScreenState extends State<RootScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return DefaultLayout(
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
           selectedItemColor: PRIMARY_COLOR,
           unselectedItemColor: BODY_TEXT_COLOR,
           selectedFontSize: 10.0,

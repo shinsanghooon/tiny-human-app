@@ -8,9 +8,7 @@ import 'common/provider/route_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
     ProviderScope(
@@ -32,6 +30,7 @@ class _App extends ConsumerWidget {
         scaffoldBackgroundColor: Colors.white,
         // colorScheme: ColorScheme(brightness: brightness, primary: primary, onPrimary: onPrimary, secondary: secondary, onSecondary: onSecondary, error: error, onError: onError, background: background, onBackground: onBackground, surface: surface, onSurface: onSurface),
         dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
+        fontFamily: 'Pretendard',
       ),
       debugShowCheckedModeBanner: false,
       routerConfig: router,

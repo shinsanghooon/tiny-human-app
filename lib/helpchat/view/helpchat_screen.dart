@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
-import 'package:tiny_human_app/helpchat/view/chat_screen.dart';
+import 'package:tiny_human_app/helpchat/view/helpchat_detail_screen.dart';
 
 import '../../baby/view/baby_screen.dart';
 import '../../common/constant/colors.dart';
