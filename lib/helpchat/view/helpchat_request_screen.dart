@@ -3,9 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
+import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
 
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
@@ -35,6 +35,8 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
   String? sentence;
   String? accessToken;
 
+  ChatRequestType chatRequestType = ChatRequestType.random;
+
   @override
   void initState() {
     super.initState();
@@ -56,83 +58,135 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      appBar: diaryAppBar(context),
+      appBar: _helpChatAppBar(context),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                pickedImages.isEmpty
-                    ? GestureDetector(
-                        onTap: () async {
-                          List<XFile> selectedImages = await uploadImages();
-
-                          if ((pickedImages.length + selectedImages.length) > 5) {
-                            throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-                          }
-
-                          setState(() {
-                            pickedImages = selectedImages;
-                            fileNames = pickedImages.map((image) => image.name).toList();
-                          });
-                        },
-                        child: Container(
-                          height: MediaQuery.of(context).size.width / 1.2,
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          color: Colors.deepOrange.shade500,
-                          child: _uploadPhotoLabel(),
-                        ),
-                      )
-                    : GestureDetector(
-                        onTap: () async {
-                          List<XFile> selectedImages = await uploadImages();
-
-                          if ((pickedImages.length + selectedImages.length) > 5) {
-                            throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
-                          }
-
-                          setState(() {
-                            pickedImages = [...pickedImages, ...selectedImages];
-                            fileNames = pickedImages.map((image) => image.name).toList();
-                          });
-                        },
-                        child: Container(
-                          height: MediaQuery.of(context).size.width / 1.2,
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          color: Colors.transparent,
-                          child: _uploadPhotoCarousel(MediaQuery.of(context).size.width / 1.2),
-                        ),
-                      ),
-                const SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    datePickerButton(context),
-                    const SizedBox(width: 14.0),
-                    if (daysAfterBirth != null)
-                      Text(
-                        '+${daysAfterBirth.toString()}일',
-                        style: const TextStyle(
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  child: Form(
-                    key: formKey,
-                    child: diaryTextCard(1, 1),
+                SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text('어떤 사용자에게 도움을 요청할까요?',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
+                          )),
+                      _buildRadioListTile(ChatRequestType.random),
+                      _buildRadioListTile(ChatRequestType.locationBased),
+                    ],
                   ),
                 ),
-                registerDiaryActionButton(context),
+                const SizedBox(height: 30.0),
+                const Text('채팅을 원하는 내용을 적어주세요.',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w500,
+                    )),
+                const SizedBox(
+                  height: 16.0,
+                ),
+                Column(
+                  children: [
+                    _selectedImageCarousel(context),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Form(
+                        key: formKey,
+                        child: _chatDescriptionTextForm(1, 1),
+                      ),
+                    ),
+                  ],
+                ),
+                _requestChatActionButton(context),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  GestureDetector _selectedImageCarousel(BuildContext context) {
+    return pickedImages.isEmpty
+        ? GestureDetector(
+            onTap: () async {
+              List<XFile> selectedImages = await uploadImages();
+
+              if ((pickedImages.length + selectedImages.length) > 5) {
+                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+              }
+
+              setState(() {
+                pickedImages = selectedImages;
+                fileNames = pickedImages.map((image) => image.name).toList();
+              });
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                height: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width / 2,
+                color: Colors.deepOrange.shade500,
+                child: _uploadPhotoLabel(),
+              ),
+            ),
+          )
+        : GestureDetector(
+            onTap: () async {
+              List<XFile> selectedImages = await uploadImages();
+
+              if ((pickedImages.length + selectedImages.length) > 5) {
+                throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+              }
+
+              setState(() {
+                pickedImages = [...pickedImages, ...selectedImages];
+                fileNames = pickedImages.map((image) => image.name).toList();
+              });
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16.0),
+              child: Container(
+                height: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width / 2,
+                color: Colors.transparent,
+                child: _uploadPhotoCarousel(MediaQuery.of(context).size.width / 2),
+              ),
+            ),
+          );
+  }
+
+  Widget _buildRadioListTile(ChatRequestType selectedChatRequestType) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        radioTheme: const RadioThemeData(
+          visualDensity: VisualDensity.compact, // 더 콤팩트한 UI
+        ),
+      ),
+      child: RadioListTile<ChatRequestType>(
+        activeColor: PRIMARY_COLOR,
+        contentPadding: EdgeInsets.zero,
+        fillColor: MaterialStateColor.resolveWith((states) => PRIMARY_COLOR),
+        title: Text(selectedChatRequestType.displayName,
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            )),
+        subtitle: Text(
+          selectedChatRequestType.description,
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        value: selectedChatRequestType,
+        groupValue: chatRequestType,
+        onChanged: (ChatRequestType? value) {
+          setState(() {
+            chatRequestType = value!;
+          });
+        },
       ),
     );
   }
@@ -148,13 +202,17 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
       children: [
         Icon(
           Icons.photo_outlined,
-          size: 100.0,
+          size: 60.0,
+        ),
+        SizedBox(
+          height: 10.0,
         ),
         Text(
-          "사진을 업로드 해주세요.",
+          "사진을 선택해주세요.",
           style: TextStyle(
-            fontSize: 20.0,
+            fontSize: 16.0,
           ),
+          textAlign: TextAlign.center,
         )
       ],
     );
@@ -223,22 +281,21 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
   }
 
   // 입력 폼 위젯 생성
-  Widget diaryTextCard(int id, diaryLength) {
+  Widget _chatDescriptionTextForm(int id, diaryLength) {
     return SizedBox(
       height: 250,
       child: CustomLongTextFormField(
-        keyName: 'description_$id',
-        // textEditingController: textEditingController,
+        keyName: 'chat_description_$id',
         onSaved: (String? value) {
           sentence = value;
         },
-        hintText: "아기의 오늘을 남겨주세요.",
+        hintText: "어떤 도움이 필요하신가요? 자세하게 적어주실수록 구체적인 답변을 얻을 수 있습니다.",
         initialValue: '',
       ),
     );
   }
 
-  SizedBox registerDiaryActionButton(BuildContext context) {
+  SizedBox _requestChatActionButton(BuildContext context) {
     return SizedBox(
       height: 46.0,
       width: MediaQuery.of(context).size.width,
@@ -252,39 +309,6 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
           } else {
             return;
           }
-          //
-          // UserModel user = await ref.read(userMeProvider.notifier).getMe();
-          // int userId = user.id;
-          // int babyId = ref.read(selectedBabyProvider.notifier).state;
-          //
-          // DiaryCreateModel diaryCreateModel = DiaryCreateModel(
-          //   userId: userId,
-          //   babyId: babyId,
-          //   daysAfterBirth: daysAfterBirth!,
-          //   likeCount: 0,
-          //   date: diaryDate!,
-          //   sentences: [SentenceRequestModel(sentence: sentence!)],
-          //   files: fileNames.map((fileName) => DiaryFileModel(fileName: fileName)).toList(),
-          // );
-          //
-          // DiaryResponseWithPresignedModel preSignedUrlResponse =
-          //     await ref.read(diaryPaginationProvider.notifier).addDiary(diaryCreateModel);
-          //
-          // List<String> preSignedUrls = preSignedUrlResponse.pictures.map((res) => res.preSignedUrl!).toList();
-          //
-          // for (int i = 0; i < pickedImages.length; i++) {
-          //   File file = File(pickedImages[i].path!);
-          //   String? mimeType = lookupMimeType(file.path);
-          //
-          //   await dio.put(preSignedUrls[i],
-          //       data: file.openRead(),
-          //       options: Options(
-          //         headers: {
-          //           Headers.contentLengthHeader: file.lengthSync(),
-          //         },
-          //         contentType: mimeType,
-          //       ));
-          // }
 
           if (mounted) {
             Navigator.of(context).pop();
@@ -296,7 +320,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
           backgroundColor: PRIMARY_COLOR,
         ),
         child: const Text(
-          "등록 하기",
+          "채팅 요청하기",
           style: TextStyle(
             fontSize: 18.0,
             fontWeight: FontWeight.w600,
@@ -307,7 +331,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
     );
   }
 
-  AppBar diaryAppBar(BuildContext context) {
+  AppBar _helpChatAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
         "채팅을 생성하세요",
@@ -320,50 +344,9 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      backgroundColor: Colors.transparent,
       elevation: 0.0,
-    );
-  }
-
-  Widget datePickerButton(BuildContext context) {
-    return SizedBox(
-      height: 46.0,
-      child: OutlinedButton(
-        onPressed: () {
-          showDatePicker(
-            context: context,
-            initialEntryMode: DatePickerEntryMode.calendarOnly,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1900),
-            lastDate: DateTime.now(),
-          ).then((value) {
-            setState(() {
-              diaryDate = value;
-              print(diaryDate);
-
-              calculateDaysAfterBirth(diaryDate!);
-            });
-          });
-        },
-        child: Row(
-          children: [
-            const Icon(
-              Icons.calendar_month_outlined,
-              color: Colors.black54,
-            ),
-            const SizedBox(
-              width: 5.0,
-            ),
-            Text(
-              DateFormat('yyyy-MM-dd').format(diaryDate!).toString(),
-              style: const TextStyle(
-                fontSize: 14.0,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-      ),
+      surfaceTintColor: Colors.white,
+      backgroundColor: Colors.white,
     );
   }
 

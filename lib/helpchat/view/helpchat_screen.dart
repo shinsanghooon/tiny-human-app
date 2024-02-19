@@ -118,7 +118,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
               );
             },
             separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(height: 8.0);
+              return const SizedBox(height: 14.0);
             },
           ),
         ]),
