@@ -6,6 +6,7 @@ import 'package:tiny_human_app/helpchat/view/helpchat_detail_screen.dart';
 import '../../baby/view/baby_screen.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
+import '../model/chat_page_info.dart';
 import 'helpchat_request_screen.dart';
 
 class HelpChatScreen extends StatefulWidget {
@@ -103,7 +104,11 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatScreen(id: 1)));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ChatScreen(
+                            id: 1,
+                            chatData: ChatPageInfo(peerId: 'dfdf1', peerNickname: 'dfd'),
+                          )));
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -136,7 +141,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
               child: Text(
                 data['title'],
                 style: const TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 17.0,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,
