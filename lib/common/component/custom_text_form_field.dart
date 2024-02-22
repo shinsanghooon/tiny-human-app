@@ -24,7 +24,6 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('initial value $initialValue');
     const baseBorder = OutlineInputBorder(
         borderSide: BorderSide(
       color: INPUT_BORDER_COLOR,
@@ -63,8 +62,7 @@ class CustomTextFormField extends StatelessWidget {
 
         // 기본으로 세팅한 보더를 넣어준다.
         enabledBorder: baseBorder,
-        focusedBorder: baseBorder.copyWith(
-            borderSide: baseBorder.borderSide.copyWith(color: PRIMARY_COLOR)),
+        focusedBorder: baseBorder.copyWith(borderSide: baseBorder.borderSide.copyWith(color: PRIMARY_COLOR)),
       ),
     );
   }

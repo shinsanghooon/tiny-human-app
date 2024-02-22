@@ -8,8 +8,7 @@ import 'package:tiny_human_app/user/repository/auth_repository.dart';
 
 import '../repository/user_me_repository.dart';
 
-final userMeProvider =
-    StateNotifierProvider<UserMeStateNotifier, UserModelBase?>((ref) {
+final userMeProvider = StateNotifierProvider<UserMeStateNotifier, UserModelBase?>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final repository = ref.watch(userMeRepositoryProvider);
   final storage = ref.watch(secureStorageProvider);
@@ -50,8 +49,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
     return response;
   }
 
-  Future<UserModelBase> login(
-      {required String email, required String password}) async {
+  Future<UserModelBase> login({required String email, required String password}) async {
     try {
       state = UserModelLoading();
 
@@ -65,11 +63,47 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
       final jwt = JWT.decode(response.accessToken);
       // 이렇게 요청을 다시 보내서 데이터를 받아오면 서버에서 검증이 됐으니까 유효한 토큰이라는 것을 알 수 있다.
-      final userResponse =
-          await repository.getMe(id: jwt.payload['userId'] as int);
+      final userResponse = await repository.getMe(id: jwt.payload['userId'] as int);
 
       state = userResponse;
 
+      return userResponse;
+    } catch (e) {
+      state = UserModelError(message: '로그인에 실패했습니다.');
+      return Future.value(state);
+    }
+  }
+
+  Future<UserModelBase> googleLogin(
+      {required String email, required String accessToken, required String name, required String photoURL}) async {
+    try {
+      state = UserModelLoading();
+
+      final response = await authRepository.googleLogin(
+        email: email,
+        accessToken: accessToken,
+        name: name,
+        photoURL: photoURL,
+      );
+      print('access');
+      print(response.accessToken);
+
+      await storage.write(key: REFRESH_TOKEN_KEY, value: response.refreshToken);
+      await storage.write(key: ACCESS_TOKEN_KEY, value: response.accessToken);
+
+      final jwt = JWT.decode(response.accessToken);
+      // 이렇게 요청을 다시 보내서 데이터를 받아오면 서버에서 검증이 됐으니까 유효한 토큰이라는 것을 알 수 있다.
+
+      print(3);
+      print(jwt.payload['userId']);
+      final userResponse = await repository.getMe(id: jwt.payload['userId'] as int);
+
+      print(4);
+      print('userResponse');
+      print(userResponse);
+      state = userResponse;
+
+      print(5);
       return userResponse;
     } catch (e) {
       state = UserModelError(message: '로그인에 실패했습니다.');

@@ -122,12 +122,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () => onGoogleLoginPress(context),
-                        child: Text("Google Login"),
+                        child: Text("구글 로그인",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                            )),
                         style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.blueAccent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
+                              borderRadius: BorderRadius.circular(20.0),
                             )),
                       )
                     ],
@@ -148,21 +152,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     try {
       GoogleSignInAccount? account = await googleSignIn.signIn();
-      print(account);
-
       final GoogleSignInAuthentication? googleAuth = await account?.authentication;
-      print(googleAuth.toString());
-      print(googleAuth?.idToken);
-      print('--');
-      print(googleAuth?.accessToken);
+      final accessToken = googleAuth?.accessToken;
+      final idToken = googleAuth?.idToken;
 
-      final credential =
-          GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
-      print('-- crendential');
-      print(credential.idToken);
-      print(credential.toString());
+      final credential = GoogleAuthProvider.credential(accessToken: accessToken, idToken: idToken);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final name = userCredential.user?.displayName;
+      final photoURL = userCredential.user?.photoURL;
+      final email = userCredential.user?.email;
+
+      ref.read(userMeProvider.notifier).googleLogin(
+            email: email!,
+            accessToken: accessToken!,
+            name: name!,
+            photoURL: photoURL!,
+          );
     } catch (error) {
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(
