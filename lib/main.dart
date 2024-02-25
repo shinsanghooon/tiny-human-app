@@ -92,9 +92,14 @@ void initializeNotification() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
+
+  var fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
+  await FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    print('need to send new token to server');
+  });
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   initializeNotification();
   FirebaseMessaging.instance.requestPermission(
@@ -102,7 +107,6 @@ void main() async {
     alert: true,
     sound: true,
   );
-  print('fcmToken: $fcmToken');
 
   runApp(
     ProviderScope(
