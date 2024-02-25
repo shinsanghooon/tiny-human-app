@@ -55,23 +55,30 @@ void initializeNotification() async {
 
   // Android & iOS Foreground 일 때
   // localNotification을 사용해야함
+  // 앱이 forecground(즉, 활성 상태)에 있을 때 푸시 알림 메시지를 수신하는 경우에 호출
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
 
-    if (notification != null) {
-      flutterLocalNotificationPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          const NotificationDetails(
-            android: AndroidNotificationDetails(
-              'high_importance_channel',
-              'high_importance_notification',
-              importance: Importance.max,
+    // 아래 코드를 사용하면 중복 알림이 발생한다.
+    // foreground는 원래 알림이 안온다고 하던데 확인해볼 것!
+    if (Platform.isAndroid) {
+      if (notification != null) {
+        print(notification?.title);
+        print(notification?.body);
+        flutterLocalNotificationPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'high_importance_channel',
+                'high_importance_notification',
+                importance: Importance.max,
+              ),
+              iOS: DarwinNotificationDetails(),
             ),
-            iOS: DarwinNotificationDetails(),
-          ),
-          payload: message.data["data"]);
+            payload: message.data["data"]);
+      }
     }
   });
 
@@ -85,6 +92,7 @@ void initializeNotification() async {
   // iOS Background
   if (Platform.isIOS) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      // 앱이 백그라운드나 종료 상태에 있을 때 사용자가 푸시 알림을 탭하여 앱을 열었을 경우에 발생하는 이벤트를 처리하는 리스너
       // 액션 추가
     });
   }
