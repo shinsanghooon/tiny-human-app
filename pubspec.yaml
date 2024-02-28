@@ -71,6 +71,8 @@ dependencies:
 
   fluttertoast: ^8.2.4
 
+  device_info_plus: ^9.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

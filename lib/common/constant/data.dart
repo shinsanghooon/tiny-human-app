@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:tiny_human_app/diary/enum/file_type.dart';
-import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
-import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 
 const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
 const REFRESH_TOKEN_KEY = 'REFRESH_TOKEN';
+const FCM_TOKEN = 'FCM_TOKEN';
 
 const storage = FlutterSecureStorage();
 

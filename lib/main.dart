@@ -63,8 +63,6 @@ void initializeNotification() async {
     // foreground는 원래 알림이 안온다고 하던데 확인해볼 것!
     if (Platform.isAndroid) {
       if (notification != null) {
-        print(notification?.title);
-        print(notification?.body);
         flutterLocalNotificationPlugin.show(
             notification.hashCode,
             notification.title,
@@ -101,12 +99,6 @@ void initializeNotification() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  var fcmToken = await FirebaseMessaging.instance.getToken();
-  print(fcmToken);
-  await FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-    print('need to send new token to server');
-  });
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   initializeNotification();
