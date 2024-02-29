@@ -39,7 +39,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // initState에서는 async가 안되기 때문에 함수로 분리한다.
     checkToken();
   }
 
@@ -49,7 +48,6 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('detail build');
     final state = ref.watch(diaryDetailProvider(widget.model.id));
 
     if (state == null) {

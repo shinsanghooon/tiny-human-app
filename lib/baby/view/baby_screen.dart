@@ -40,15 +40,19 @@ class BabyScreen extends ConsumerWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 100.0),
+        padding: const EdgeInsets.only(top: 00.0),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemCount: data.length,
           itemBuilder: (context, index) => SizedBox(
-            width: MediaQuery.of(context).size.width / 1.1,
+            width: MediaQuery.of(context).size.width / 1.0,
+            height: MediaQuery.of(context).size.height,
             child: Padding(
-              padding: const EdgeInsets.only(left: 40.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 10.0,
+                horizontal: 20.0,
+              ),
               child: BabyCard(model: data[index]),
             ),
           ),

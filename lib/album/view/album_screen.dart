@@ -322,12 +322,9 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
       context: context,
       position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 20, 20, 0),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(14.0),
-          bottomLeft: Radius.circular(14.0),
-          bottomRight: Radius.circular(14.0),
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(18.0)),
       ),
+      surfaceTintColor: Colors.white,
       items: AlbumPopUpMenu.values
           .map(
             (value) => PopupMenuItem(
