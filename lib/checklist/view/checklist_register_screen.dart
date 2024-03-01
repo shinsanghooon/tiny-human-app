@@ -13,12 +13,10 @@ class ChecklistRegisterScreen extends ConsumerStatefulWidget {
   const ChecklistRegisterScreen({super.key});
 
   @override
-  ConsumerState<ChecklistRegisterScreen> createState() =>
-      _ChecklistRegisterScreenState();
+  ConsumerState<ChecklistRegisterScreen> createState() => _ChecklistRegisterScreenState();
 }
 
-class _ChecklistRegisterScreenState
-    extends ConsumerState<ChecklistRegisterScreen> {
+class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
   String title = '';
   List<ChecklistDetailCreateModel> checklistDetails = [];
@@ -45,8 +43,7 @@ class _ChecklistRegisterScreenState
                   children: [
                     const Text(
                       "Title",
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
                     ),
                     titleTextCard(),
                     const SizedBox(
@@ -54,8 +51,7 @@ class _ChecklistRegisterScreenState
                     ),
                     const Text(
                       "Checklist",
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -86,8 +82,7 @@ class _ChecklistRegisterScreenState
                       child: IconButton(
                         onPressed: () {
                           setState(() {
-                            checklistDetails.add(ChecklistDetailCreateModel(
-                                contents: '', reason: ''));
+                            checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -145,11 +140,13 @@ class _ChecklistRegisterScreenState
       child: CustomTextChecklistFormField(
         keyName: 'checklist_detail_$idx',
         onSaved: (String? value) {
-          checklistDetails[idx] =
-              ChecklistDetailCreateModel(contents: value!, reason: '');
+          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
+        },
+        onChanged: (String? value) {
+          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
         },
         hintText: "체크할 항목을 입력해주세요.",
-        initialValue: '',
+        initialValue: checklistDetails[idx].contents,
       ),
     );
   }
