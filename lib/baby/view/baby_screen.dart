@@ -41,9 +41,9 @@ class BabyScreen extends ConsumerWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 00.0),
-        child: ListView.builder(
+        child: PageView.builder(
           scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
+          // shrinkWrap: true,
           itemCount: data.length,
           itemBuilder: (context, index) => SizedBox(
             width: MediaQuery.of(context).size.width / 1.0,

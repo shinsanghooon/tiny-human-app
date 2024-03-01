@@ -150,7 +150,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                           const SizedBox(height: 12.0),
                           Text(
                             widget.model.description,
-                            maxLines: 6,
+                            maxLines: 5,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               height: 1.8,
