@@ -60,6 +60,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
 
     return DefaultLayout(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
@@ -137,6 +138,40 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
             const SizedBox(
               height: 30.0,
             ),
+            state.letter != null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text(
+                          'From. 티니',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            height: 1.8,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text(
+                          state.letter!,
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            height: 1.8,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 50.0,
+                      )
+                    ],
+                  )
+                : const SizedBox(
+                    height: 10.0,
+                  )
           ],
         ),
       ),

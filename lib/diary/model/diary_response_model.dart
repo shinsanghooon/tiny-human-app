@@ -16,6 +16,7 @@ class DiaryResponseModel implements IModelWithId {
   final DateTime date;
   final List<DiarySentenceModel> sentences;
   final List<DiaryPictureModel> pictures;
+  String? letter;
 
   DiaryResponseModel({
     required this.id,
@@ -26,8 +27,8 @@ class DiaryResponseModel implements IModelWithId {
     required this.date,
     required this.sentences,
     required this.pictures,
+    this.letter,
   });
 
-  factory DiaryResponseModel.fromJson(Map<String, dynamic> json) =>
-      _$DiaryResponseModelFromJson(json);
+  factory DiaryResponseModel.fromJson(Map<String, dynamic> json) => _$DiaryResponseModelFromJson(json);
 }
