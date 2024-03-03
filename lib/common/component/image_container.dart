@@ -9,11 +9,7 @@ class ImageContainer extends StatelessWidget {
   final bool selected;
 
   const ImageContainer(
-      {required this.url,
-      required this.width,
-      required this.height,
-      this.selected = false,
-      super.key});
+      {required this.url, required this.width, required this.height, this.selected = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +37,9 @@ class ImageContainer extends StatelessWidget {
       ),
       fadeInDuration: const Duration(milliseconds: 100),
       fadeOutDuration: const Duration(milliseconds: 100),
-      errorWidget: (context, url, error) => const Icon(Icons.error_outline),
+      errorWidget: (context, url, error) {
+        return CircularProgressIndicator(color: PRIMARY_COLOR, strokeWidth: 6.0);
+      },
     );
   }
 

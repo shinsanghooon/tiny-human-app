@@ -141,7 +141,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
               child: Text(
                 data['title'],
                 style: const TextStyle(
-                  fontSize: 17.0,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.w600,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -162,6 +162,9 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
         Text(
           data['last_message'],
           maxLines: 2,
+          style: const TextStyle(
+            fontSize: 16.0,
+          ),
         )
       ]),
     );

@@ -94,234 +94,242 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     }
 
     return Scaffold(
-      body: GestureDetector(
-        onScaleUpdate: onScaleUpdate,
-        onScaleEnd: onScaleEnd,
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              title: const Text(
-                "ALBUM",
-                style: TextStyle(
-                  color: Colors.deepOrange,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              leading: IconButton(
-                  icon: const Icon(
-                    Icons.home_outlined,
-                    color: PRIMARY_COLOR,
+      body: RefreshIndicator(
+        edgeOffset: 100.0,
+        color: PRIMARY_COLOR,
+        onRefresh: () async {
+          ref.read(albumPaginationProvider.notifier).paginate(forceRefetch: true);
+        },
+        child: GestureDetector(
+          onScaleUpdate: onScaleUpdate,
+          onScaleEnd: onScaleEnd,
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                backgroundColor: Colors.transparent,
+                title: const Text(
+                  "ALBUM",
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.w800,
                   ),
-                  onPressed: () => context.goNamed(BabyScreen.routeName)),
-              actions: [
-                Row(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          showModalBottomSheet<void>(
-                            backgroundColor: Colors.white,
-                            context: context,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            builder: (BuildContext context) {
-                              return SizedBox(
-                                height: 150,
-                                child: Column(
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: ListTile(
-                                        onTap: () {
-                                          if (orderBy != 'uploadedAt') {
-                                            ref.read(albumOrderByProvider.notifier).update((state) => 'uploadedAt');
-                                          }
+                ),
+                leading: IconButton(
+                    icon: const Icon(
+                      Icons.home_outlined,
+                      color: PRIMARY_COLOR,
+                    ),
+                    onPressed: () => context.goNamed(BabyScreen.routeName)),
+                actions: [
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            showModalBottomSheet<void>(
+                              backgroundColor: Colors.white,
+                              context: context,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: 150,
+                                  child: Column(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: ListTile(
+                                          onTap: () {
+                                            if (orderBy != 'uploadedAt') {
+                                              ref.read(albumOrderByProvider.notifier).update((state) => 'uploadedAt');
+                                            }
 
-                                          Navigator.of(context).pop();
-                                        },
-                                        title: orderBy == 'uploadedAt'
-                                            ? const Text('업로드 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
-                                            : const Text('업로드 날짜 순'),
+                                            Navigator.of(context).pop();
+                                          },
+                                          title: orderBy == 'uploadedAt'
+                                              ? const Text('업로드 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                              : const Text('업로드 날짜 순'),
+                                        ),
                                       ),
-                                    ),
-                                    ListTile(
-                                        onTap: () {
-                                          if (orderBy != 'createdAt') {
-                                            ref.read(albumOrderByProvider.notifier).update((state) => 'createdAt');
-                                          }
-                                          Navigator.of(context).pop();
-                                        },
-                                        title: orderBy == 'createdAt'
-                                            ? const Text('사진 찍은 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
-                                            : const Text('사진 찍은 날짜 순')),
-                                  ],
-                                ),
-                              );
-                            },
-                          ).then((value) {
-                            setState(() {});
+                                      ListTile(
+                                          onTap: () {
+                                            if (orderBy != 'createdAt') {
+                                              ref.read(albumOrderByProvider.notifier).update((state) => 'createdAt');
+                                            }
+                                            Navigator.of(context).pop();
+                                          },
+                                          title: orderBy == 'createdAt'
+                                              ? const Text('사진 찍은 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
+                                              : const Text('사진 찍은 날짜 순')),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ).then((value) {
+                              setState(() {});
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.sort_outlined,
+                            color: PRIMARY_COLOR,
+                          )),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isSelectMode = !isSelectMode;
+                            if (!isSelectMode) {
+                              selectedIds = List.empty();
+                            }
                           });
                         },
-                        icon: const Icon(
-                          Icons.sort_outlined,
-                          color: PRIMARY_COLOR,
-                        )),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isSelectMode = !isSelectMode;
-                          if (!isSelectMode) {
-                            selectedIds = List.empty();
-                          }
-                        });
-                      },
-                      icon: isSelectMode
-                          ? const Icon(
-                              Icons.check_circle,
-                              color: PRIMARY_COLOR,
+                        icon: isSelectMode
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: PRIMARY_COLOR,
+                              )
+                            : const Icon(
+                                Icons.check_circle_outline_outlined,
+                                color: PRIMARY_COLOR,
+                              ),
+                      ),
+                      isSelectMode
+                          ? IconButton(
+                              key: _menuButtonKey,
+                              icon: const Icon(
+                                Icons.more_horiz,
+                                color: PRIMARY_COLOR,
+                              ),
+                              onPressed: () async {
+                                debugPrint('Show Menu Button');
+                                RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
+                                Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
+                                _showAlbumPopupMenu(buttonOffset, context);
+                              },
                             )
-                          : const Icon(
-                              Icons.check_circle_outline_outlined,
-                              color: PRIMARY_COLOR,
-                            ),
-                    ),
-                    isSelectMode
-                        ? IconButton(
-                            key: _menuButtonKey,
-                            icon: const Icon(
-                              Icons.more_horiz,
-                              color: PRIMARY_COLOR,
-                            ),
-                            onPressed: () async {
-                              debugPrint('Show Menu Button');
-                              RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
-                              Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
-                              _showAlbumPopupMenu(buttonOffset, context);
-                            },
-                          )
-                        : IconButton(
-                            icon: const Icon(
-                              Icons.add,
-                              color: PRIMARY_COLOR,
-                            ),
-                            onPressed: () async {
-                              List<XFile> selectedImages = await uploadImages();
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.add,
+                                color: PRIMARY_COLOR,
+                              ),
+                              onPressed: () async {
+                                List<XFile> selectedImages = await uploadImages();
 
-                              setState(() {
-                                isLoading = true;
-                              });
+                                setState(() {
+                                  isLoading = true;
+                                });
 
-                              if (selectedImages.isNotEmpty) {
-                                int babyId = ref.read(selectedBabyProvider.notifier).state;
+                                if (selectedImages.isNotEmpty) {
+                                  int babyId = ref.read(selectedBabyProvider.notifier).state;
 
-                                List<AlbumModel> albumsWithPreSignedUrl =
-                                    await ref.read(albumPaginationProvider.notifier).addAlbums(babyId, selectedImages);
+                                  List<AlbumModel> albumsWithPreSignedUrl = await ref
+                                      .read(albumPaginationProvider.notifier)
+                                      .addAlbums(babyId, selectedImages);
 
-                                final dio = ref.watch(dioProvider);
+                                  final dio = ref.watch(dioProvider);
 
-                                await Future.wait(
-                                    selectedImages.asMap().entries.map((entry) async {
-                                      int index = entry.key;
-                                      var selectedImage = entry.value;
-                                      String preSignedUrl = albumsWithPreSignedUrl[index].preSignedUrl;
-                                      File file = File(selectedImage.path);
-                                      String? mimeType = lookupMimeType(file.path);
-                                      return dio.put(
-                                        preSignedUrl,
-                                        data: file.openRead(),
-                                        options: Options(
-                                          headers: {
-                                            Headers.contentLengthHeader: file.lengthSync(),
-                                          },
-                                          contentType: mimeType,
-                                        ),
-                                      );
-                                    }).toList(),
-                                    eagerError: false);
-                              }
-                              var duration = Duration(milliseconds: 500 * selectedImages.length);
-                              await Future.delayed(duration);
+                                  await Future.wait(
+                                      selectedImages.asMap().entries.map((entry) async {
+                                        int index = entry.key;
+                                        var selectedImage = entry.value;
+                                        String preSignedUrl = albumsWithPreSignedUrl[index].preSignedUrl;
+                                        File file = File(selectedImage.path);
+                                        String? mimeType = lookupMimeType(file.path);
+                                        return dio.put(
+                                          preSignedUrl,
+                                          data: file.openRead(),
+                                          options: Options(
+                                            headers: {
+                                              Headers.contentLengthHeader: file.lengthSync(),
+                                            },
+                                            contentType: mimeType,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      eagerError: false);
+                                }
+                                var duration = Duration(milliseconds: 500 * selectedImages.length);
+                                await Future.delayed(duration);
 
-                              ref.read(albumPaginationProvider.notifier).addAlbumsToState();
+                                ref.read(albumPaginationProvider.notifier).addAlbumsToState();
 
-                              setState(() {
-                                isLoading = false;
-                              });
-                            })
-                  ],
-                )
-              ],
-            ),
-            isLoading
-                ? SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height - 200, // sliver app bar default height
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: PRIMARY_COLOR,
-                          strokeWidth: 8.0,
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              })
+                    ],
+                  )
+                ],
+              ),
+              isLoading
+                  ? SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height - 200, // sliver app bar default height
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: PRIMARY_COLOR,
+                            strokeWidth: 8.0,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                : SliverGrid(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      if (index + 1 > s3ImageUrls.length) {
-                        return null;
-                      }
-                      return Padding(
-                        padding: EdgeInsets.all(8 / gridCount),
-                        child: isSelectMode
-                            ? GestureDetector(
-                                onTap: () {
-                                  final selectedModel = (data[index] as AlbumResponseModel);
-                                  setState(() {
-                                    if (selectedIds.where((id) => id == data[index].id).isEmpty) {
-                                      selectedIds = [...selectedIds, selectedModel.id];
-                                    } else {
-                                      selectedIds.remove(data[index].id);
-                                    }
-                                  });
-                                },
-                                child: ImageContainer(
-                                  url: s3ImageUrls[index],
-                                  width: null,
-                                  height: null,
-                                  selected: selectedIds.where((id) => id == data[index].id).isNotEmpty,
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: () {
-                                  final selectedModel = (data[index] as AlbumResponseModel);
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PhotoRoute(
-                                        image: s3ImageUrls[index],
-                                        date:
-                                            DateConvertor.dateTimeToKoreanDateString(selectedModel.originalCreatedAt!),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(6.0),
+                    )
+                  : SliverGrid(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (index + 1 > s3ImageUrls.length) {
+                          return null;
+                        }
+                        return Padding(
+                          padding: EdgeInsets.all(8 / gridCount),
+                          child: isSelectMode
+                              ? GestureDetector(
+                                  onTap: () {
+                                    final selectedModel = (data[index] as AlbumResponseModel);
+                                    setState(() {
+                                      if (selectedIds.where((id) => id == data[index].id).isEmpty) {
+                                        selectedIds = [...selectedIds, selectedModel.id];
+                                      } else {
+                                        selectedIds.remove(data[index].id);
+                                      }
+                                    });
+                                  },
                                   child: ImageContainer(
                                     url: s3ImageUrls[index],
                                     width: null,
                                     height: null,
+                                    selected: selectedIds.where((id) => id == data[index].id).isNotEmpty,
+                                  ),
+                                )
+                              : GestureDetector(
+                                  onTap: () {
+                                    final selectedModel = (data[index] as AlbumResponseModel);
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PhotoRoute(
+                                          image: s3ImageUrls[index],
+                                          date: DateConvertor.dateTimeToKoreanDateString(
+                                              selectedModel.originalCreatedAt!),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                    child: ImageContainer(
+                                      url: s3ImageUrls[index],
+                                      width: null,
+                                      height: null,
+                                    ),
                                   ),
                                 ),
-                              ),
-                      );
-                    }),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: gridCount.toInt(),
-                    ),
-                  )
-          ],
+                        );
+                      }),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: gridCount.toInt(),
+                      ),
+                    )
+            ],
+          ),
         ),
       ),
     );
@@ -453,8 +461,13 @@ class PhotoRoute extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
         body: SizedBox(
-            height: MediaQuery.of(context).size.height - 200, // sliver app bar default height,
-            child: Center(child: CachedNetworkImage(imageUrl: image))),
+          height: MediaQuery.of(context).size.height - 200, // sliver app bar default height,
+          child: Center(
+            child: CachedNetworkImage(
+              imageUrl: image,
+            ),
+          ),
+        ),
       ),
     );
   }
