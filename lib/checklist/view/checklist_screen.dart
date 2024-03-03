@@ -54,13 +54,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         child: ListView.builder(
           itemBuilder: (context, index) {
             return ExpansionTile(
-              title: Text(
-                data[index].title,
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              title: _checklistTitle(data, index),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -84,6 +78,36 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           },
           itemCount: data.length,
         ));
+  }
+
+  Widget _checklistTitle(List<ChecklistModel> data, int index) {
+    bool detailAllChecked = data[index].checklistDetail.every((detail) => detail.isChecked == true);
+    return detailAllChecked
+        ? Row(
+            children: [
+              Text(
+                data[index].title,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(
+                width: 10.0,
+              ),
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+              )
+            ],
+          )
+        : Text(
+            data[index].title,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+            ),
+          );
   }
 
   IconButton _todoDeleteButton(int checklistId) {
