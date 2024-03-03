@@ -47,18 +47,16 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   @override
   Widget build(BuildContext context) {
     final albumList = ref.watch(albumPaginationProvider);
-    String orderBy = ref
-        .read(albumPaginationProvider.notifier)
-        .order;
+    String orderBy = ref.read(albumPaginationProvider.notifier).order;
 
     if (albumList is CursorPaginationLoading) {
       return Container(
         color: Colors.white,
         child: const Center(
             child: CircularProgressIndicator(
-              color: PRIMARY_COLOR,
-              strokeWidth: 8.0,
-            )),
+          color: PRIMARY_COLOR,
+          strokeWidth: 8.0,
+        )),
       );
     }
 
@@ -180,156 +178,149 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                       },
                       icon: isSelectMode
                           ? const Icon(
-                        Icons.check_circle,
-                        color: PRIMARY_COLOR,
-                      )
+                              Icons.check_circle,
+                              color: PRIMARY_COLOR,
+                            )
                           : const Icon(
-                        Icons.check_circle_outline_outlined,
-                        color: PRIMARY_COLOR,
-                      ),
+                              Icons.check_circle_outline_outlined,
+                              color: PRIMARY_COLOR,
+                            ),
                     ),
                     isSelectMode
                         ? IconButton(
-                      key: _menuButtonKey,
-                      icon: const Icon(
-                        Icons.more_horiz,
-                        color: PRIMARY_COLOR,
-                      ),
-                      onPressed: () async {
-                        debugPrint('Show Menu Button');
-                        RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
-                        Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
-                        _showAlbumPopupMenu(buttonOffset, context);
-                      },
-                    )
+                            key: _menuButtonKey,
+                            icon: const Icon(
+                              Icons.more_horiz,
+                              color: PRIMARY_COLOR,
+                            ),
+                            onPressed: () async {
+                              debugPrint('Show Menu Button');
+                              RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
+                              Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
+                              _showAlbumPopupMenu(buttonOffset, context);
+                            },
+                          )
                         : IconButton(
-                        icon: const Icon(
-                          Icons.add,
-                          color: PRIMARY_COLOR,
-                        ),
-                        onPressed: () async {
-                          List<XFile> selectedImages = await uploadImages();
+                            icon: const Icon(
+                              Icons.add,
+                              color: PRIMARY_COLOR,
+                            ),
+                            onPressed: () async {
+                              List<XFile> selectedImages = await uploadImages();
 
-                          setState(() {
-                            isLoading = true;
-                          });
+                              setState(() {
+                                isLoading = true;
+                              });
 
-                          if (selectedImages.isNotEmpty) {
-                            int babyId = ref
-                                .read(selectedBabyProvider.notifier)
-                                .state;
+                              if (selectedImages.isNotEmpty) {
+                                int babyId = ref.read(selectedBabyProvider.notifier).state;
 
-                            List<AlbumModel> albumsWithPreSignedUrl =
-                            await ref.read(albumPaginationProvider.notifier).addAlbums(babyId, selectedImages);
+                                List<AlbumModel> albumsWithPreSignedUrl =
+                                    await ref.read(albumPaginationProvider.notifier).addAlbums(babyId, selectedImages);
 
-                            final dio = ref.watch(dioProvider);
+                                final dio = ref.watch(dioProvider);
 
-                            // TODO 비동기로 처리해서 한 번에 요청
-                            for (int i = 0; i < selectedImages.length; i++) {
-                              String preSignedUrl = albumsWithPreSignedUrl[i].preSignedUrl;
-                              File file = File(selectedImages[i].path);
-                              String? mimeType = lookupMimeType(file.path);
-                              await dio.put(
-                                preSignedUrl,
-                                data: file.openRead(),
-                                options: Options(
-                                  headers: {
-                                    Headers.contentLengthHeader: file.lengthSync(),
-                                  },
-                                  contentType: mimeType,
-                                ),
-                              );
-                            }
-                          }
-                          var duration = Duration(seconds: 1 * selectedImages.length);
-                          await Future.delayed(duration);
+                                await Future.wait(
+                                    selectedImages.asMap().entries.map((entry) async {
+                                      int index = entry.key;
+                                      var selectedImage = entry.value;
+                                      String preSignedUrl = albumsWithPreSignedUrl[index].preSignedUrl;
+                                      File file = File(selectedImage.path);
+                                      String? mimeType = lookupMimeType(file.path);
+                                      return dio.put(
+                                        preSignedUrl,
+                                        data: file.openRead(),
+                                        options: Options(
+                                          headers: {
+                                            Headers.contentLengthHeader: file.lengthSync(),
+                                          },
+                                          contentType: mimeType,
+                                        ),
+                                      );
+                                    }).toList(),
+                                    eagerError: false);
+                              }
+                              var duration = Duration(milliseconds: 500 * selectedImages.length);
+                              await Future.delayed(duration);
 
-                          ref.read(albumPaginationProvider.notifier).addAlbumsToState();
+                              ref.read(albumPaginationProvider.notifier).addAlbumsToState();
 
-                          setState(() {
-                            isLoading = false;
-                          });
-                        })
+                              setState(() {
+                                isLoading = false;
+                              });
+                            })
                   ],
                 )
               ],
             ),
             isLoading
                 ? SliverToBoxAdapter(
-              child: SizedBox(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height - 200, // sliver app bar default height
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: PRIMARY_COLOR,
-                    strokeWidth: 8.0,
-                  ),
-                ),
-              ),
-            )
-                : SliverGrid(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (index + 1 > s3ImageUrls.length) {
-                  return null;
-                }
-                return Padding(
-                  padding: EdgeInsets.all(8 / gridCount),
-                  child: isSelectMode
-                      ? GestureDetector(
-                    onTap: () {
-                      final selectedModel = (data[index] as AlbumResponseModel);
-                      setState(() {
-                        if (selectedIds
-                            .where((id) => id == data[index].id)
-                            .isEmpty) {
-                          selectedIds = [...selectedIds, selectedModel.id];
-                        } else {
-                          selectedIds.remove(data[index].id);
-                        }
-                      });
-                    },
-                    child: ImageContainer(
-                      url: s3ImageUrls[index],
-                      width: null,
-                      height: null,
-                      selected: selectedIds
-                          .where((id) => id == data[index].id)
-                          .isNotEmpty,
-                    ),
-                  )
-                      : GestureDetector(
-                    onTap: () {
-                      final selectedModel = (data[index] as AlbumResponseModel);
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PhotoRoute(
-                                image: s3ImageUrls[index],
-                                date:
-                                DateConvertor.dateTimeToKoreanDateString(selectedModel.originalCreatedAt!),
-                              ),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200, // sliver app bar default height
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: PRIMARY_COLOR,
+                          strokeWidth: 8.0,
                         ),
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6.0),
-                      child: ImageContainer(
-                        url: s3ImageUrls[index],
-                        width: null,
-                        height: null,
                       ),
                     ),
-                  ),
-                );
-              }),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: gridCount.toInt(),
-              ),
-            )
+                  )
+                : SliverGrid(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      if (index + 1 > s3ImageUrls.length) {
+                        return null;
+                      }
+                      return Padding(
+                        padding: EdgeInsets.all(8 / gridCount),
+                        child: isSelectMode
+                            ? GestureDetector(
+                                onTap: () {
+                                  final selectedModel = (data[index] as AlbumResponseModel);
+                                  setState(() {
+                                    if (selectedIds.where((id) => id == data[index].id).isEmpty) {
+                                      selectedIds = [...selectedIds, selectedModel.id];
+                                    } else {
+                                      selectedIds.remove(data[index].id);
+                                    }
+                                  });
+                                },
+                                child: ImageContainer(
+                                  url: s3ImageUrls[index],
+                                  width: null,
+                                  height: null,
+                                  selected: selectedIds.where((id) => id == data[index].id).isNotEmpty,
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  final selectedModel = (data[index] as AlbumResponseModel);
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PhotoRoute(
+                                        image: s3ImageUrls[index],
+                                        date:
+                                            DateConvertor.dateTimeToKoreanDateString(selectedModel.originalCreatedAt!),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6.0),
+                                  child: ImageContainer(
+                                    url: s3ImageUrls[index],
+                                    width: null,
+                                    height: null,
+                                  ),
+                                ),
+                              ),
+                      );
+                    }),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: gridCount.toInt(),
+                    ),
+                  )
           ],
         ),
       ),
@@ -346,8 +337,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
       surfaceTintColor: Colors.white,
       items: AlbumPopUpMenu.values
           .map(
-            (value) =>
-            PopupMenuItem(
+            (value) => PopupMenuItem(
               value: value,
               textStyle: const TextStyle(
                 color: Colors.black,
@@ -372,7 +362,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 }
               },
             ),
-      )
+          )
           .toList(),
     );
   }
@@ -412,13 +402,11 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            int babyId = ref
-                .read(selectedBabyProvider.notifier)
-                .state;
+            int babyId = ref.read(selectedBabyProvider.notifier).state;
             ref.read(albumPaginationProvider.notifier).deleteAlbums(
-              babyId,
-              AlbumDeleteRequestModel(ids: selectedIds),
-            );
+                  babyId,
+                  AlbumDeleteRequestModel(ids: selectedIds),
+                );
 
             if (mounted) {
               context.goNamed(AlbumScreen.routeName);
@@ -465,10 +453,7 @@ class PhotoRoute extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
         body: SizedBox(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height - 200, // sliver app bar default height,
+            height: MediaQuery.of(context).size.height - 200, // sliver app bar default height,
             child: Center(child: CachedNetworkImage(imageUrl: image))),
       ),
     );
