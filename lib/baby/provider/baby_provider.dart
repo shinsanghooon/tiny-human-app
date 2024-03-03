@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
-import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../model/baby_model_with_presigned.dart';
 import '../repository/baby_repository.dart';
@@ -9,7 +8,6 @@ final selectedBabyProvider = StateProvider<int>((ref) => 0);
 
 final babyProvider = StateNotifierProvider<BabyNotifier, List<BabyModel>>((ref) {
   final repository = ref.watch(babyRepositoryProvider);
-  final user = ref.watch(userMeProvider);
   return BabyNotifier(repository: repository);
 });
 
@@ -23,7 +21,6 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
   }
 
   Future<List<BabyModel>> getMyBabies() async {
-    print('get My Baby');
     final response = await repository.getMyBabies();
     state = response;
     return response;

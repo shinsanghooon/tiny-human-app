@@ -23,14 +23,17 @@ class DiaryScreen extends ConsumerStatefulWidget {
 class _DiaryScreenState extends ConsumerState<DiaryScreen> {
   @override
   Widget build(BuildContext context) {
+    print('in diary screen');
     final diaryPagination = ref.watch(diaryPaginationProvider);
+    print(diaryPagination);
+    print(diaryPagination is CursorPaginationLoading);
 
     if (diaryPagination is CursorPaginationLoading) {
       return Container(
         color: Colors.white,
         child: const Center(
             child: CircularProgressIndicator(
-          color: PRIMARY_COLOR,
+          color: Colors.deepPurpleAccent,
         )),
       );
     }
@@ -46,7 +49,7 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
 
     return DefaultLayout(
       child: RefreshIndicator(
-        edgeOffset: 120.0, // TODO: AppBar 높이 알아내서 반영하기
+        edgeOffset: 120.0,
         color: PRIMARY_COLOR,
         onRefresh: () async {
           ref.read(diaryPaginationProvider.notifier).paginate(forceRefetch: true);
@@ -96,7 +99,7 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
-                return SizedBox(height: 12.0);
+                return const SizedBox(height: 12.0);
               },
             ),
           ],

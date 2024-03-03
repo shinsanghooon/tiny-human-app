@@ -285,6 +285,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             options: CarouselOptions(
                 height: size,
                 viewportFraction: 1.0,
+                enableInfiniteScroll: false,
                 onPageChanged: (index, _) {
                   setState(() {
                     photoCurrentIndex = index;
@@ -462,6 +463,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
         },
       ),
       backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.white,
       elevation: 0.0,
     );
   }

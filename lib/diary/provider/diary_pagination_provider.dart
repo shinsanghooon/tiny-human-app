@@ -46,8 +46,8 @@ class DiaryPaginationStateNotifier extends PaginationProvider<DiaryResponseModel
   }) {}
 
   /// 페이지 새로고침
-  void refreshPagination() {
-    paginate(forceRefetch: true);
+  void refreshPagination() async {
+    await paginate(forceRefetch: true);
   }
 
   /// 일기 등록

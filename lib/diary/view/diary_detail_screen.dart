@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -17,7 +16,6 @@ import 'package:tiny_human_app/diary/view/diary_update_screen.dart';
 
 import '../../common/constant/data.dart';
 import '../../common/enum/update_delete_menu.dart';
-import 'diary_screen.dart';
 
 class DiaryDetailScreen extends ConsumerStatefulWidget {
   final DiaryResponseModel model;
@@ -55,7 +53,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       return const DefaultLayout(
           child: Center(
               child: CircularProgressIndicator(
-        color: PRIMARY_COLOR,
+        color: Colors.green,
       )));
     }
 
@@ -75,107 +73,118 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       extendBodyBehindAppBar: true,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                state.pictures.length > 1
-                    ? CarouselSlider(
-                        items: state.pictures.map((image) {
-                          return _diaryImage(image, context);
-                        }).toList(),
-                        options: CarouselOptions(
-                            viewportFraction: 1.0,
-                            height: MediaQuery.of(context).size.height / 1.8,
-                            onPageChanged: (index, _) {
-                              setState(() {
-                                photoCurrentIndex = index;
-                              });
-                            }),
-                      )
-                    : _diaryImage(state.pictures.first, context),
-                if (state.pictures.length > 1)
-                  Positioned(
-                    bottom: 5.0,
-                    child: AnimatedSmoothIndicator(
-                      activeIndex: photoCurrentIndex,
-                      count: state.pictures.length,
-                      effect: JumpingDotEffect(
-                        verticalOffset: 10.0,
-                        jumpScale: 2.0,
-                        dotColor: Colors.white.withOpacity(0.3),
-                        activeDotColor: Colors.deepOrange.withOpacity(0.6),
-                        dotWidth: 14.0,
-                        dotHeight: 14.0,
-                        spacing: 8.0,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            // 최소 높이를 디바이스의 화면 높이로 설정합니다.
+            minHeight: MediaQuery.of(context).size.height,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  state.pictures.length > 1
+                      ? CarouselSlider(
+                          items: state.pictures.map((image) {
+                            return _diaryImage(image, context);
+                          }).toList(),
+                          options: CarouselOptions(
+                              viewportFraction: 1.0,
+                              height: MediaQuery.of(context).size.height / 1.8,
+                              onPageChanged: (index, _) {
+                                setState(() {
+                                  photoCurrentIndex = index;
+                                });
+                              }),
+                        )
+                      : _diaryImage(state.pictures.first, context),
+                  if (state.pictures.length > 1)
+                    Positioned(
+                      bottom: 5.0,
+                      child: AnimatedSmoothIndicator(
+                        activeIndex: photoCurrentIndex,
+                        count: state.pictures.length,
+                        effect: JumpingDotEffect(
+                          verticalOffset: 10.0,
+                          jumpScale: 2.0,
+                          dotColor: Colors.white.withOpacity(0.3),
+                          activeDotColor: Colors.deepOrange.withOpacity(0.6),
+                          dotWidth: 14.0,
+                          dotHeight: 14.0,
+                          spacing: 8.0,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Icon(
-                Icons.horizontal_rule_outlined,
-                color: PRIMARY_COLOR.withOpacity(0.7),
+                ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              child: _diaryDateTitle(state),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                state.sentences.first.sentence,
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  height: 1.8,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Icon(
+                      Icons.horizontal_rule_outlined,
+                      color: PRIMARY_COLOR.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                child: _diaryDateTitle(state),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  state.sentences.first.sentence,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    height: 1.8,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            state.letter != null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          'From. 티니 ☺️',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            height: 1.8,
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
+              const SizedBox(
+                height: 30.0,
+              ),
+              state.letter != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Text(
+                            'From. 티니 ☺️',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              height: 1.8,
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          state.letter!,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            height: 1.8,
-                            color: Colors.black87,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Text(
+                            state.letter!,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              height: 1.8,
+                              color: Colors.black87,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 50.0,
-                      )
-                    ],
-                  )
-                : const SizedBox(
-                    height: 10.0,
-                  )
-          ],
+                        const SizedBox(
+                          height: 50.0,
+                        )
+                      ],
+                    )
+                  : const SizedBox(
+                      height: 10.0,
+                    )
+            ],
+          ),
         ),
       ),
     );
@@ -205,7 +214,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     );
   }
 
-  Future<void> _checkDeleteMenuDialog(DiaryResponseModel state) async {
+  Future<void> _checkDeleteMenuDialog(DiaryResponseModel state, BuildContext buildContext) async {
     const msgTextStyle = TextStyle(
       color: Colors.black,
       fontSize: 20.0,
@@ -240,9 +249,10 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            ref.read(diaryPaginationProvider.notifier).deleteDiary(diaryId: state.id);
+            await ref.read(diaryPaginationProvider.notifier).deleteDiary(diaryId: state.id);
             if (mounted) {
-              context.goNamed(DiaryScreen.routeName);
+              Navigator.of(context).pop();
+              Navigator.of(buildContext).pop();
             }
           },
           text: '삭제하기',
@@ -321,7 +331,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                     );
                   }
                 } else if (DiaryUpdateDeleteMenu.DELETE == value) {
-                  await _checkDeleteMenuDialog(state);
+                  await _checkDeleteMenuDialog(state, context);
                 }
               },
             ),

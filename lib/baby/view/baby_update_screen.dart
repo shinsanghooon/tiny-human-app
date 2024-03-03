@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
+import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -77,7 +78,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
     timeOfBirth = widget.model.timeOfBirth;
     dayOfBirth = DateConvertor.stringToDateTime(widget.model.dayOfBirth);
     description = widget.model.description;
-    baseImageUrl = '${S3_BASE_URL}${widget.model.profileImgKeyName}';
+    baseImageUrl = S3UrlGenerator.getThumbnailUrlWith1000wh(widget.model.profileImgKeyName);
   }
 
   void checkToken() async {

@@ -53,6 +53,8 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
       }
 
       final isLoading = state is CursorPaginationLoading;
+      print('isLoading?');
+      print(isLoading);
       final isRefetching = state is CursorPaginationRefetching;
       final isFetchingMore = state is CursorPaginationFetchingMore;
 
@@ -93,7 +95,7 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
         order: this.order, // fixed values until update something
         cursorPaginationParams: cursorPaginationParams,
       );
-      
+
       if (state is CursorPaginationFetchingMore<T>) {
         final pState = state as CursorPaginationFetchingMore<T>;
 

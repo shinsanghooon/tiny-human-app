@@ -47,6 +47,8 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   String? sentence;
   String? accessToken;
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +70,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
     final babyId = ref.watch(selectedBabyProvider);
     final babies = ref.watch(babyProvider);
     final selectedBaby = babies.where((baby) => baby.id == babyId).first;
-
     calculateDaysAfterBirth(selectedBaby, diaryDate!);
 
     return DefaultLayout(
@@ -302,11 +303,12 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
+          await Future.delayed(const Duration(seconds: 2));
+          ref.read(diaryPaginationProvider.notifier).refreshPagination();
+
           if (mounted) {
             Navigator.of(context).pop();
           }
-
-          ref.read(diaryPaginationProvider.notifier).refreshPagination();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
@@ -337,6 +339,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
         onPressed: () => Navigator.of(context).pop(),
       ),
       backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.white,
       elevation: 0.0,
     );
   }

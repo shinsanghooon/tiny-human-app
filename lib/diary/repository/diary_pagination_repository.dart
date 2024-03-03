@@ -67,7 +67,7 @@ abstract class DiaryPaginationRepository implements IBasePaginationRepository<Di
   /// 사진을 삭제합니다.
   @DELETE('/{diaryId}/pictures/{deletedImageId}')
   @Headers({'accessToken': 'true'})
-  Future<DiaryResponseModel> deleteImages({
+  Future<void> deleteImages({
     @Path('diaryId') required int diaryId,
     @Path('deletedImageId') required int imageId,
   });
