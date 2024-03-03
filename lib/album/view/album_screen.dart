@@ -15,8 +15,8 @@ import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
-import 'package:tiny_human_app/common/constant/data.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
+import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/dio/dio.dart';
@@ -67,7 +67,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
     final cp = albumList as CursorPagination;
     final data = cp.body;
-    final s3ImageUrls = data.map((e) => '${S3_BASE_URL}${e.keyName}').toList();
+    final s3ImageUrls = data.map((e) => S3UrlGenerator.getThumbnailUrlWith1000wh(e.keyName)).toList();
 
     void onScaleUpdate(ScaleUpdateDetails details) {
       // 제스처에 따라 그리드 수를 동적으로 조절

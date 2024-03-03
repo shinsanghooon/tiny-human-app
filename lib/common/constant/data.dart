@@ -14,7 +14,7 @@ final ip = Platform.isIOS == true ? simulatorIp : emulatorIp;
 
 const APP_TITLE = "TINY HUMAN";
 
-const S3_BASE_URL = "https://tiny-human-dev.s3.ap-northeast-2.amazonaws.com/";
+const S3_BASE_URL = "https://tiny-human-thumbnail-dev.s3.ap-northeast-2.amazonaws.com/";
 
 const SAMPLE_BABY_IMAGE_URL =
     "https://tiny-human-dev.s3.ap-northeast-2.amazonaws.com/baby/1/album/c9f17d33-39c7-42ba-90d6-0315aa4ee3c5_image_picker_8BDAAE8F-9811-438F-9601-2E3E2DFCE08A-12553-000078B129855C8D.jpg";

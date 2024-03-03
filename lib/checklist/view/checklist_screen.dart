@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 import 'package:tiny_human_app/checklist/view/checklist_update_screen.dart';
 
+import '../../baby/view/baby_screen.dart';
 import '../../common/component/checkbox.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
@@ -34,6 +36,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           ),
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
+          leading: IconButton(
+              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+              onPressed: () => context.goNamed(BabyScreen.routeName)),
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -52,11 +57,12 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               title: Text(
                 data[index].title,
                 style: const TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               children: [
                 ...checklistWidget(data[index], context),
@@ -175,9 +181,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           surfaceTintColor: Colors.white,
         ),
         onPressed: () {
-          ref
-              .read(checklistProvider.notifier)
-              .toggleAllChecklistDetail(checklist.id);
+          ref.read(checklistProvider.notifier).toggleAllChecklistDetail(checklist.id);
         },
         icon: const Icon(
           Icons.checklist,
@@ -185,8 +189,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         ));
   }
 
-  List<Padding> checklistWidget(
-      ChecklistModel checklistModel, BuildContext context) {
+  List<Padding> checklistWidget(ChecklistModel checklistModel, BuildContext context) {
     return checklistModel.checklistDetail.map((checkDetail) {
       return Padding(
         padding: const EdgeInsets.symmetric(
@@ -199,9 +202,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
             CustomCheckBox(
               isChecked: checkDetail.isChecked,
               onCheckChanged: (bool? newValue) {
-                ref
-                    .read(checklistProvider.notifier)
-                    .toggleChecklistDetail(checklistModel.id, checkDetail.id);
+                ref.read(checklistProvider.notifier).toggleChecklistDetail(checklistModel.id, checkDetail.id);
               },
             ),
             SizedBox(
@@ -210,12 +211,20 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    checkDetail.contents,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                    ),
-                  ),
+                  checkDetail.isChecked
+                      ? Text(
+                          checkDetail.contents,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        )
+                      : Text(
+                          checkDetail.contents,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                          ),
+                        ),
                 ],
               ),
             ),

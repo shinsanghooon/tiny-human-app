@@ -9,6 +9,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
+import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
@@ -146,10 +147,12 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.0),
                         child: Text(
-                          'From. 티니',
+                          'From. 티니 ☺️',
                           style: TextStyle(
                             fontSize: 20.0,
                             height: 1.8,
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -331,7 +334,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
     return Stack(
       children: [
         Image.network(
-          '$S3_BASE_URL${image.keyName}',
+          S3UrlGenerator.getThumbnailUrlWith1000wh(image.keyName),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height / 1.8,
           fit: BoxFit.cover,

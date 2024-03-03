@@ -10,6 +10,7 @@ import 'package:tiny_human_app/common/view/root_screen.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/enum/update_delete_menu.dart';
+import '../../common/utils/s3_url_generator.dart';
 import '../model/baby_model.dart';
 import '../provider/baby_provider.dart';
 import '../view/baby_update_screen.dart';
@@ -51,7 +52,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                           child: ImageContainer(
                             url: widget.model.profileImgKeyName == ""
                                 ? SAMPLE_BABY_IMAGE_URL
-                                : '$S3_BASE_URL${widget.model.profileImgKeyName}',
+                                : S3UrlGenerator.getThumbnailUrlWith1000wh(widget.model.profileImgKeyName),
                             width: 350,
                             height: 350,
                           ),
