@@ -63,7 +63,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      appBar: BabyAppBar(context),
+      appBar: _babyAppBar(context),
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
@@ -73,7 +73,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ProfileAvatar(),
+                  _babyRegisterImage(),
                   const SizedBox(height: 20.0),
                   Form(
                     key: formKey,
@@ -104,9 +104,9 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              datePickerButton(context),
+                              _datePickerButton(context),
                               const SizedBox(width: 12.0),
-                              timePickerButton(context),
+                              _timePickerButton(context),
                             ],
                           ),
                         ),
@@ -136,11 +136,10 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  GestureDetector ProfileAvatar() {
+  GestureDetector _babyRegisterImage() {
     return GestureDetector(
       onTap: () async {
-        final XFile? pickedFile =
-            await picker.pickImage(source: ImageSource.gallery);
+        final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
         if (pickedFile != null) {
           setState(() {
             pickedFilePath = pickedFile!.path;
@@ -149,7 +148,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           });
         }
       },
-      child: GradientBorderCircleAvatar(selectedProfileImage: profileImage),
+      child: BabyRegisterImage(selectedProfileImage: profileImage),
     );
   }
 
@@ -180,8 +179,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
             data: {
               "name": name,
               "gender": gender == '남자 아기' ? 'MALE' : 'FEMALE',
-              "dayOfBirth":
-                  DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
+              "dayOfBirth": DateFormat('yyyy-MM-dd').format(dayOfBirth!).toString(),
               "timeOfBirth": timeOfBirth,
               "nickName": nickname,
               "fileName": fileName,
@@ -219,9 +217,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
 
           print('baby');
           print(response);
-          ref
-              .read(babyProvider.notifier)
-              .addBaby(BabyModel.fromJson(response.data));
+          ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
 
           Navigator.of(context).pop();
         },
@@ -240,7 +236,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  AppBar BabyAppBar(BuildContext context) {
+  AppBar _babyAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
         "아기를 등록해주세요",
@@ -253,7 +249,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      backgroundColor: Colors.transparent,
       elevation: 0.0,
     );
   }
@@ -287,7 +282,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  Expanded datePickerButton(BuildContext context) {
+  Expanded _datePickerButton(BuildContext context) {
     return Expanded(
       child: SizedBox(
         height: 50.0,
@@ -318,18 +313,16 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  Expanded timePickerButton(BuildContext context) {
+  Expanded _timePickerButton(BuildContext context) {
     return Expanded(
-      child: Container(
+      child: SizedBox(
         height: 50.0,
         child: OutlinedButton(
           onPressed: () {
             _showTimeDialog(context);
           },
           child: Text(
-            timeOfBirth != null
-                ? '${timeOfBirth.toString().split(" ")[0]}시'
-                : "태어난 시간",
+            timeOfBirth != null ? '${timeOfBirth.toString().split(" ")[0]}시' : "태어난 시간",
             style: const TextStyle(
               fontSize: 14.0,
               color: Colors.black,
@@ -340,7 +333,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  void _showTimeDialog(BuildContext context) {
+  void _showTimeDialog(BuildContext buildContext) {
     List<int> times = List.generate(24, (index) => index);
     timeOfBirth = 0;
 
@@ -351,20 +344,29 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           title: const Text(
             '태어난 시간을 선택해주세요.',
             textAlign: TextAlign.center,
-          ),
-          content: DropdownMenu<int>(
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 6.0),
+            style: TextStyle(
+              fontSize: 18.0,
             ),
-            initialSelection: timeOfBirth ?? times.first,
-            onSelected: (int? value) {
-              timeOfBirth = value!;
-            },
-            dropdownMenuEntries: times.map(
-              (t) {
-                return DropdownMenuEntry(value: t, label: '${t}시');
-              },
-            ).toList(),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownMenu<int>(
+                menuHeight: 300,
+                inputDecorationTheme: const InputDecorationTheme(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 6.0),
+                ),
+                initialSelection: timeOfBirth ?? times.first,
+                onSelected: (int? value) {
+                  timeOfBirth = value!;
+                },
+                dropdownMenuEntries: times.map(
+                  (t) {
+                    return DropdownMenuEntry(value: t, label: '${t}시');
+                  },
+                ).toList(),
+              ),
+            ],
           ),
           actions: [
             registerActionButton(

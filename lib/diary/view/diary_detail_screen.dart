@@ -159,7 +159,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                             style: TextStyle(
                               fontSize: 20.0,
                               height: 1.8,
-                              color: Colors.greenAccent,
+                              color: MAIN_GREEN_COLOR,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

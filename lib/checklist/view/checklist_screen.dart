@@ -95,7 +95,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               const SizedBox(
                 width: 10.0,
               ),
-              const Icon(Icons.check_circle, color: const Color(0xff46d253))
+              const Icon(Icons.check_circle, color: MAIN_GREEN_COLOR)
             ],
           )
         : Text(

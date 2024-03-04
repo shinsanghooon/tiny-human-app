@@ -115,7 +115,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
       appBar: _diaryAppBar(context),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -462,8 +462,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           Navigator.of(context).pop();
         },
       ),
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.white,
       elevation: 0.0,
     );
   }

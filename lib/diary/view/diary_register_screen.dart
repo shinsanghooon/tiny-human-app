@@ -76,7 +76,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
       appBar: diaryAppBar(context),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -303,7 +303,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
-          await Future.delayed(const Duration(seconds: 2));
           ref.read(diaryPaginationProvider.notifier).refreshPagination();
 
           if (mounted) {

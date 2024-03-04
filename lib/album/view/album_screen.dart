@@ -335,7 +335,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     );
   }
 
-  void _showAlbumPopupMenu(Offset buttonOffset, BuildContext context) {
+  void _showAlbumPopupMenu(Offset buttonOffset, BuildContext buildContext) {
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 20, 20, 0),
@@ -366,7 +366,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 https: //stackoverflow.com/questions/67713122/navigator-inside-popupmenuitem-does-not-work
                 await Future.delayed(Duration.zero);
                 if (AlbumPopUpMenu.DELETE == value) {
-                  await _checkDeleteMenuDialog();
+                  await _checkDeleteMenuDialog(buildContext);
                 }
               },
             ),
@@ -375,7 +375,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     );
   }
 
-  Future<void> _checkDeleteMenuDialog() async {
+  Future<void> _checkDeleteMenuDialog(BuildContext buildContext) async {
     const msgTextStyle = TextStyle(
       color: Colors.black,
       fontSize: 20.0,
@@ -417,7 +417,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 );
 
             if (mounted) {
-              context.goNamed(AlbumScreen.routeName);
+              Navigator.of(context).pop();
             }
           },
           text: '삭제하기',

@@ -126,7 +126,16 @@ class _App extends ConsumerWidget {
         useMaterial3: true,
         dialogBackgroundColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+        ),
         dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
+        dropdownMenuTheme: const DropdownMenuThemeData(
+            menuStyle: MenuStyle(
+          backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+          surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
+        )),
         fontFamily: 'Pretendard',
       ),
       debugShowCheckedModeBanner: false,
