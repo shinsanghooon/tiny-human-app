@@ -4,7 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/firebase/firebase_options.dart';
 
 import 'common/provider/route_provider.dart';
@@ -124,6 +126,10 @@ class _App extends ConsumerWidget {
     return MaterialApp.router(
       theme: ThemeData(
         useMaterial3: true,
+        colorScheme: const ColorScheme.light(
+          primary: PRIMARY_COLOR,
+          onBackground: Colors.white,
+        ),
         dialogBackgroundColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
@@ -136,8 +142,26 @@ class _App extends ConsumerWidget {
           backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
           surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
         )),
+        datePickerTheme: const DatePickerThemeData(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+        ),
+        textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+          foregroundColor: PRIMARY_COLOR,
+        )),
         fontFamily: 'Pretendard',
       ),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        // 앱에서 지원하는 언어 목록을 설정합니다.
+        Locale('ko', 'KR'), // 한국어
+        Locale('en', 'US'), // 영어
+      ],
       debugShowCheckedModeBanner: false,
       routerConfig: router,
     );
