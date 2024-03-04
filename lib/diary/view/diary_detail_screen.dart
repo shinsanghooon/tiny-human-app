@@ -53,7 +53,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       return const DefaultLayout(
           child: Center(
               child: CircularProgressIndicator(
-        color: Colors.green,
+        color: PRIMARY_COLOR,
       )));
     }
 
@@ -159,7 +159,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                             style: TextStyle(
                               fontSize: 20.0,
                               height: 1.8,
-                              color: Colors.green,
+                              color: Colors.greenAccent,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
