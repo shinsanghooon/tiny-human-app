@@ -22,6 +22,7 @@ import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 import '../../common/constant/colors.dart';
 import '../../common/dio/dio.dart';
 import '../../common/enum/update_delete_menu.dart';
+import '../../common/utils/pagination_utils.dart';
 import '../model/album_model.dart';
 
 class AlbumScreen extends ConsumerStatefulWidget {
@@ -44,6 +45,28 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   final ImagePicker imagePicker = ImagePicker();
 
+  final ScrollController controller = ScrollController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.addListener(listener);
+  }
+
+  void listener() {
+    PaginationUtils.paginate(
+      controller: controller,
+      provider: ref.read(albumPaginationProvider.notifier),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(listener);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final albumList = ref.watch(albumPaginationProvider);
@@ -62,7 +85,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
     if (albumList is CursorPaginationError) {
       return Center(
-        child: Text("에러가 있습니다. ${albumList.message}"),
+        child: Text("에러가 발생했습니다. ${albumList.message}"),
       );
     }
 
@@ -104,6 +127,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
           onScaleUpdate: onScaleUpdate,
           onScaleEnd: onScaleEnd,
           child: CustomScrollView(
+            controller: controller,
             slivers: [
               SliverAppBar(
                 backgroundColor: Colors.transparent,
@@ -200,7 +224,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                                 color: PRIMARY_COLOR,
                               ),
                               onPressed: () async {
-                                debugPrint('Show Menu Button');
                                 RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
                                 Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
                                 _showAlbumPopupMenu(buttonOffset, context);
@@ -247,7 +270,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                                       }).toList(),
                                       eagerError: false);
                                 }
-                                var duration = Duration(milliseconds: 500 * selectedImages.length);
+                                var duration = Duration(milliseconds: 200 * selectedImages.length);
                                 await Future.delayed(duration);
 
                                 ref.read(albumPaginationProvider.notifier).addAlbumsToState();

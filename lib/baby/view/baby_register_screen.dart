@@ -68,7 +68,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

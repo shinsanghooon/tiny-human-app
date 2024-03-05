@@ -47,14 +47,12 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
       if (state is CursorPagination && !forceRefetch) {
         final pState = state as CursorPagination;
         if (pState.nextCursorRequest.key == -1) {
-          print('데이터가 없습니다.');
+          // 데이터가 없는 상황
           return;
         }
       }
 
       final isLoading = state is CursorPaginationLoading;
-      print('isLoading?');
-      print(isLoading);
       final isRefetching = state is CursorPaginationRefetching;
       final isFetchingMore = state is CursorPaginationFetchingMore;
 
@@ -63,7 +61,7 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
         return;
       }
 
-      CursorPaginationParams cursorPaginationParams = CursorPaginationParams(key: null, size: fetchCount);
+      CursorPaginationParams cursorPaginationParams = CursorPaginationParams(size: fetchCount);
 
       if (fetchMore) {
         // 데이터를 추가로 가져오는 상황
@@ -75,8 +73,8 @@ class PaginationProvider<T extends IModelWithId, U extends IBasePaginationReposi
           body: pState.body,
         );
 
-        cursorPaginationParams.copyWith(
-          key: pState.body.last.id,
+        cursorPaginationParams = cursorPaginationParams.copyWith(
+          key: pState.nextCursorRequest.key,
         );
       } else {
         // 데이터를 처음부터 가져오는 상황

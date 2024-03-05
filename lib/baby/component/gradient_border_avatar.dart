@@ -16,7 +16,7 @@ class _BabyRegisterImageState extends State<BabyRegisterImage> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
+      borderRadius: BorderRadius.circular(24.0),
       child: Container(
         height: MediaQuery.of(context).size.width / 1.3,
         width: MediaQuery.of(context).size.width / 1.3,

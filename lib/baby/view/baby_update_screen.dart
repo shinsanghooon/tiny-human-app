@@ -194,7 +194,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
             },
             child: pickedFilePath == null
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(24.0),
                     child: Image.network(
                       baseImageUrl!,
                       width: MediaQuery.of(context).size.width / 1.3,
@@ -203,7 +203,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
                     ),
                   )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(24.0),
                     child: Image.asset(
                       pickedFilePath!,
                       width: MediaQuery.of(context).size.width / 1.3,
