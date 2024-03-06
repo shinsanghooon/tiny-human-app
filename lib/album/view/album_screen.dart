@@ -21,6 +21,7 @@ import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/dio/dio.dart';
+import '../../common/enum/album_sort.dart';
 import '../../common/enum/update_delete_menu.dart';
 import '../../common/utils/pagination_utils.dart';
 import '../model/album_model.dart';
@@ -36,6 +37,7 @@ class AlbumScreen extends ConsumerStatefulWidget {
 
 class _AlbumScreenState extends ConsumerState<AlbumScreen> {
   final GlobalKey _menuButtonKey = GlobalKey();
+  final GlobalKey _sortButtonKey = GlobalKey();
   double gridCount = 4;
   double endScale = 1.0;
   bool isLoading = false;
@@ -67,6 +69,29 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     super.dispose();
   }
 
+  void onScaleUpdate(ScaleUpdateDetails details) {
+    // 제스처에 따라 그리드 수를 동적으로 조절
+    endScale = details.scale;
+  }
+
+  void onScaleEnd(ScaleEndDetails details) {
+    setState(() {
+      if (endScale < 1) {
+        gridCount += 1;
+      } else {
+        gridCount -= 1;
+      }
+
+      if (gridCount == 0) {
+        gridCount = 1;
+      }
+
+      if (gridCount == 11) {
+        gridCount = 10;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final albumList = ref.watch(albumPaginationProvider);
@@ -92,29 +117,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     final cp = albumList as CursorPagination;
     final data = cp.body;
     final s3ImageUrls = data.map((e) => S3UrlGenerator.getThumbnailUrlWith1000wh(e.keyName)).toList();
-
-    void onScaleUpdate(ScaleUpdateDetails details) {
-      // 제스처에 따라 그리드 수를 동적으로 조절
-      endScale = details.scale;
-    }
-
-    void onScaleEnd(ScaleEndDetails details) {
-      setState(() {
-        if (endScale < 1) {
-          gridCount += 1;
-        } else {
-          gridCount -= 1;
-        }
-
-        if (gridCount == 0) {
-          gridCount = 1;
-        }
-
-        if (gridCount == 11) {
-          gridCount = 10;
-        }
-      });
-    }
 
     return Scaffold(
       body: RefreshIndicator(
@@ -148,50 +150,9 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                   Row(
                     children: [
                       IconButton(
+                          key: _sortButtonKey,
                           onPressed: () {
-                            showModalBottomSheet<void>(
-                              backgroundColor: Colors.white,
-                              context: context,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              builder: (BuildContext context) {
-                                return SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: ListTile(
-                                          onTap: () {
-                                            if (orderBy != 'uploadedAt') {
-                                              ref.read(albumOrderByProvider.notifier).update((state) => 'uploadedAt');
-                                            }
-
-                                            Navigator.of(context).pop();
-                                          },
-                                          title: orderBy == 'uploadedAt'
-                                              ? const Text('업로드 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
-                                              : const Text('업로드 날짜 순'),
-                                        ),
-                                      ),
-                                      ListTile(
-                                          onTap: () {
-                                            if (orderBy != 'createdAt') {
-                                              ref.read(albumOrderByProvider.notifier).update((state) => 'createdAt');
-                                            }
-                                            Navigator.of(context).pop();
-                                          },
-                                          title: orderBy == 'createdAt'
-                                              ? const Text('사진 찍은 날짜 순', style: TextStyle(fontWeight: FontWeight.w600))
-                                              : const Text('사진 찍은 날짜 순')),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ).then((value) {
-                              setState(() {});
-                            });
+                            _showAlbumSortPopupMenu(context, orderBy);
                           },
                           icon: const Icon(
                             Icons.sort_outlined,
@@ -224,9 +185,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                                 color: PRIMARY_COLOR,
                               ),
                               onPressed: () async {
-                                RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
-                                Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
-                                _showAlbumPopupMenu(buttonOffset, context);
+                                _showAlbumModifyPopupMenu(context);
                               },
                             )
                           : IconButton(
@@ -358,10 +317,59 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     );
   }
 
-  void _showAlbumPopupMenu(Offset buttonOffset, BuildContext buildContext) {
+  void _showAlbumSortPopupMenu(BuildContext context, String orderBy) {
+    RenderBox renderBox = _sortButtonKey.currentContext!.findRenderObject() as RenderBox;
+    Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
     showMenu(
       context: context,
-      position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 20, 20, 0),
+      position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 30, 20, 0),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(18.0)),
+      ),
+      surfaceTintColor: Colors.white,
+      items: AlbumSorting.values
+          .map(
+            (value) => PopupMenuItem(
+              value: value,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(value.disPlayIcon),
+                  ),
+                  orderBy == value.name
+                      ? Text(
+                          value.displayName,
+                          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
+                        )
+                      : Text(
+                          value.displayName,
+                          style: const TextStyle(fontSize: 18.0),
+                        )
+                ],
+              ),
+              onTap: () {
+                if (orderBy != value.name) {
+                  if (AlbumSorting.UPLOAD == value) {
+                    ref.read(albumOrderByProvider.notifier).update((state) => AlbumSorting.UPLOAD.name);
+                  } else {
+                    // createdAt
+                    ref.read(albumOrderByProvider.notifier).update((state) => AlbumSorting.CREATE.name);
+                  }
+                }
+              },
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  void _showAlbumModifyPopupMenu(BuildContext buildContext) {
+    RenderBox renderBox = _menuButtonKey.currentContext!.findRenderObject() as RenderBox;
+    Offset buttonOffset = renderBox.localToGlobal(Offset.zero);
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(buttonOffset.dx, buttonOffset.dy + 30, 20, 0),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(18.0)),
       ),
