@@ -44,4 +44,9 @@ class DateConvertor {
       return '방금 전';
     }
   }
+
+  static int calculateDaysAfterBaseDate(String baseDate, DateTime selectedDate) {
+    final birthday = DateConvertor.stringToDateTime(baseDate);
+    return selectedDate.difference(birthday!).inDays + 1;
+  }
 }

@@ -97,6 +97,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
     final albumList = ref.watch(albumPaginationProvider);
     String orderBy = ref.read(albumPaginationProvider.notifier).order;
 
+    final babyId = ref.watch(selectedBabyProvider);
+    final babies = ref.watch(babyProvider);
+    final selectedBaby = babies.where((baby) => baby.id == babyId).first;
+
     if (albumList is CursorPaginationLoading) {
       return Container(
         color: Colors.white,
@@ -284,14 +288,17 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                                   onTap: () {
                                     final selectedModel = (data[index] as AlbumResponseModel);
 
+                                    selectedBaby.dayOfBirth;
+
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => PhotoRoute(
-                                          image: s3ImageUrls[index],
-                                          date: DateConvertor.dateTimeToKoreanDateString(
-                                              selectedModel.originalCreatedAt!),
-                                        ),
+                                            image: s3ImageUrls[index],
+                                            date: DateConvertor.dateTimeToKoreanDateString(
+                                                selectedModel.originalCreatedAt!),
+                                            daysAfterBirth: DateConvertor.calculateDaysAfterBaseDate(
+                                                selectedBaby.dayOfBirth, selectedModel.originalCreatedAt!)),
                                       ),
                                     );
                                   },
@@ -471,10 +478,12 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 class PhotoRoute extends StatelessWidget {
   final String image;
   final String date;
+  final int daysAfterBirth;
 
   const PhotoRoute({
     required this.image,
     required this.date,
+    required this.daysAfterBirth,
     super.key,
   });
 
@@ -483,11 +492,26 @@ class PhotoRoute extends StatelessWidget {
     return InteractiveViewer(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            date,
-            style: const TextStyle(
-              fontSize: 18.0,
-            ),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                date,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+              const SizedBox(
+                height: 4.0,
+              ),
+              Text(
+                '+$daysAfterBirth일',
+                style: const TextStyle(
+                  fontSize: 14.0,
+                  color: PRIMARY_COLOR,
+                ),
+              )
+            ],
           ),
           backgroundColor: Colors.white,
         ),
