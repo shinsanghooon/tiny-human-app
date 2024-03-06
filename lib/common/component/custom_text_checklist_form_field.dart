@@ -24,12 +24,10 @@ class CustomTextChecklistFormField extends StatefulWidget {
   });
 
   @override
-  State<CustomTextChecklistFormField> createState() =>
-      _CustomTextChecklistFormFieldState();
+  State<CustomTextChecklistFormField> createState() => _CustomTextChecklistFormFieldState();
 }
 
-class _CustomTextChecklistFormFieldState
-    extends State<CustomTextChecklistFormField> {
+class _CustomTextChecklistFormFieldState extends State<CustomTextChecklistFormField> {
   @override
   Widget build(BuildContext context) {
     const baseBorder = OutlineInputBorder(
@@ -42,6 +40,7 @@ class _CustomTextChecklistFormFieldState
       cursorColor: PRIMARY_COLOR,
       obscureText: widget.obscureText,
       autofocus: widget.autofocus,
+      maxLines: null,
       onChanged: widget.onChanged,
       onSaved: widget.onSaved,
       initialValue: widget.initialValue,
@@ -52,27 +51,25 @@ class _CustomTextChecklistFormFieldState
         return null;
       },
       style: const TextStyle(
-        fontSize: 20.0,
+        fontSize: 18.0,
       ),
       decoration: InputDecoration(
         icon: const Icon(
           Icons.keyboard_arrow_right,
           color: PRIMARY_COLOR,
-          size: 20.0,
+          size: 18.0,
         ),
         hintText: widget.hintText,
         errorText: widget.errorText,
         hintStyle: const TextStyle(
           color: BODY_TEXT_COLOR,
-          fontSize: 20.0,
+          fontSize: 18.0,
         ),
         fillColor: INPUT_BG_COLOR,
         filled: true,
         border: baseBorder,
         enabledBorder: baseBorder,
-        focusedBorder: baseBorder.copyWith(
-            borderSide:
-                baseBorder.borderSide.copyWith(color: Colors.transparent)),
+        focusedBorder: baseBorder.copyWith(borderSide: baseBorder.borderSide.copyWith(color: Colors.transparent)),
       ),
     );
   }
