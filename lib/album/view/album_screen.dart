@@ -287,9 +287,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               : GestureDetector(
                                   onTap: () {
                                     final selectedModel = (data[index] as AlbumResponseModel);
-
-                                    selectedBaby.dayOfBirth;
-
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

@@ -7,7 +7,6 @@ class PaginationUtils {
     required PaginationProvider provider,
   }) {
     if (controller.offset > controller.position.maxScrollExtent - 300) {
-      print('fetch more!');
       provider.paginate(fetchMore: true);
     }
   }
