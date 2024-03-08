@@ -10,6 +10,7 @@ class CustomLongTextFormField extends StatelessWidget {
   final String? hintText;
   final String? errorText;
   final String initialValue;
+  final int? maxLength;
   final TextEditingController? textEditingController;
 
   const CustomLongTextFormField({
@@ -20,6 +21,7 @@ class CustomLongTextFormField extends StatelessWidget {
     this.hintText,
     this.errorText,
     required this.initialValue,
+    this.maxLength,
     this.textEditingController,
     super.key,
   });
@@ -35,7 +37,7 @@ class CustomLongTextFormField extends StatelessWidget {
     return TextFormField(
       controller: textEditingController,
       textAlignVertical: TextAlignVertical.top,
-      maxLength: 300,
+      maxLength: maxLength ?? 300,
       maxLines: null,
       expands: true,
       cursorColor: PRIMARY_COLOR,

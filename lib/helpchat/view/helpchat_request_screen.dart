@@ -1,13 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
+import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
 
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
+import '../../user/model/user_model.dart';
+import '../../user/provider/user_me_provider.dart';
+import '../provider/help_request_provider.dart';
 
 class HelpChatRequestScreen extends ConsumerStatefulWidget {
   const HelpChatRequestScreen({super.key});
@@ -22,7 +25,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
   String? accessToken;
   String? requestContents;
 
-  ChatRequestType chatRequestType = ChatRequestType.random;
+  ChatRequestType chatRequestType = ChatRequestType.KEYWORD;
 
   @override
   void initState() {
@@ -40,7 +43,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
       appBar: _helpChatAppBar(context),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.only(top: 12.0, left: 24.0, right: 24.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +57,8 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
                             fontSize: 20.0,
                             fontWeight: FontWeight.w500,
                           )),
-                      _buildRadioListTile(ChatRequestType.random),
-                      _buildRadioListTile(ChatRequestType.locationBased),
+                      _buildRadioListTile(ChatRequestType.KEYWORD),
+                      _buildRadioListTile(ChatRequestType.LOCATION),
                     ],
                   ),
                 ),
@@ -118,12 +121,13 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
   // 입력 폼 위젯 생성
   Widget _chatDescriptionTextForm(int id, diaryLength) {
     return SizedBox(
-      height: 250,
+      height: 350,
       child: CustomLongTextFormField(
         keyName: 'chat_description_$id',
         onSaved: (String? value) {
           requestContents = value;
         },
+        maxLength: 500,
         hintText: "어떤 도움이 필요하신가요? 자세하게 적어주실수록 구체적인 답변을 얻을 수 있습니다.",
         initialValue: '',
       ),
@@ -145,11 +149,22 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
             return;
           }
 
+          // ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
+          //   title: title,
+          //   checklistDetailCreate: checklistDetails,
+          // );
+          //
+          // ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
+
+          UserModel user = await ref.read(userMeProvider.notifier).getMe();
+          final helpChatCreateModel =
+              HelpChatCreateModel(userId: user.id, requestType: chatRequestType.name, contents: requestContents ?? '');
+
+          ref.read(helpRequestProvider.notifier).addHelpRequest(helpChatCreateModel);
+
           if (mounted) {
             Navigator.of(context).pop();
           }
-
-          ref.read(diaryPaginationProvider.notifier).refreshPagination();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
