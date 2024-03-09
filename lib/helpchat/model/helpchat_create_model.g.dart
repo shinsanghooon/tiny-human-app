@@ -8,15 +8,15 @@ part of 'helpchat_create_model.dart';
 
 HelpChatCreateModel _$HelpChatCreateModelFromJson(Map<String, dynamic> json) =>
     HelpChatCreateModel(
-      userId: json['userId'] as int,
-      requestType: json['requestType'] as String,
-      contents: json['contents'] as String,
+      helpRequestId: json['helpRequestId'] as int,
+      helpRequestUserId: json['helpRequestUserId'] as int,
+      helpAnswerUserId: json['helpAnswerUserId'] as int,
     );
 
 Map<String, dynamic> _$HelpChatCreateModelToJson(
         HelpChatCreateModel instance) =>
     <String, dynamic>{
-      'userId': instance.userId,
-      'requestType': instance.requestType,
-      'contents': instance.contents,
+      'helpRequestId': instance.helpRequestId,
+      'helpRequestUserId': instance.helpRequestUserId,
+      'helpAnswerUserId': instance.helpAnswerUserId,
     };

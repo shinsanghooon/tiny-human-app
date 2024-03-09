@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
-import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
+import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
@@ -157,8 +157,8 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
           // ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
 
           UserModel user = await ref.read(userMeProvider.notifier).getMe();
-          final helpChatCreateModel =
-              HelpChatCreateModel(userId: user.id, requestType: chatRequestType.name, contents: requestContents ?? '');
+          final helpChatCreateModel = HelpRequestCreateModel(
+              userId: user.id, requestType: chatRequestType.name, contents: requestContents ?? '');
 
           ref.read(helpRequestProvider.notifier).addHelpRequest(helpChatCreateModel);
 

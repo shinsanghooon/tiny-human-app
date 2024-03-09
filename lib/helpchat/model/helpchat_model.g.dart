@@ -9,22 +9,17 @@ part of 'helpchat_model.dart';
 HelpChatModel _$HelpChatModelFromJson(Map<String, dynamic> json) =>
     HelpChatModel(
       id: json['id'] as int,
-      userId: json['userId'] as int,
-      requestType: $enumDecode(_$ChatRequestTypeEnumMap, json['requestType']),
-      contents: json['contents'] as String,
+      helpRequestId: json['helpRequestId'] as int,
+      helpRequestUserId: json['helpRequestUserId'] as int,
+      helpAnswerUserId: json['helpAnswerUserId'] as int,
       createdAt: DateConvertor.stringToDateTime(json['createdAt'] as String?),
     );
 
 Map<String, dynamic> _$HelpChatModelToJson(HelpChatModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'userId': instance.userId,
-      'requestType': _$ChatRequestTypeEnumMap[instance.requestType]!,
-      'contents': instance.contents,
+      'helpRequestId': instance.helpRequestId,
+      'helpRequestUserId': instance.helpRequestUserId,
+      'helpAnswerUserId': instance.helpAnswerUserId,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
-
-const _$ChatRequestTypeEnumMap = {
-  ChatRequestType.KEYWORD: 'KEYWORD',
-  ChatRequestType.LOCATION: 'LOCATION',
-};

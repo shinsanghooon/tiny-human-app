@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 
 class DateConvertor {
   static DateTime? stringToDateTime(String? value) {
+    print('in convertor');
+    print(value);
     if (value == null) {
       return null;
     }

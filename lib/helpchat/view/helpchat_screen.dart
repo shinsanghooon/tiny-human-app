@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
-import 'package:tiny_human_app/helpchat/view/helpchat_detail_screen.dart';
+import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
+import 'package:tiny_human_app/helpchat/provider/help_request_provider.dart';
+import 'package:tiny_human_app/helpchat/view/chat_sample.dart';
 
 import '../../baby/view/baby_screen.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
-import '../model/chat_page_info.dart';
 import 'helpchat_request_screen.dart';
 
-class HelpChatScreen extends StatefulWidget {
+class HelpChatScreen extends ConsumerStatefulWidget {
   static String get routeName => 'helpchat';
 
   const HelpChatScreen({super.key});
 
   @override
-  State<HelpChatScreen> createState() => _HelpChatScreenState();
+  ConsumerState<HelpChatScreen> createState() => _HelpChatScreenState();
 }
 
-class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProviderStateMixin {
+class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
   @override
@@ -35,38 +37,8 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final data = [
-      {
-        'id': 10,
-        'title': '근처에 기저귀 갈이대 있나요? 정말 급해요 롱롱 텍스트',
-        'last_chatted': DateTime.now(),
-        'last_message': "감사합니다. 도움이 되었어요!",
-      },
-      {
-        'id': 1,
-        'title': '근처에 기저귀 갈이대 있나요?',
-        'last_chatted': DateTime.now(),
-        'last_message': "감사합니다. 도움이 되었어요!",
-      },
-      {
-        'id': 2,
-        'title': '명절에 오픈하는 키즈카페 있나요?',
-        'last_chatted': DateTime(2024, 2, 10),
-        'last_message': "감사합니다. 도움이 되었어요!"
-      },
-      {
-        'id': 3,
-        'title': '아기랑 갈만한 카페 추천해주세요.',
-        'last_chatted': DateTime(2024, 1, 24),
-        'last_message': "감사합니다. 도움이 되었어요!"
-      },
-      {
-        'id': 4,
-        'title': '열이나요ㅠㅠ',
-        'last_chatted': DateTime(2023, 12, 15),
-        'last_message': "감사합니다. 도움이 되었어요!",
-      }
-    ];
+    final data = ref.watch(helpRequestProvider);
+    print(data[0].toString());
 
     return DefaultLayout(
       child: RefreshIndicator(
@@ -87,16 +59,26 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
                 icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
                 onPressed: () => context.goNamed(BabyScreen.routeName)),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.add, color: PRIMARY_COLOR),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const HelpChatRequestScreen(),
-                    ),
-                  );
-                },
-              )
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.add, color: PRIMARY_COLOR),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const HelpChatRequestScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.format_list_bulleted_outlined, color: PRIMARY_COLOR),
+                    onPressed: () {
+                      print('HELP CHAT 메시지 알림 스크린 만들기');
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
           SliverList.separated(
@@ -105,9 +87,9 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
               return InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChatScreen(
-                            id: 1,
-                            chatData: ChatPageInfo(peerId: 'dfdf1', peerNickname: 'dfd'),
+                      builder: (_) => ChatSample(
+                          // id: 1,
+                          // chatData: ChatPageInfo(peerId: 'dfdf1', peerNickname: 'dfd'),
                           )));
                 },
                 child: Padding(
@@ -131,7 +113,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
     );
   }
 
-  Widget chatCard(data) {
+  Widget chatCard(HelpRequestModel data) {
     return Container(
       color: Colors.white,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -139,7 +121,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
           children: [
             Expanded(
               child: Text(
-                data['title'],
+                data.contents,
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
@@ -151,7 +133,7 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
               width: 10.0,
             ),
             Text(
-              DateConvertor.convertoToRelativeTime(data['last_chatted']),
+              DateConvertor.convertoToRelativeTime(data.createdAt!),
               style: TextStyle(color: Colors.grey.shade600),
             ),
           ],
@@ -160,11 +142,12 @@ class _HelpChatScreenState extends State<HelpChatScreen> with SingleTickerProvid
           height: 6.0,
         ),
         Text(
-          data['last_message'],
+          data.contents,
           maxLines: 2,
           style: const TextStyle(
             fontSize: 16.0,
           ),
+          overflow: TextOverflow.ellipsis,
         )
       ]),
     );

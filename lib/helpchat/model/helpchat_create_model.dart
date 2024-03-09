@@ -1,17 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
-
-import '../../common/utils/date_convertor.dart';
 
 part 'helpchat_create_model.g.dart';
 
 @JsonSerializable()
 class HelpChatCreateModel {
-  final int userId;
-  final String requestType;
-  final String contents;
+  final int helpRequestId;
+  final int helpRequestUserId;
+  final int helpAnswerUserId;
 
-  HelpChatCreateModel({required this.userId, required this.requestType, required this.contents});
+  HelpChatCreateModel({
+    required this.helpRequestId,
+    required this.helpRequestUserId,
+    required this.helpAnswerUserId,
+  });
 
   factory HelpChatCreateModel.fromJson(Map<String, dynamic> json) => _$HelpChatCreateModelFromJson(json);
 
