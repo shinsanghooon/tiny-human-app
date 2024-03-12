@@ -38,7 +38,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
   String _userEnterMessage = '';
 
   void _sendMessage() async {
-    FocusScope.of(context).unfocus();
+    // FocusScope.of(context).unfocus();
     FirebaseFirestore.instance
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(widget.groupChatId)
