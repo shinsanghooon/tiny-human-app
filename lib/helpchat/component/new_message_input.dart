@@ -35,7 +35,7 @@ class NewMessageInput extends ConsumerStatefulWidget {
 
 class _NewMessageInputState extends ConsumerState<NewMessageInput> {
   final _textController = TextEditingController();
-  String _userEnterMessage = '';
+  String inputMessage = '';
 
   void _sendMessage() async {
     // FocusScope.of(context).unfocus();
@@ -45,7 +45,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
         .collection(widget.groupChatId)
         .add(
       {
-        'text': _userEnterMessage,
+        'text': inputMessage,
         'fromId': widget.fromId,
         'toId': widget.toId,
         'date': Timestamp.now(),
@@ -57,7 +57,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
           HelpChatLatestMessage(
             helpRequestUserId: widget.chatRequestUserId,
             helpAnswerUserId: widget.chatAnswerUserId,
-            message: _userEnterMessage,
+            message: inputMessage,
             messageTime: DateTime.now(),
           ),
         );
@@ -81,6 +81,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
         children: [
           IconButton(
             onPressed: () {
+              // TODO
               print('TBD');
             },
             icon: const Icon(Icons.add),
@@ -91,22 +92,25 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
               maxLines: null,
               controller: _textController,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14.0),
+                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 hintText: '메시지를 작성해주세요.',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24.0),
                 ),
               ),
+              style: const TextStyle(
+                fontSize: 18.0,
+              ),
               onChanged: (value) {
                 setState(() {
-                  _userEnterMessage = value;
+                  inputMessage = value;
                 });
               },
             ),
           ),
           IconButton(
             onPressed: () {
-              _userEnterMessage.trim().isEmpty ? null : _sendMessage();
+              inputMessage.trim().isEmpty ? null : _sendMessage();
             },
             icon: const Icon(Icons.send),
             color: PRIMARY_COLOR,
