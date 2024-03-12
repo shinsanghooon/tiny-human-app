@@ -215,6 +215,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       return Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,
+          vertical: 4.0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
