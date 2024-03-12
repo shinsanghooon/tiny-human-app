@@ -35,5 +35,19 @@ class HelpChatNotifier extends StateNotifier<List<HelpChatModel>> {
       helpChatId: helpChatId,
       helpChatLatestMessage: helpChatLatestMessage,
     );
+
+    state = state.map((e) {
+      return e.id == helpChatId
+          ? HelpChatModel(
+              id: e.id,
+              helpRequestId: e.helpRequestId,
+              helpRequestUserId: e.helpRequestUserId,
+              helpAnswerUserId: e.helpAnswerUserId,
+              helpRequest: e.helpRequest,
+              latestMessage: helpChatLatestMessage.message,
+              latestMessageTime: helpChatLatestMessage.messageTime,
+            )
+          : e;
+    }).toList();
   }
 }
