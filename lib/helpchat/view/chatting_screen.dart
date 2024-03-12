@@ -23,7 +23,6 @@ class _ChattingScreenState extends State<ChattingScreen> {
 
   final _chatInputController = TextEditingController();
   final _listScrollController = ScrollController();
-  final _focusNode = FocusNode();
 
   int? userId;
   int? peerId;
@@ -108,51 +107,57 @@ class _ChattingScreenState extends State<ChattingScreen> {
             },
           ),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection(FirestoreConstants.pathMessageCollection)
-                    .doc(_groupChatId)
-                    .collection(_groupChatId)
-                    .orderBy('date', descending: true)
-                    .limit(_limit)
-                    .snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  _listMessage = snapshot.data!.docs;
+        body: GestureDetector(
+          onTap: () {
+            // 현재 포커스를 가진 위젯에서 포커스를 제거하여 키보드를 숨김
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection(FirestoreConstants.pathMessageCollection)
+                      .doc(_groupChatId)
+                      .collection(_groupChatId)
+                      .orderBy('date', descending: true)
+                      .limit(_limit)
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    _listMessage = snapshot.data!.docs;
 
-                  return ListView.builder(
-                    itemCount: _listMessage.length,
-                    itemBuilder: (context, index) {
-                      return ChatBubble(
-                          message: _listMessage[index]['text'], isMe: _listMessage[index]['fromId'] == userId!);
-                    },
-                    reverse: true,
-                    controller: _listScrollController,
-                  );
-                },
+                    return ListView.builder(
+                      itemCount: _listMessage.length,
+                      itemBuilder: (context, index) {
+                        return ChatBubble(
+                            message: _listMessage[index]['text'], isMe: _listMessage[index]['fromId'] == userId!);
+                      },
+                      reverse: true,
+                      controller: _listScrollController,
+                    );
+                  },
+                ),
               ),
-            ),
-            NewMessageInput(
-              title: title,
-              fromId: userId!,
-              toId: peerId!,
-              helpChatId: helpChatId!,
-              chatRequestUserId: chatRequestUserId!,
-              chatAnswerUserId: chatAnswerUserId!,
-              groupChatId: _groupChatId,
-              controller: _listScrollController,
-            ),
-            const SizedBox(
-              height: 16.0,
-            ),
-          ],
+              NewMessageInput(
+                title: title,
+                fromId: userId!,
+                toId: peerId!,
+                helpChatId: helpChatId!,
+                chatRequestUserId: chatRequestUserId!,
+                chatAnswerUserId: chatAnswerUserId!,
+                groupChatId: _groupChatId,
+                controller: _listScrollController,
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+            ],
+          ),
         ));
   }
 }
