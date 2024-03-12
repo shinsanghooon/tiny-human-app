@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiny_human_app/common/constant/colors.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
@@ -17,16 +18,12 @@ class ChatBubble extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: isMe ? Colors.grey[300] : Colors.blueAccent,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(12),
-                topLeft: Radius.circular(12),
-                bottomRight: isMe ? Radius.circular(0) : Radius.circular(12),
-                bottomLeft: isMe ? Radius.circular(12) : Radius.circular(0)),
+            color: isMe ? Colors.grey[200] : PRIMARY_COLOR,
+            borderRadius: const BorderRadius.all(Radius.circular(18.0)),
           ),
-          width: 150,
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          width: message.length > 20 ? 200 : null,
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Text(
             message,
             style: TextStyle(

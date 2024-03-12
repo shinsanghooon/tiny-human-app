@@ -2,12 +2,14 @@ import 'package:intl/intl.dart';
 
 class DateConvertor {
   static DateTime? stringToDateTime(String? value) {
-    print('in convertor');
-    print(value);
     if (value == null) {
       return null;
     }
     return DateTime.parse(value);
+  }
+
+  static String toIso8601String(DateTime value) {
+    return value.toIso8601String();
   }
 
   static String dateTimeToKoreanDateString(DateTime date) {

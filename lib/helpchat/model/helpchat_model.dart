@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../common/utils/date_convertor.dart';
+import 'helprequest_model.dart';
 
 part 'helpchat_model.g.dart';
 
@@ -14,6 +15,7 @@ class HelpChatModel {
     fromJson: DateConvertor.stringToDateTime,
   )
   final DateTime? createdAt;
+  final HelpRequestModel? helpRequest;
 
   HelpChatModel({
     required this.id,
@@ -21,6 +23,7 @@ class HelpChatModel {
     required this.helpRequestUserId,
     required this.helpAnswerUserId,
     this.createdAt,
+    this.helpRequest,
   });
 
   factory HelpChatModel.fromJson(Map<String, dynamic> json) => _$HelpChatModelFromJson(json);

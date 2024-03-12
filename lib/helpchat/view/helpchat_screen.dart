@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
+import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
-import 'package:tiny_human_app/helpchat/provider/help_request_provider.dart';
-import 'package:tiny_human_app/helpchat/view/chat_sample.dart';
+import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
 
 import '../../baby/view/baby_screen.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
+import '../../user/model/user_model.dart';
+import '../../user/provider/user_me_provider.dart';
+import '../provider/help_chat_provider.dart';
 import 'helpchat_request_screen.dart';
 
 class HelpChatScreen extends ConsumerStatefulWidget {
@@ -37,8 +40,12 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.watch(helpRequestProvider);
-    print(data[0].toString());
+    List<HelpChatModel> helpChatInfo = ref.watch(helpChatProvider);
+    // chat info를 조회하는 provider 생성
+    // chat info를 조회할 때는 groupChatId를 사용해야 한다.
+    // 가져온 데이터로 화면에 뿌린다.
+    // 그냥 rdb에 컬럼 추가해서 저장할까?
+    // 그게 나을듯!
 
     return DefaultLayout(
       child: RefreshIndicator(
@@ -75,6 +82,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     icon: const Icon(Icons.format_list_bulleted_outlined, color: PRIMARY_COLOR),
                     onPressed: () {
                       print('HELP CHAT 메시지 알림 스크린 만들기');
+                      // 내가 요청한 help, 내가 푸시 받은 help를 표시하는 메뉴
                     },
                   ),
                 ],
@@ -82,14 +90,17 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
             ],
           ),
           SliverList.separated(
-            itemCount: data.length,
+            itemCount: helpChatInfo.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () {
+                onTap: () async {
+                  UserModel user = await ref.read(userMeProvider.notifier).getMe();
+                  int userId = user.id;
+
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChatSample(
-                          // id: 1,
-                          // chatData: ChatPageInfo(peerId: 'dfdf1', peerNickname: 'dfd'),
+                      builder: (_) => ChattingScreen(
+                            userId: userId,
+                            model: helpChatInfo[index],
                           )));
                 },
                 child: Padding(
@@ -99,7 +110,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     top: 8.0,
                   ),
                   child: chatCard(
-                    data[index],
+                    helpChatInfo[index].helpRequest!,
                   ),
                 ),
               );

@@ -6,6 +6,7 @@ import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 
 import '../../common/constant/data.dart';
 import '../model/helpchat_create_model.dart';
+import '../model/helpchat_latest_message.dart';
 import '../model/helpchat_model.dart';
 import '../model/helprequest_model.dart';
 
@@ -43,4 +44,11 @@ abstract class HelpChatRepository {
     'accessToken': 'true',
   })
   Future<HelpRequestModel> registerHelpRequest({@Body() required HelpRequestCreateModel helpChatCreateModel});
+
+  @PATCH('/{helpChatId}')
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<void> updateLatestMessage(
+      {@Path('helpChatId') required int helpChatId, @Body() required HelpChatLatestMessage helpChatLatestMessage});
 }
