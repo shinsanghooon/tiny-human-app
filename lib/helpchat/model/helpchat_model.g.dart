@@ -12,6 +12,9 @@ HelpChatModel _$HelpChatModelFromJson(Map<String, dynamic> json) =>
       helpRequestId: json['helpRequestId'] as int,
       helpRequestUserId: json['helpRequestUserId'] as int,
       helpAnswerUserId: json['helpAnswerUserId'] as int,
+      latestMessage: json['latestMessage'] as String,
+      latestMessageTime:
+          DateConvertor.stringToDateTime(json['latestMessageTime'] as String?),
       createdAt: DateConvertor.stringToDateTime(json['createdAt'] as String?),
       helpRequest: json['helpRequest'] == null
           ? null
@@ -25,6 +28,8 @@ Map<String, dynamic> _$HelpChatModelToJson(HelpChatModel instance) =>
       'helpRequestId': instance.helpRequestId,
       'helpRequestUserId': instance.helpRequestUserId,
       'helpAnswerUserId': instance.helpAnswerUserId,
+      'latestMessage': instance.latestMessage,
+      'latestMessageTime': instance.latestMessageTime?.toIso8601String(),
       'createdAt': instance.createdAt?.toIso8601String(),
       'helpRequest': instance.helpRequest,
     };

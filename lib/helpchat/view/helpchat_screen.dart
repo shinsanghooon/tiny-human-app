@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
-import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
 
 import '../../baby/view/baby_screen.dart';
@@ -41,11 +40,6 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     List<HelpChatModel> helpChatInfo = ref.watch(helpChatProvider);
-    // chat info를 조회하는 provider 생성
-    // chat info를 조회할 때는 groupChatId를 사용해야 한다.
-    // 가져온 데이터로 화면에 뿌린다.
-    // 그냥 rdb에 컬럼 추가해서 저장할까?
-    // 그게 나을듯!
 
     return DefaultLayout(
       child: RefreshIndicator(
@@ -98,7 +92,8 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                   int userId = user.id;
 
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ChattingScreen(
+                      builder: (_) =>
+                          ChattingScreen(
                             userId: userId,
                             model: helpChatInfo[index],
                           )));
@@ -110,7 +105,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     top: 8.0,
                   ),
                   child: chatCard(
-                    helpChatInfo[index].helpRequest!,
+                    helpChatInfo[index],
                   ),
                 ),
               );
@@ -124,7 +119,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
     );
   }
 
-  Widget chatCard(HelpRequestModel data) {
+  Widget chatCard(HelpChatModel data) {
     return Container(
       color: Colors.white,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -132,7 +127,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           children: [
             Expanded(
               child: Text(
-                data.contents,
+                data.helpRequest!.contents,
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
@@ -144,7 +139,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
               width: 10.0,
             ),
             Text(
-              DateConvertor.convertoToRelativeTime(data.createdAt!),
+              DateConvertor.convertoToRelativeTime(data.latestMessageTime!),
               style: TextStyle(color: Colors.grey.shade600),
             ),
           ],
@@ -153,7 +148,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           height: 6.0,
         ),
         Text(
-          data.contents,
+          data.latestMessage,
           maxLines: 2,
           style: const TextStyle(
             fontSize: 16.0,

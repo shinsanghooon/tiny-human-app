@@ -11,6 +11,11 @@ class HelpChatModel {
   final int helpRequestId;
   final int helpRequestUserId;
   final int helpAnswerUserId;
+  final String latestMessage;
+  @JsonKey(
+    fromJson: DateConvertor.stringToDateTime,
+  )
+  final DateTime? latestMessageTime;
   @JsonKey(
     fromJson: DateConvertor.stringToDateTime,
   )
@@ -22,6 +27,8 @@ class HelpChatModel {
     required this.helpRequestId,
     required this.helpRequestUserId,
     required this.helpAnswerUserId,
+    required this.latestMessage,
+    this.latestMessageTime,
     this.createdAt,
     this.helpRequest,
   });
