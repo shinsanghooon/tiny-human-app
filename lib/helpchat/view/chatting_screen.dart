@@ -129,15 +129,18 @@ class _ChattingScreenState extends State<ChattingScreen> {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    _listMessage = snapshot.data!.docs;
 
+                    _listMessage = snapshot.data!.docs;
                     return ListView.builder(
+                      // TODO 키 수정하기
+                      key: const PageStorageKey('key'),
                       itemCount: _listMessage.length,
                       itemBuilder: (context, index) {
                         return ChatBubble(
                             message: _listMessage[index]['text'], isMe: _listMessage[index]['fromId'] == userId!);
                       },
                       reverse: true,
+                      shrinkWrap: true,
                       controller: _listScrollController,
                     );
                   },
