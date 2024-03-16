@@ -39,6 +39,12 @@ abstract class HelpChatRepository {
   })
   Future<List<HelpRequestModel>> getHelpRequest();
 
+  @GET('/help-request/all')
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<List<HelpRequestModel>> getHelpRequestAll();
+
   @POST('/help-request')
   @Headers({
     'accessToken': 'true',
