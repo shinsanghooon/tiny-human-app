@@ -87,7 +87,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                 ),
               ),
             ),
-            ListView.builder(
+            ListView.separated(
               // 여기에 key를 넣어줘야지 하나가 열렸을 때 다른 탭이 닫힌다. 하지만 애니메이션이 깨진다...
               // 확인해보기!
               shrinkWrap: true,
@@ -234,6 +234,12 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                 );
               },
               itemCount: data.length,
+              separatorBuilder: (context, index) => const Divider(
+                color: DIVIDER_COLOR,
+                indent: 16.0,
+                endIndent: 16.0,
+                height: 0.0,
+              ),
             ),
             const SizedBox(
               height: 60.0,

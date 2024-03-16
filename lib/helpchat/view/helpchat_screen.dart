@@ -139,11 +139,14 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                 ),
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 14.0),
+            separatorBuilder: (context, index) => const Divider(
+              color: DIVIDER_COLOR,
+              indent: 16.0,
+              endIndent: 16.0,
+            ),
             itemCount: items.length,
           );
         } else if (snapshot.hasError) {
-          print('error?');
           return SliverFillRemaining(
             child: Center(child: Text('Error: ${snapshot.error}')),
           );

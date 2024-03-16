@@ -51,7 +51,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 })
           ],
         ),
-        child: ListView.builder(
+        child: ListView.separated(
           itemBuilder: (context, index) {
             return ExpansionTile(
               title: _checklistTitle(data, index),
@@ -77,6 +77,12 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
             );
           },
           itemCount: data.length,
+          separatorBuilder: (context, index) => const Divider(
+            color: DIVIDER_COLOR,
+            indent: 16.0,
+            endIndent: 16.0,
+            height: 0.0,
+          ),
         ));
   }
 

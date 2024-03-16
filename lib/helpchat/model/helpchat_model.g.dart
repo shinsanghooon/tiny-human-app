@@ -12,7 +12,7 @@ HelpChatModel _$HelpChatModelFromJson(Map<String, dynamic> json) =>
       helpRequestId: json['helpRequestId'] as int,
       helpRequestUserId: json['helpRequestUserId'] as int,
       helpAnswerUserId: json['helpAnswerUserId'] as int,
-      latestMessage: json['latestMessage'] as String,
+      latestMessage: json['latestMessage'] as String?,
       latestMessageTime:
           DateConvertor.stringToDateTime(json['latestMessageTime'] as String?),
       createdAt: DateConvertor.stringToDateTime(json['createdAt'] as String?),
