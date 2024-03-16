@@ -272,7 +272,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
 
           UserModel user = await ref.read(userMeProvider.notifier).getMe();
           int userId = user.id;
-          int babyId = ref.read(selectedBabyProvider.notifier).state;
+          int babyId = ref.read(selectedBabyProvider);
 
           DiaryCreateModel diaryCreateModel = DiaryCreateModel(
             userId: userId,

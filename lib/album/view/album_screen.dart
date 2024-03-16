@@ -205,7 +205,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                                 });
 
                                 if (selectedImages.isNotEmpty) {
-                                  int babyId = ref.read(selectedBabyProvider.notifier).state;
+                                  int babyId = ref.read(selectedBabyProvider);
 
                                   List<AlbumModel> albumsWithPreSignedUrl = await ref
                                       .read(albumPaginationProvider.notifier)
@@ -445,7 +445,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
         ),
         IconsButton(
           onPressed: () async {
-            int babyId = ref.read(selectedBabyProvider.notifier).state;
+            int babyId = ref.read(selectedBabyProvider);
             ref.read(albumPaginationProvider.notifier).deleteAlbums(
                   babyId,
                   AlbumDeleteRequestModel(ids: selectedIds),
