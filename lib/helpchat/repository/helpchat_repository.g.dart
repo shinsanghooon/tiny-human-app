@@ -98,6 +98,33 @@ class _HelpChatRepository implements HelpChatRepository {
   }
 
   @override
+  Future<List<HelpRequestModel>> getHelpRequestAll() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<HelpRequestModel>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/help-request/all',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map(
+            (dynamic i) => HelpRequestModel.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
   Future<HelpRequestModel> registerHelpRequest(
       {required helpChatCreateModel}) async {
     const _extra = <String, dynamic>{};

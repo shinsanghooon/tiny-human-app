@@ -52,6 +52,15 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
       },
     );
 
+    FirebaseFirestore.instance.collection(FirestoreConstants.pathChatCollection).doc(widget.groupChatId).set(
+      {
+        'id': widget.helpChatId,
+        'title': widget.title,
+        'latest_message': inputMessage,
+        'date': Timestamp.now(),
+      },
+    );
+
     await ref.read(helpChatProvider.notifier).updateLatestMessage(
           widget.helpChatId,
           HelpChatLatestMessage(
