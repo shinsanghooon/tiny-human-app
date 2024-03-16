@@ -69,11 +69,16 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
       final jwt = JWT.decode(response.accessToken);
       // 이렇게 요청을 다시 보내서 데이터를 받아오면 서버에서 검증이 됐으니까 유효한 토큰이라는 것을 알 수 있다.
       final userResponse = await repository.getMe(id: jwt.payload['userId'] as int);
-
       state = userResponse;
 
+      final deviceUniqueId = await getDeviceUniqueId();
       final fcmToken = await FirebaseMessaging.instance.getToken();
-      await storage.write(key: FCM_TOKEN, value: fcmToken);
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        await repository.registerFcmTokenAndDeviceInfo(
+            userPushCreate: UserPushCreateModel(fcmToken: newToken!, deviceInfo: deviceUniqueId));
+      });
+      await repository.registerFcmTokenAndDeviceInfo(
+          userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
 
       return userResponse;
     } catch (e) {
