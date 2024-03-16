@@ -12,14 +12,14 @@ import '../../user/model/user_model.dart';
 import '../../user/provider/user_me_provider.dart';
 import '../provider/help_request_provider.dart';
 
-class HelpChatRequestScreen extends ConsumerStatefulWidget {
-  const HelpChatRequestScreen({super.key});
+class HelpRequestRegisterScreen extends ConsumerStatefulWidget {
+  const HelpRequestRegisterScreen({super.key});
 
   @override
-  ConsumerState<HelpChatRequestScreen> createState() => _DiaryRegisterScreenState();
+  ConsumerState<HelpRequestRegisterScreen> createState() => _DiaryRegisterScreenState();
 }
 
-class _DiaryRegisterScreenState extends ConsumerState<HelpChatRequestScreen> {
+class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
   String? accessToken;

@@ -181,7 +181,6 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         surfaceTintColor: Colors.white,
       ),
       onPressed: () {
-        print('edit checklist');
         Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChecklistUpdateScreen(
                   model: data,

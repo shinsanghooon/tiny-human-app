@@ -17,7 +17,7 @@ class HelpRequestNotifier extends StateNotifier<List<HelpRequestModel>> {
   }) : super([]) {
     // 레포지토리를 써도 결국 id를 통해 User를 조회해야함
     // accessToken을  서버에 전달하기 때문에 userId를 전달할 필요 없음
-    getHelpRequest();
+    getHelpRequestAll();
   }
 
   void addHelpRequest(HelpRequestCreateModel model) async {
@@ -26,8 +26,10 @@ class HelpRequestNotifier extends StateNotifier<List<HelpRequestModel>> {
   }
 
   Future<void> getHelpRequest() async {
-    state = await repository.getHelpRequest();
+    // state = await repository.getHelpRequest();
+  }
+
+  Future<void> getHelpRequestAll() async {
+    state = await repository.getHelpRequestAll();
   }
 }
-
-

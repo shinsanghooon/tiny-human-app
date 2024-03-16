@@ -12,6 +12,7 @@ import '../../user/model/user_model.dart';
 import '../../user/provider/user_me_provider.dart';
 import '../provider/help_chat_provider.dart';
 import 'helpchat_request_screen.dart';
+import 'helprequest_list_screen.dart';
 
 class HelpChatScreen extends ConsumerStatefulWidget {
   static String get routeName => 'helpchat';
@@ -67,15 +68,23 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const HelpChatRequestScreen(),
+                          builder: (_) => const HelpRequestRegisterScreen(),
                         ),
                       );
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.format_list_bulleted_outlined, color: PRIMARY_COLOR),
-                    onPressed: () {
+                    icon: const Icon(Icons.sos_outlined, color: PRIMARY_COLOR),
+                    onPressed: () async {
                       print('HELP CHAT 메시지 알림 스크린 만들기');
+                      UserModel user = await ref.read(userMeProvider.notifier).getMe();
+                      int userId = user.id;
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => HelpRequestListScreen(userId: userId),
+                        ),
+                      );
                       // 내가 요청한 help, 내가 푸시 받은 help를 표시하는 메뉴
                     },
                   ),
@@ -92,8 +101,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                   int userId = user.id;
 
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) =>
-                          ChattingScreen(
+                      builder: (_) => ChattingScreen(
                             userId: userId,
                             model: helpChatInfo[index],
                           )));
@@ -148,7 +156,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           height: 6.0,
         ),
         Text(
-          data.latestMessage,
+          data.latestMessage ?? "메시지를 보내주세요. 🙂",
           maxLines: 2,
           style: const TextStyle(
             fontSize: 16.0,

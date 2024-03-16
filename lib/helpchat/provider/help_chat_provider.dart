@@ -21,9 +21,10 @@ class HelpChatNotifier extends StateNotifier<List<HelpChatModel>> {
     getHelpChat();
   }
 
-  void addHelpChat(HelpChatCreateModel model) async {
+  Future<HelpChatModel> addHelpChat(HelpChatCreateModel model) async {
     final response = await repository.registerChatRequest(helpChatCreateModel: model);
     state = [response, ...state];
+    return response;
   }
 
   Future<void> getHelpChat() async {
@@ -36,6 +37,7 @@ class HelpChatNotifier extends StateNotifier<List<HelpChatModel>> {
       helpChatLatestMessage: helpChatLatestMessage,
     );
 
+    // TODO 이걸 캐시 업데이트 하면 채팅을 보는 상대방 화면은 업데이트가 안됨.
     state = state.map((e) {
       return e.id == helpChatId
           ? HelpChatModel(
