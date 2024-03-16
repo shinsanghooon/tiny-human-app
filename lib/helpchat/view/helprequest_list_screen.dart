@@ -233,7 +233,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                   ),
                 );
               },
-              itemCount: data.length,
+              itemCount: showOnlyMyPost ? data.where((d) => d.userId == widget.userId).length : data.length,
               separatorBuilder: (context, index) => const Divider(
                 color: DIVIDER_COLOR,
                 indent: 16.0,
