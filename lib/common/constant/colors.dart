@@ -13,3 +13,6 @@ const INPUT_BG_COLOR = Color(0x0FFBFBFB);
 const INPUT_BORDER_COLOR = Color(0xFFF3F2F2);
 
 const MAIN_GREEN_COLOR = Color(0xff46d253);
+
+// text backgorund
+const TEXT_BACKGROUND_COLOR = Color(0xFFEEEEEE);
