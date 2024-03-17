@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -89,8 +87,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     final selectedBaby = babies.where((baby) => baby.id == babyId).first;
     final diaryState = ref.watch(diaryDetailProvider(widget.id));
 
-    calculateDaysAfterBirth(selectedBaby, diaryState!.date);
-
     if (diaryState == null) {
       return const DefaultLayout(
           child: Center(
@@ -110,6 +106,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     baseDaysAfterBirth = diaryState.daysAfterBirth;
     baseFiles = diaryState.pictures;
     baseSentence = diaryState.sentences;
+
+    calculateDaysAfterBirth(selectedBaby, diaryDate ?? baseDiaryDate!);
 
     return DefaultLayout(
       appBar: _diaryAppBar(context),
