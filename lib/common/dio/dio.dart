@@ -40,7 +40,6 @@ class CustomInterceptor extends Interceptor {
 
     if (options.headers['refreshToken'] == 'true') {
       options.headers.remove('refreshToken');
-
       final token = await storage.read(key: REFRESH_TOKEN_KEY);
       debugPrint('[REFRESH TOKEN] ${token}');
       options.headers.addAll({
@@ -58,9 +57,9 @@ class CustomInterceptor extends Interceptor {
     // 401에러가 났을 때
     // 토큰을 재발급 받는 시도를 하고 토큰이 재발급되면
     // 다시 새로운 토큰으로 요청을 한다.
-    debugPrint('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
-    debugPrint('[ERROR] [${err.message}]');
-    debugPrint('[ERROR] [${err}]');
+    debugPrint('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri} ${err.requestOptions.path}');
+    debugPrint('[ERROR] message: ${err.message}');
+    debugPrint('[ERROR] err object: ${err}');
 
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
 
@@ -71,20 +70,28 @@ class CustomInterceptor extends Interceptor {
     }
 
     final isStatus401 = err.response?.statusCode == 401;
+    print(err.response?.statusCode);
+    print(err.response?.data);
 
     // 토큰을 발급 받으려다가 에러가 난 것이다.
-    final isPathRefresh = err.requestOptions.path == '/auth/token';
+    final isPathRefresh = err.requestOptions.path == '/api/v1/token';
+    print(err.requestOptions.path);
+    print(isPathRefresh);
+    print('refreshToken $refreshToken');
 
     if (isStatus401 && !isPathRefresh) {
       debugPrint('[ERROR] RefreshToken Error');
       final dio = Dio();
 
+      print('!!!!');
       try {
         final response = await dio.post(
-          'http://$ip/auth/token',
+          'http://$ip/api/v1/token',
+          data: {'refreshToken': refreshToken},
           options: Options(headers: {'authorization': 'Bearer $refreshToken'}),
         );
         final accessToken = response.data['accessToken'];
+        print('newAccesstoken: $accessToken');
 
         final options = err.requestOptions;
 
@@ -94,6 +101,7 @@ class CustomInterceptor extends Interceptor {
 
         // 요청 재전송. 헤더만 변경해서
         final newResponse = await dio.fetch(options);
+        print(newResponse);
         return handler.resolve(newResponse);
       } on DioError catch (e) {
         // jwt 관련 다른 에러(토큰 만료)

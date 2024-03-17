@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tiny_human_app/baby/model/baby_model.dart';
+import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/diary/model/diary_create_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
@@ -26,8 +28,7 @@ class DiaryRegisterScreen extends ConsumerStatefulWidget {
   const DiaryRegisterScreen({super.key});
 
   @override
-  ConsumerState<DiaryRegisterScreen> createState() =>
-      _DiaryRegisterScreenState();
+  ConsumerState<DiaryRegisterScreen> createState() => _DiaryRegisterScreenState();
 }
 
 class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
@@ -46,106 +47,85 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   String? sentence;
   String? accessToken;
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
     checkToken();
     diaryDate = DateTime.now();
-    calculateDaysAfterBirth(diaryDate!);
   }
 
   void checkToken() async {
     accessToken = (await storage.read(key: ACCESS_TOKEN_KEY))!;
   }
 
-  void calculateDaysAfterBirth(DateTime selectedDate) {
-    // TODO: After Baby Provider
-    final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate
-        .difference(birthday)
-        .inDays + 1;
+  void calculateDaysAfterBirth(BabyModel baby, DateTime selectedDate) {
+    final birthday = DateConvertor.stringToDateTime(baby.dayOfBirth);
+    daysAfterBirth = selectedDate.difference(birthday!).inDays + 1;
   }
 
   @override
   Widget build(BuildContext context) {
+    final babyId = ref.watch(selectedBabyProvider);
+    final babies = ref.watch(babyProvider);
+    final selectedBaby = babies.where((baby) => baby.id == babyId).first;
+    calculateDaysAfterBirth(selectedBaby, diaryDate!);
+
     return DefaultLayout(
       appBar: diaryAppBar(context),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 pickedImages.isEmpty
                     ? GestureDetector(
-                  onTap: () async {
-                    List<XFile> selectedImages = await uploadImages();
+                        onTap: () async {
+                          List<XFile> selectedImages = await uploadImages();
 
-                    if ((pickedImages.length + selectedImages.length) >
-                        5) {
-                      throw const Expanded(
-                          child: Text("사진은 5장까지만 선택이 가능합니다."));
-                    }
+                          if ((pickedImages.length + selectedImages.length) > 5) {
+                            throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+                          }
 
-                    setState(() {
-                      pickedImages = selectedImages;
-                      fileNames = pickedImages
-                          .map((image) => image.name)
-                          .toList();
-                    });
-                  },
-                  child: Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 1.2,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 1.2,
-                    color: Colors.deepOrange.shade500,
-                    child: _uploadPhotoLabel(),
-                  ),
-                )
+                          setState(() {
+                            pickedImages = selectedImages;
+                            fileNames = pickedImages.map((image) => image.name).toList();
+                          });
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.width / 1.2,
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          color: Colors.deepOrange.shade500,
+                          child: _uploadPhotoLabel(),
+                        ),
+                      )
                     : GestureDetector(
-                  onTap: () async {
-                    List<XFile> selectedImages = await uploadImages();
+                        onTap: () async {
+                          List<XFile> selectedImages = await uploadImages();
 
-                    if ((pickedImages.length + selectedImages.length) >
-                        5) {
-                      throw const Expanded(
-                          child: Text("사진은 5장까지만 선택이 가능합니다."));
-                    }
+                          if ((pickedImages.length + selectedImages.length) > 5) {
+                            throw const Expanded(child: Text("사진은 5장까지만 선택이 가능합니다."));
+                          }
 
-                    setState(() {
-                      pickedImages = [...pickedImages, ...selectedImages];
-                      fileNames = pickedImages
-                          .map((image) => image.name)
-                          .toList();
-                    });
-                  },
-                  child: Container(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 1.2,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width / 1.2,
-                    color: Colors.transparent,
-                    child: _uploadPhotoCarousel(
-                        MediaQuery
-                            .of(context)
-                            .size
-                            .width / 1.2),
-                  ),
-                ),
+                          setState(() {
+                            pickedImages = [...pickedImages, ...selectedImages];
+                            fileNames = pickedImages.map((image) => image.name).toList();
+                          });
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.width / 1.2,
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          color: Colors.transparent,
+                          child: _uploadPhotoCarousel(MediaQuery.of(context).size.width / 1.2),
+                        ),
+                      ),
                 const SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    datePickerButton(context),
+                    datePickerButton(context, selectedBaby),
                     const SizedBox(width: 14.0),
                     if (daysAfterBirth != null)
                       Text(
@@ -223,8 +203,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                       onPressed: () {
                         setState(() {
                           pickedImages.removeAt(photoCurrentIndex);
-                          fileNames =
-                              pickedImages.map((image) => image.name).toList();
+                          fileNames = pickedImages.map((image) => image.name).toList();
                         });
                       },
                     ),
@@ -279,10 +258,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
   SizedBox registerDiaryActionButton(BuildContext context) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
           if (formKey.currentState == null) {
@@ -296,9 +272,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
 
           UserModel user = await ref.read(userMeProvider.notifier).getMe();
           int userId = user.id;
-          int babyId = ref
-              .read(selectedBabyProvider.notifier)
-              .state;
+          int babyId = ref.read(selectedBabyProvider);
 
           DiaryCreateModel diaryCreateModel = DiaryCreateModel(
             userId: userId,
@@ -307,18 +281,13 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
             likeCount: 0,
             date: diaryDate!,
             sentences: [SentenceRequestModel(sentence: sentence!)],
-            files: fileNames
-                .map((fileName) => DiaryFileModel(fileName: fileName))
-                .toList(),
+            files: fileNames.map((fileName) => DiaryFileModel(fileName: fileName)).toList(),
           );
 
-          DiaryResponseWithPresignedModel preSignedUrlResponse = await ref
-              .read(diaryPaginationProvider.notifier)
-              .addDiary(diaryCreateModel);
+          DiaryResponseWithPresignedModel preSignedUrlResponse =
+              await ref.read(diaryPaginationProvider.notifier).addDiary(diaryCreateModel);
 
-          List<String> preSignedUrls = preSignedUrlResponse.pictures
-              .map((res) => res.preSignedUrl!)
-              .toList();
+          List<String> preSignedUrls = preSignedUrlResponse.pictures.map((res) => res.preSignedUrl!).toList();
 
           for (int i = 0; i < pickedImages.length; i++) {
             File file = File(pickedImages[i].path!);
@@ -334,11 +303,11 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
+          ref.read(diaryPaginationProvider.notifier).refreshPagination();
+
           if (mounted) {
             Navigator.of(context).pop();
           }
-
-          ref.read(diaryPaginationProvider.notifier).refreshPagination();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
@@ -369,11 +338,12 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
         onPressed: () => Navigator.of(context).pop(),
       ),
       backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.white,
       elevation: 0.0,
     );
   }
 
-  Widget datePickerButton(BuildContext context) {
+  Widget datePickerButton(BuildContext context, BabyModel selectedBaby) {
     return SizedBox(
       height: 46.0,
       child: OutlinedButton(
@@ -389,7 +359,7 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
               diaryDate = value;
               print(diaryDate);
 
-              calculateDaysAfterBirth(diaryDate!);
+              calculateDaysAfterBirth(selectedBaby, diaryDate!);
             });
           });
         },

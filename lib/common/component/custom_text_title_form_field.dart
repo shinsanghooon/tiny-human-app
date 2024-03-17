@@ -26,13 +26,13 @@ class CustomTextTitleFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const baseBorder =
-        OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
+    const baseBorder = OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
 
     return TextFormField(
       cursorColor: PRIMARY_COLOR,
       obscureText: obscureText,
       autofocus: autofocus,
+      maxLines: null,
       onSaved: onSaved,
       onChanged: onChanged,
       initialValue: initialValue,
@@ -65,9 +65,7 @@ class CustomTextTitleFormField extends StatelessWidget {
 
         // 기본으로 세팅한 보더를 넣어준다.
         enabledBorder: baseBorder,
-        focusedBorder: baseBorder.copyWith(
-            borderSide:
-                baseBorder.borderSide.copyWith(color: Colors.transparent)),
+        focusedBorder: baseBorder.copyWith(borderSide: baseBorder.borderSide.copyWith(color: Colors.transparent)),
       ),
     );
   }

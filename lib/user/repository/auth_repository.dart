@@ -37,7 +37,22 @@ class AuthRepository {
         options: Options(headers: {
           'refreshToken': 'true',
         }));
-
+    
     return TokenResponse.fromJson(response.data);
+  }
+
+  Future<LoginResponse> googleLogin({
+    required String email,
+    required String accessToken,
+    required String name,
+    required String photoURL,
+  }) async {
+    final response = await dio.post('$baseUrl/auth/google', data: {
+      "email": email,
+      "socialAccessToken": accessToken,
+      "name": name,
+      "photoUrl": photoURL,
+    });
+    return LoginResponse.fromJson(response.data);
   }
 }

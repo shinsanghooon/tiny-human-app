@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
+import 'package:tiny_human_app/common/enum/album_sort.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
@@ -13,7 +14,7 @@ import '../model/album_create_model.dart';
 import '../model/album_model.dart';
 import '../repository/album_pagination_repository.dart';
 
-final albumOrderByProvider = StateProvider<String>((ref) => 'uploadedAt');
+final albumOrderByProvider = StateProvider<String>((ref) => AlbumSorting.UPLOAD.name);
 
 final albumPaginationProvider = StateNotifierProvider<AlbumPaginationStateNotifier, CursorPaginationBase>((ref) {
   final repo = ref.watch(albumPaginationRepositoryProvider);

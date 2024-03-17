@@ -20,6 +20,7 @@ DiaryResponseModel _$DiaryResponseModelFromJson(Map<String, dynamic> json) =>
       pictures: (json['pictures'] as List<dynamic>)
           .map((e) => DiaryPictureModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      letter: json['letter'] as String?,
     );
 
 Map<String, dynamic> _$DiaryResponseModelToJson(DiaryResponseModel instance) =>
@@ -32,4 +33,5 @@ Map<String, dynamic> _$DiaryResponseModelToJson(DiaryResponseModel instance) =>
       'date': instance.date.toIso8601String(),
       'sentences': instance.sentences,
       'pictures': instance.pictures,
+      'letter': instance.letter,
     };

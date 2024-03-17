@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>288839383676-06tujj9h9jeunfvpl1i4fksk8c3formd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.288839383676-06tujj9h9jeunfvpl1i4fksk8c3formd</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>288839383676-o4iksnqfm38vdj4obn95ied88191eo9q.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBrnanQBJywue91Lpj-M9uSSq-TfcPhph8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>288839383676</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.tinyHumanApp</string>
+	<key>PROJECT_ID</key>
+	<string>tiny-human</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tiny-human.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:288839383676:ios:9ea169e1a559d6f6e967f9</string>
+</dict>
+</plist>

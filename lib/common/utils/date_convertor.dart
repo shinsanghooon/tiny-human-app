@@ -8,6 +8,10 @@ class DateConvertor {
     return DateTime.parse(value);
   }
 
+  static String toIso8601String(DateTime value) {
+    return value.toIso8601String();
+  }
+
   static String dateTimeToKoreanDateString(DateTime date) {
     return '${date.year}년 ${date.month}월 ${date.day}일';
   }
@@ -25,5 +29,28 @@ class DateConvertor {
     DateTime dateTime = inputFormat.parse(dateString);
 
     return DateTime.parse(DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime));
+  }
+
+  static String convertoToRelativeTime(DateTime date) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(date);
+
+    if (difference.inDays >= 7) {
+      int week = (difference.inDays / 7).floor();
+      return '$week주 전';
+    } else if (difference.inDays >= 1) {
+      return '${difference.inDays}일 전';
+    } else if (difference.inHours >= 1) {
+      return '${difference.inHours}시간 전';
+    } else if (difference.inMinutes >= 1) {
+      return '${difference.inMinutes}분 전';
+    } else {
+      return '방금 전';
+    }
+  }
+
+  static int calculateDaysAfterBaseDate(String baseDate, DateTime selectedDate) {
+    final birthday = DateConvertor.stringToDateTime(baseDate);
+    return selectedDate.difference(birthday!).inDays + 1;
   }
 }

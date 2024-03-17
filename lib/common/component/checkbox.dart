@@ -15,6 +15,7 @@ class CustomCheckBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Checkbox(
       fillColor: MaterialStateProperty.all<Color>(Colors.white),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       activeColor: PRIMARY_COLOR,
       side: const BorderSide(color: PRIMARY_COLOR),
       checkColor: PRIMARY_COLOR,

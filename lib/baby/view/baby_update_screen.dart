@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
+import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
@@ -77,7 +78,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
     timeOfBirth = widget.model.timeOfBirth;
     dayOfBirth = DateConvertor.stringToDateTime(widget.model.dayOfBirth);
     description = widget.model.description;
-    baseImageUrl = '${S3_BASE_URL}${widget.model.profileImgKeyName}';
+    baseImageUrl = S3UrlGenerator.getThumbnailUrlWith1000wh(widget.model.profileImgKeyName);
   }
 
   void checkToken() async {
@@ -87,7 +88,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      appBar: babyAppBar(context),
+      appBar: _babyAppBar(context),
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
@@ -193,7 +194,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
             },
             child: pickedFilePath == null
                 ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(24.0),
                     child: Image.network(
                       baseImageUrl!,
                       width: MediaQuery.of(context).size.width / 1.3,
@@ -202,7 +203,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
                     ),
                   )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(24.0),
                     child: Image.asset(
                       pickedFilePath!,
                       width: MediaQuery.of(context).size.width / 1.3,
@@ -328,7 +329,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
     );
   }
 
-  AppBar babyAppBar(BuildContext context) {
+  AppBar _babyAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
         "아기 정보를 수정해주세요",
@@ -343,7 +344,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           context.pop();
         },
       ),
-      backgroundColor: Colors.transparent,
       elevation: 0.0,
     );
   }
@@ -500,20 +500,29 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           title: const Text(
             '태어난 시간을 선택해주세요.',
             textAlign: TextAlign.center,
-          ),
-          content: DropdownMenu<int>(
-            inputDecorationTheme: const InputDecorationTheme(
-              contentPadding: EdgeInsets.symmetric(horizontal: 6.0),
+            style: TextStyle(
+              fontSize: 18.0,
             ),
-            initialSelection: timeOfBirth ?? times.first,
-            onSelected: (int? value) {
-              timeOfBirth = value!;
-            },
-            dropdownMenuEntries: times.map(
-              (t) {
-                return DropdownMenuEntry(value: t, label: '${t}시');
-              },
-            ).toList(),
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownMenu<int>(
+                menuHeight: 300,
+                inputDecorationTheme: const InputDecorationTheme(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 6.0),
+                ),
+                initialSelection: timeOfBirth ?? times.first,
+                onSelected: (int? value) {
+                  timeOfBirth = value!;
+                },
+                dropdownMenuEntries: times.map(
+                  (t) {
+                    return DropdownMenuEntry(value: t, label: '${t}시');
+                  },
+                ).toList(),
+              ),
+            ],
           ),
           actions: [
             registerActionButton(

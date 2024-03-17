@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/utils/validator.dart';
 
@@ -11,6 +10,7 @@ class CustomLongTextFormField extends StatelessWidget {
   final String? hintText;
   final String? errorText;
   final String initialValue;
+  final int? maxLength;
   final TextEditingController? textEditingController;
 
   const CustomLongTextFormField({
@@ -21,6 +21,7 @@ class CustomLongTextFormField extends StatelessWidget {
     this.hintText,
     this.errorText,
     required this.initialValue,
+    this.maxLength,
     this.textEditingController,
     super.key,
   });
@@ -36,7 +37,7 @@ class CustomLongTextFormField extends StatelessWidget {
     return TextFormField(
       controller: textEditingController,
       textAlignVertical: TextAlignVertical.top,
-      maxLength: 300,
+      maxLength: maxLength ?? 300,
       maxLines: null,
       expands: true,
       cursorColor: PRIMARY_COLOR,
@@ -45,25 +46,22 @@ class CustomLongTextFormField extends StatelessWidget {
       onSaved: onSaved,
       initialValue: initialValue,
       validator: (value) {
-              if (value == null || value.isEmpty) {
-                return '필수 입력값입니다.';
-              }
+        if (value == null || value.isEmpty) {
+          return '필수 입력값입니다.';
+        }
 
-              if(keyName == 'email' && !isValidEmail(value)) {
-                print(value);
-                return '올바른 이메일 주소를 입력해주세요';
-              }
+        if (keyName == 'email' && !isValidEmail(value)) {
+          print(value);
+          return '올바른 이메일 주소를 입력해주세요';
+        }
 
-              return null;
-            },
+        return null;
+      },
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20.0),
         hintText: hintText,
         errorText: errorText,
-        hintStyle: const TextStyle(
-          color: BODY_TEXT_COLOR,
-          fontSize: 14.0,
-        ),
+        hintStyle: const TextStyle(color: BODY_TEXT_COLOR, fontSize: 14.0, overflow: TextOverflow.visible),
         fillColor: INPUT_BG_COLOR,
         filled: true,
         border: baseBorder,
@@ -71,8 +69,7 @@ class CustomLongTextFormField extends StatelessWidget {
         // 기본으로 세팅한 보더를 넣어준다.
         enabledBorder: baseBorder,
 
-        focusedBorder: baseBorder.copyWith(
-            borderSide: baseBorder.borderSide.copyWith(color: PRIMARY_COLOR)),
+        focusedBorder: baseBorder.copyWith(borderSide: baseBorder.borderSide.copyWith(color: PRIMARY_COLOR)),
       ),
     );
   }

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -42,9 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(
                   height: 20.0,
                 ),
-                const ScreenSubTitle(
-                    subTitle:
-                        "이메일과 비밀번호를 입력해서 로그인해주세요.\n오늘도 ${APP_TITLE}에 하루를 남겨보세요!"),
+                const ScreenSubTitle(subTitle: "이메일과 비밀번호를 입력해서 로그인해주세요.\n오늘도 ${APP_TITLE}에 하루를 남겨보세요!"),
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -76,10 +76,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onPressed: state is UserModelLoading
                             ? null
                             : () async {
-                                // final rawString = '${username}:${password}';
-                                // Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                                // String token = stringToBase64.encode(rawString);
-
                                 if (formKey.currentState == null) {
                                   // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
                                   return null;
@@ -95,33 +91,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   return null;
                                 }
 
-                                ref
-                                    .read(userMeProvider.notifier)
-                                    .login(email: email, password: password);
-
-                                // final response = await dio.post(
-                                //   'http://$ip/api/v1/auth/login',
-                                //   data: {
-                                //     "email": email,
-                                //     "password": password,
-                                //   },
-                                // );
-                                // print('login');
-                                // print(response.data);
-                                // final accessToken = response.data['accessToken'];
-                                // final refreshToken = response.data['refreshToken'];
-                                //
-                                // await storage.write(
-                                //     key: ACCESS_TOKEN_KEY, value: accessToken);
-                                // await storage.write(
-                                //     key: REFRESH_TOKEN_KEY, value: refreshToken);
-                                //
-                                // Navigator.of(context).pushAndRemoveUntil(
-                                //   MaterialPageRoute(
-                                //     builder: (_) => RootScreen(),
-                                //   ),
-                                //   (route) => false,
-                                // );
+                                ref.read(userMeProvider.notifier).login(email: email, password: password);
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: PRIMARY_COLOR,
@@ -137,8 +107,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => const RegisterScreen()));
+                          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: PRIMARY_COLOR,
@@ -150,6 +119,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => onGoogleLoginPress(context),
+                        child: Text("구글 로그인",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blueAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            )),
                       )
                     ],
                   ),
@@ -160,5 +143,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  onGoogleLoginPress(BuildContext context) async {
+    GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
+      'email',
+    ]);
+
+    try {
+      GoogleSignInAccount? account = await googleSignIn.signIn();
+      final GoogleSignInAuthentication? googleAuth = await account?.authentication;
+      final accessToken = googleAuth?.accessToken;
+      final idToken = googleAuth?.idToken;
+
+      final credential = GoogleAuthProvider.credential(accessToken: accessToken, idToken: idToken);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final name = userCredential.user?.displayName;
+      final photoURL = userCredential.user?.photoURL;
+      final email = userCredential.user?.email;
+
+      ref.read(userMeProvider.notifier).googleLogin(
+            email: email!,
+            accessToken: accessToken!,
+            name: name!,
+            photoURL: photoURL!,
+          );
+    } catch (error) {
+      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인 실패')),
+      );
+    }
   }
 }

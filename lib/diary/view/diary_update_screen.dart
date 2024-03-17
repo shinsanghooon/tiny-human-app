@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison
-
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -19,11 +17,15 @@ import 'package:tiny_human_app/diary/model/diary_sentence_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
 
+import '../../baby/model/baby_model.dart';
+import '../../baby/provider/baby_provider.dart';
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
+import '../../common/utils/date_convertor.dart';
+import '../../common/utils/s3_url_generator.dart';
 import '../model/diary_response_with_presigned_model.dart';
 import '../model/photo_with_savetype_model.dart';
 
@@ -73,14 +75,16 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     accessToken = (await storage.read(key: ACCESS_TOKEN_KEY))!;
   }
 
-  void calculateDaysAfterBirth(DateTime selectedDate) {
-    // TODO: After Baby Provider
-    final birthday = DateTime(2022, 9, 27);
-    daysAfterBirth = selectedDate.difference(birthday).inDays + 1;
+  void calculateDaysAfterBirth(BabyModel baby, DateTime selectedDate) {
+    final birthday = DateConvertor.stringToDateTime(baby.dayOfBirth);
+    daysAfterBirth = selectedDate.difference(birthday!).inDays + 1;
   }
 
   @override
   Widget build(BuildContext context) {
+    final babyId = ref.watch(selectedBabyProvider);
+    final babies = ref.watch(babyProvider);
+    final selectedBaby = babies.where((baby) => baby.id == babyId).first;
     final diaryState = ref.watch(diaryDetailProvider(widget.id));
 
     if (diaryState == null) {
@@ -93,8 +97,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
     if (saveModels.isEmpty) {
       for (var picture in diaryState.pictures) {
-        saveModels.add(PhotoWithSaveTypeModel(
-            id: picture.id, type: SaveType.URL, path: picture.keyName));
+        saveModels.add(PhotoWithSaveTypeModel(id: picture.id, type: SaveType.URL, path: picture.keyName));
       }
     }
 
@@ -104,17 +107,19 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     baseFiles = diaryState.pictures;
     baseSentence = diaryState.sentences;
 
+    calculateDaysAfterBirth(selectedBaby, diaryDate ?? baseDiaryDate!);
+
     return DefaultLayout(
       appBar: _diaryAppBar(context),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 _diaryImageCarousel(context, saveModels, deletedFiles),
                 const SizedBox(height: 20.0),
-                _diaryDate(context),
+                _diaryDate(context, selectedBaby),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Form(
@@ -122,8 +127,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                     child: _diaryTextCard(1, 1, diaryState.sentences.first),
                   ),
                 ),
-                _updateDiaryActionButton(
-                    context, diaryState, saveModels, deletedFiles),
+                _updateDiaryActionButton(context, diaryState, saveModels, deletedFiles),
               ],
             ),
           ),
@@ -132,11 +136,11 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  Row _diaryDate(BuildContext context) {
+  Row _diaryDate(BuildContext context, BabyModel selectedBaby) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _datePickerButton(context),
+        _datePickerButton(context, selectedBaby),
         const SizedBox(width: 14.0),
         Text(
           '+${(daysAfterBirth ?? baseDaysAfterBirth).toString()}일',
@@ -151,9 +155,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   GestureDetector _diaryImageCarousel(
-      BuildContext context,
-      List<PhotoWithSaveTypeModel> models,
-      List<PhotoWithSaveTypeModel> deletedFiles) {
+      BuildContext context, List<PhotoWithSaveTypeModel> models, List<PhotoWithSaveTypeModel> deletedFiles) {
     return models.isEmpty
         ? GestureDetector(
             onTap: () async {
@@ -164,8 +166,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
               setState(() {
                 List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
+                  return PhotoWithSaveTypeModel(type: SaveType.LOCAL, path: image.path, name: image.name);
                 }).toList();
 
                 saveModels = [
@@ -190,8 +191,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
 
               setState(() {
                 List<PhotoWithSaveTypeModel> temp = selectedImages.map((image) {
-                  return PhotoWithSaveTypeModel(
-                      type: SaveType.LOCAL, path: image.path, name: image.name);
+                  return PhotoWithSaveTypeModel(type: SaveType.LOCAL, path: image.path, name: image.name);
                 }).toList();
 
                 // 여기서 setState를 하니까 위젯이 다시 빌드되고 이미지는 다시 1개가 된다...
@@ -205,10 +205,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
               height: MediaQuery.of(context).size.width / 1.2,
               width: MediaQuery.of(context).size.width / 1.2,
               color: Colors.transparent,
-              child: _uploadPhotoCarousel(
-                  MediaQuery.of(context).size.width / 1.2,
-                  models,
-                  deletedFiles),
+              child: _uploadPhotoCarousel(MediaQuery.of(context).size.width / 1.2, models, deletedFiles),
             ),
           );
   }
@@ -236,8 +233,8 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  Widget _uploadPhotoCarousel(double size, List<PhotoWithSaveTypeModel> models,
-      List<PhotoWithSaveTypeModel> deletedFiles) {
+  Widget _uploadPhotoCarousel(
+      double size, List<PhotoWithSaveTypeModel> models, List<PhotoWithSaveTypeModel> deletedFiles) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -256,7 +253,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                             fit: BoxFit.cover,
                           )
                         : Image.network(
-                            '$S3_BASE_URL${image.path}',
+                            S3UrlGenerator.getThumbnailUrlWith1000wh(image.path),
                             width: size,
                             height: size,
                             fit: BoxFit.cover,
@@ -269,8 +266,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                       color: Colors.deepOrange.withOpacity(0.9),
                       onPressed: () {
                         setState(() {
-                          PhotoWithSaveTypeModel deleteModel =
-                              models.removeAt(photoCurrentIndex);
+                          PhotoWithSaveTypeModel deleteModel = models.removeAt(photoCurrentIndex);
                           deletedFiles.add(deleteModel);
                           if (deleteModel.type == SaveType.URL) {
                             print("삭제 요청 API를 호출한다");
@@ -287,6 +283,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
             options: CarouselOptions(
                 height: size,
                 viewportFraction: 1.0,
+                enableInfiniteScroll: false,
                 onPageChanged: (index, _) {
                   setState(() {
                     photoCurrentIndex = index;
@@ -313,8 +310,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
   }
 
   // 입력 폼 위젯 생성
-  Widget _diaryTextCard(
-      int id, diaryLength, DiarySentenceModel originalSentence) {
+  Widget _diaryTextCard(int id, diaryLength, DiarySentenceModel originalSentence) {
     return SizedBox(
       height: 250,
       child: CustomLongTextFormField(
@@ -327,15 +323,20 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
     );
   }
 
-  SizedBox _updateDiaryActionButton(
-      BuildContext context,
-      DiaryResponseModel state,
-      List<PhotoWithSaveTypeModel> models,
+  SizedBox _updateDiaryActionButton(BuildContext context, DiaryResponseModel state, List<PhotoWithSaveTypeModel> models,
       List<PhotoWithSaveTypeModel> deletedFiles) {
     return SizedBox(
       height: 46.0,
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
+        child: const Text(
+          "수정 하기",
+          style: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         onPressed: () async {
           if (formKey.currentState == null) {
             return;
@@ -361,31 +362,28 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           // 날짜가 수정된 경우
           if (isDateChanged()) {
             print("날짜가 수정됨.");
-            ref.read(diaryPaginationProvider.notifier).updateDate(
-                diaryId: diaryId,
-                model: DateRequestModel(updatedDate: diaryDate!));
+            ref
+                .read(diaryPaginationProvider.notifier)
+                .updateDate(diaryId: diaryId, model: DateRequestModel(updatedDate: diaryDate!));
           }
+
+          // 시간이 수정된 경우
 
           // 기존에 삭제된 이미지는 서버에 삭제 요청
           for (var deletedFile in deletedFiles) {
             print("삭제 이미지 존재");
-            ref
-                .read(diaryPaginationProvider.notifier)
-                .deleteImages(diaryId: diaryId, imageId: deletedFile.id!);
+            ref.read(diaryPaginationProvider.notifier).deleteImages(diaryId: diaryId, imageId: deletedFile.id!);
           }
 
           // 이미지는 새로 업로드된 이미지만 수정
-          List<PhotoWithSaveTypeModel> newImages =
-              models.where((image) => image.type == SaveType.LOCAL).toList();
+          List<PhotoWithSaveTypeModel> newImages = models.where((image) => image.type == SaveType.LOCAL).toList();
 
           if (newImages.isNotEmpty) {
             print("신규 이미지 존재");
             DiaryResponseWithPresignedModel preSignedUrlResponse =
                 await ref.read(diaryPaginationProvider.notifier).addImages(
                       diaryId: diaryId,
-                      diaryFileModels: newImages
-                          .map((image) => DiaryFileModel(fileName: image.name!))
-                          .toList(),
+                      diaryFileModels: newImages.map((image) => DiaryFileModel(fileName: image.name!)).toList(),
                     );
 
             List<String> preSignedUrls = preSignedUrlResponse.pictures
@@ -393,8 +391,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
                 .map((res) => res.preSignedUrl!)
                 .toList();
 
-            List<PhotoWithSaveTypeModel> localImages =
-                models.where((model) => model.type == SaveType.LOCAL).toList();
+            List<PhotoWithSaveTypeModel> localImages = models.where((model) => model.type == SaveType.LOCAL).toList();
 
             for (int i = 0; i < localImages.length; i++) {
               File file = File(localImages[i].path);
@@ -421,14 +418,6 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
-        ),
-        child: const Text(
-          "수정 하기",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
         ),
       ),
     );
@@ -471,12 +460,11 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           Navigator.of(context).pop();
         },
       ),
-      backgroundColor: Colors.transparent,
       elevation: 0.0,
     );
   }
 
-  Widget _datePickerButton(BuildContext context) {
+  Widget _datePickerButton(BuildContext context, BabyModel selectedBaby) {
     return SizedBox(
       height: 46.0,
       child: OutlinedButton(
@@ -490,7 +478,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
           ).then((value) {
             setState(() {
               diaryDate = value;
-              calculateDaysAfterBirth(diaryDate!);
+              calculateDaysAfterBirth(selectedBaby, diaryDate!);
             });
           });
         },
@@ -504,9 +492,7 @@ class _DiaryUpdateScreenState extends ConsumerState<DiaryUpdateScreen> {
               width: 5.0,
             ),
             Text(
-              DateFormat('yyyy-MM-dd')
-                  .format(diaryDate ?? baseDiaryDate!)
-                  .toString(),
+              DateFormat('yyyy-MM-dd').format(diaryDate ?? baseDiaryDate!).toString(),
               style: const TextStyle(
                 fontSize: 14.0,
                 color: Colors.black,
