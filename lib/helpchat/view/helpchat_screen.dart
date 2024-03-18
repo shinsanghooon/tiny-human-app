@@ -118,11 +118,20 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                   int userId = user.id;
 
                   if (mounted) {
+                    bool isExistedChat = helpChatInfo.any((chat) => chat.id == items[index]['id']);
+
+                    HelpChatModel chatModel;
+                    if (!isExistedChat) {
+                      print('get new help chat ${items[index]['id']}');
+                      chatModel = await ref.read(helpChatProvider.notifier).getNewHelpChat(items[index]['id']);
+                    } else {
+                      chatModel = helpChatInfo.firstWhere((chat) => chat.id == items[index]['id']);
+                    }
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => ChattingScreen(
                           userId: userId,
-                          model: helpChatInfo.firstWhere((chat) => chat.id == items[index]['id']),
+                          model: chatModel,
                         ),
                       ),
                     );

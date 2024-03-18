@@ -31,6 +31,12 @@ class HelpChatNotifier extends StateNotifier<List<HelpChatModel>> {
     state = await repository.getHelpChat();
   }
 
+  Future<HelpChatModel> getNewHelpChat(int id) async {
+    final response = await repository.getNewHelpChat(helpChatId: id);
+    state = [response, ...state];
+    return response;
+  }
+
   Future<void> updateLatestMessage(int helpChatId, HelpChatLatestMessage helpChatLatestMessage) async {
     await repository.updateLatestMessage(
       helpChatId: helpChatId,

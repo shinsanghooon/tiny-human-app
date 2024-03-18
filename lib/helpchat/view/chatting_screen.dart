@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/helpchat/component/chat_bubble.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
@@ -8,17 +9,17 @@ import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
 import '../../common/constant/firestore_constants.dart';
 import '../component/new_message_input.dart';
 
-class ChattingScreen extends StatefulWidget {
+class ChattingScreen extends ConsumerStatefulWidget {
   final int userId;
   final HelpChatModel model;
 
   const ChattingScreen({required this.userId, required this.model, super.key});
 
   @override
-  State<ChattingScreen> createState() => _ChattingScreenState();
+  ConsumerState<ChattingScreen> createState() => _ChattingScreenState();
 }
 
-class _ChattingScreenState extends State<ChattingScreen> {
+class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   User? loggedUser;
 
   final _chatInputController = TextEditingController();

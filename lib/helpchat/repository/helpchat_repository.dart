@@ -21,6 +21,12 @@ final helpChatRepositoryProvider = Provider<HelpChatRepository>((ref) {
 abstract class HelpChatRepository {
   factory HelpChatRepository(Dio dio, {String baseUrl}) = _HelpChatRepository;
 
+  @GET('/{id}')
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<HelpChatModel> getNewHelpChat({@Path('id') required int helpChatId});
+
   @GET('')
   @Headers({
     'accessToken': 'true',
