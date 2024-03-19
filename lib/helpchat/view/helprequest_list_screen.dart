@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
+import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 import 'package:tiny_human_app/helpchat/provider/help_chat_provider.dart';
 import 'package:tiny_human_app/helpchat/provider/help_request_provider.dart';
 import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
@@ -28,6 +29,14 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(helpRequestProvider);
+
+    final List<HelpRequestModel> helpRequestData;
+    if (showOnlyMyPost) {
+      helpRequestData = data.where((request) => widget.userId == request.userId).toList();
+    } else {
+      helpRequestData = data;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -46,61 +55,55 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                showOnlyMyPost = !showOnlyMyPost;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Row(
+                children: [
+                  showOnlyMyPost
+                      ? const Icon(
+                          Icons.check_circle,
+                          size: 20.0,
+                          color: MAIN_GREEN_COLOR,
+                        )
+                      : const Icon(
+                          Icons.circle_outlined,
+                          size: 20.0,
+                        ),
+                  const SizedBox(
+                    width: 4.0,
+                  ),
+                  const Text(
+                    'MY',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 14.0),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showOnlyMyPost = !showOnlyMyPost;
-                  });
-                },
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      showOnlyMyPost
-                          ? Icon(
-                              Icons.check_circle,
-                              size: 20.0,
-                              color: MAIN_GREEN_COLOR,
-                            )
-                          : Icon(
-                              Icons.circle_outlined,
-                              size: 20.0,
-                            ),
-                      const SizedBox(
-                        width: 4.0,
-                      ),
-                      Text(
-                        '내가 쓴 글만 보기',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             ListView.separated(
               // 여기에 key를 넣어줘야지 하나가 열렸을 때 다른 탭이 닫힌다. 하지만 애니메이션이 깨진다...
               // 확인해보기!
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                // 내가 쓴 글만 보기에 체크를 했는데, userId가 다를 때는 보여주지 않는다.
-                if (showOnlyMyPost && widget.userId != data[index].userId) {
-                  return null;
-                }
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ExpansionTile(
-                    key: ValueKey(data[index].id),
+                    key: ValueKey(helpRequestData[index].id),
                     onExpansionChanged: (bool expanding) {
                       setState(() {
                         _openedTileIndex = expanding ? index : -1;
@@ -111,7 +114,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          data[index].contents,
+                          helpRequestData[index].contents,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -122,7 +125,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                           height: 6.0,
                         ),
                         Text(
-                          DateConvertor.convertoToRelativeTime(data[index].createdAt!),
+                          DateConvertor.convertoToRelativeTime(helpRequestData[index].createdAt!),
                           style: TextStyle(
                             fontSize: 14.0,
                             color: Colors.grey.shade600,
@@ -153,16 +156,16 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                             const SizedBox(
                               height: 10.0,
                             ),
-                            widget.userId != data[index].userId
+                            widget.userId != helpRequestData[index].userId
                                 ? Align(
                                     alignment: Alignment.centerRight,
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         final chatList = ref.read(helpChatProvider);
                                         bool isExistedChat = chatList.any((chat) =>
-                                            chat.helpRequestId == data[index].id &&
+                                            chat.helpRequestId == helpRequestData[index].id &&
                                             chat.helpRequestUserId == widget.userId &&
-                                            chat.helpAnswerUserId == data[index].userId);
+                                            chat.helpAnswerUserId == helpRequestData[index].userId);
 
                                         if (isExistedChat) {
                                           Fluttertoast.showToast(
@@ -177,9 +180,9 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                         }
 
                                         final helpChatCreateModel = HelpChatCreateModel(
-                                          helpRequestId: data[index].id,
+                                          helpRequestId: helpRequestData[index].id,
                                           helpRequestUserId: widget.userId,
-                                          helpAnswerUserId: data[index].userId,
+                                          helpAnswerUserId: helpRequestData[index].userId,
                                         );
 
                                         final helpChatModel =
@@ -217,7 +220,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                           fontSize: 20.0,
                                         );
                                       },
-                                      child: ElevatedButton(
+                                      child: const ElevatedButton(
                                         onPressed: null,
                                         child: Text(
                                           "채팅하기",
