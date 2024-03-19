@@ -32,9 +32,11 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
 
     final List<HelpRequestModel> helpRequestData;
     if (showOnlyMyPost) {
-      helpRequestData = data.where((request) => widget.userId == request.userId).toList();
+      helpRequestData = data.where((request) => widget.userId == request.userId).toList()
+        ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     } else {
-      helpRequestData = data;
+      helpRequestData = data..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+      ;
     }
 
     return Scaffold(
@@ -83,6 +85,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                     'MY',
                     style: TextStyle(
                       fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
