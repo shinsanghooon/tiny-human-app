@@ -36,7 +36,6 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
         ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     } else {
       helpRequestData = data..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-      ;
     }
 
     return Scaffold(
@@ -65,18 +64,19 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
               });
             },
             child: Padding(
-              padding: const EdgeInsets.only(right: 20.0),
+              padding: const EdgeInsets.only(right: 24.0),
               child: Row(
                 children: [
                   showOnlyMyPost
                       ? const Icon(
                           Icons.check_circle,
                           size: 20.0,
-                          color: MAIN_GREEN_COLOR,
+                          color: PRIMARY_COLOR,
                         )
                       : const Icon(
                           Icons.circle_outlined,
                           size: 20.0,
+                          color: PRIMARY_COLOR,
                         ),
                   const SizedBox(
                     width: 4.0,
@@ -86,6 +86,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
+                      color: PRIMARY_COLOR,
                     ),
                   ),
                 ],

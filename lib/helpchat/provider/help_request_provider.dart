@@ -4,7 +4,7 @@ import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 
 import '../repository/helpchat_repository.dart';
 
-final helpRequestProvider = StateNotifierProvider<HelpRequestNotifier, List<HelpRequestModel>>((ref) {
+final helpRequestProvider = StateNotifierProvider.autoDispose<HelpRequestNotifier, List<HelpRequestModel>>((ref) {
   final repository = ref.watch(helpChatRepositoryProvider);
   return HelpRequestNotifier(repository: repository);
 });

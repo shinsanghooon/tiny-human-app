@@ -80,7 +80,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.sos_outlined, color: PRIMARY_COLOR),
+                    icon: const Icon(Icons.list_alt_outlined, color: PRIMARY_COLOR),
                     onPressed: () async {
                       UserModel user = await ref.read(userMeProvider.notifier).getMe();
                       int userId = user.id;
