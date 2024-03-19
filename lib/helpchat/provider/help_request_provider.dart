@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 
+import '../../user/provider/user_me_provider.dart';
 import '../repository/helpchat_repository.dart';
 
 final helpRequestProvider = StateNotifierProvider.autoDispose<HelpRequestNotifier, List<HelpRequestModel>>((ref) {
+  ref.watch(userMeProvider);
   final repository = ref.watch(helpChatRepositoryProvider);
   return HelpRequestNotifier(repository: repository);
 });

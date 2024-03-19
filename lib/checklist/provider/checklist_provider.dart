@@ -2,12 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
 import 'package:tiny_human_app/checklist/model/checklist_detail_model.dart';
 
+import '../../user/provider/user_me_provider.dart';
 import '../model/checklist_model.dart';
 import '../model/toggle_all_update_request.dart';
 import '../repository/checklist_repository.dart';
 
-final checklistProvider =
-    StateNotifierProvider<ChecklistNotifier, List<ChecklistModel>>((ref) {
+final checklistProvider = StateNotifierProvider<ChecklistNotifier, List<ChecklistModel>>((ref) {
+  ref.watch(userMeProvider);
   final repository = ref.watch(checklistRepositoryProvider);
   return ChecklistNotifier(repository: repository);
 });
@@ -24,14 +25,12 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
   }
 
   void addChecklist(ChecklistCreateModel model) async {
-    final response =
-        await repository.registerChecklist(checklistCreateModel: model);
+    final response = await repository.registerChecklist(checklistCreateModel: model);
     state = [response, ...state];
   }
 
   void toggleChecklistDetail(int checklistId, int checklistDetailId) async {
-    await repository.toggleChecklistDetail(
-        checklistId: checklistId, checklistDetailId: checklistDetailId);
+    await repository.toggleChecklistDetail(checklistId: checklistId, checklistDetailId: checklistDetailId);
 
     state = state.map((e) {
       return ChecklistModel(
@@ -39,11 +38,7 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
           title: e.title,
           checklistDetail: e.checklistDetail
               .map((c) => c.id == checklistDetailId
-                  ? ChecklistDetailModel(
-                      id: c.id,
-                      contents: c.contents,
-                      reason: c.reason,
-                      isChecked: !c.isChecked)
+                  ? ChecklistDetailModel(id: c.id, contents: c.contents, reason: c.reason, isChecked: !c.isChecked)
                   : c)
               .toList());
     }).toList();
@@ -51,24 +46,19 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
 
   void toggleAllChecklistDetail(int checklistId) async {
     ChecklistModel checklist = state.where((cl) => cl.id == checklistId).first;
-    final checkedList =
-        checklist.checklistDetail.map((e) => e.isChecked).toList();
+    final checkedList = checklist.checklistDetail.map((e) => e.isChecked).toList();
 
     // 모든 항목이 체크된 경우를 제외하고는 targetChecked는 true이다.
-    int isCheckedItemLength =
-        checkedList.where((e) => e == true).toList().length;
+    int isCheckedItemLength = checkedList.where((e) => e == true).toList().length;
 
     bool targetChecked = true;
     if (checkedList.length == isCheckedItemLength) {
       targetChecked = false;
     }
 
-    final toggleAllUpdateRequest =
-        ToggleAllUpdateRequest(targetChecked: targetChecked);
+    final toggleAllUpdateRequest = ToggleAllUpdateRequest(targetChecked: targetChecked);
 
-    await repository.toggleAllChecklistDetail(
-        checklistId: checklistId,
-        toggleAllUpdateRequest: toggleAllUpdateRequest);
+    await repository.toggleAllChecklistDetail(checklistId: checklistId, toggleAllUpdateRequest: toggleAllUpdateRequest);
 
     state = state.map((e) {
       return e.id == checklistId
@@ -76,11 +66,8 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
               id: e.id,
               title: e.title,
               checklistDetail: e.checklistDetail
-                  .map((c) => ChecklistDetailModel(
-                      id: c.id,
-                      contents: c.contents,
-                      reason: c.reason,
-                      isChecked: targetChecked))
+                  .map((c) =>
+                      ChecklistDetailModel(id: c.id, contents: c.contents, reason: c.reason, isChecked: targetChecked))
                   .toList())
           : e;
     }).toList();

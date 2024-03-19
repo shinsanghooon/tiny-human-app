@@ -8,6 +8,7 @@ import 'package:tiny_human_app/diary/model/diary_file_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
+import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../model/date_request_model.dart';
 import '../model/diary_create_model.dart';
@@ -23,6 +24,8 @@ final diaryDetailProvider = Provider.family<DiaryResponseModel?, int>((ref, id) 
 });
 
 final diaryPaginationProvider = StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>((ref) {
+  ref.watch(userMeProvider);
+  print('diary-userme');
   final repo = ref.watch(diaryPaginationRepositoryProvider);
   final babyId = ref.watch(selectedBabyProvider);
   String order = 'uploadedAt';

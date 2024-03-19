@@ -80,6 +80,9 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
       await repository.registerFcmTokenAndDeviceInfo(
           userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
 
+      print('login!');
+      print('state $state');
+      
       return userResponse;
     } catch (e) {
       state = UserModelError(message: '로그인에 실패했습니다.');
@@ -116,6 +119,10 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
           userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
 
       state = userResponse;
+
+      print('login!');
+      print('state $state');
+
       return userResponse;
     } catch (e) {
       state = UserModelError(message: '로그인에 실패했습니다.');
@@ -132,5 +139,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
       GoogleSignIn().signOut(),
       FirebaseAuth.instance.signOut(),
     ]);
+    print('logout!');
+    print('state $state');
   }
 }

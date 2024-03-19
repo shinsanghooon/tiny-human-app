@@ -29,17 +29,14 @@ abstract class BabyRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<BabyModel> updateBaby(
-      {@Path('babyId') required int id,
-      @Body() required Map<String, dynamic> body});
+  Future<BabyModel> updateBaby({@Path('babyId') required int id, @Body() required Map<String, dynamic> body});
 
   @PATCH('/{babyId}/image')
   @Headers({
     'accessToken': 'true',
   })
   Future<BabyModelWithPreSigned> updateBabyProfile(
-      {@Path('babyId') required int id,
-      @Body() required Map<String, dynamic> body});
+      {@Path('babyId') required int id, @Body() required Map<String, dynamic> body});
 
   @DELETE('/{babyId}')
   @Headers({

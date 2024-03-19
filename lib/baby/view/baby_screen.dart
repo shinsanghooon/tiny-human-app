@@ -18,6 +18,7 @@ class BabyScreen extends ConsumerWidget {
     // 이 화면에서든 어떤 화면에서든 한 번 불리면 프로바이더가 생성이 되고 계속 기억이 된다.
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
+
     return DefaultLayout(
       appBar: AppBar(
         title: const Text(
@@ -45,17 +46,24 @@ class BabyScreen extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           // shrinkWrap: true,
           itemCount: data.length,
-          itemBuilder: (context, index) => SizedBox(
-            width: MediaQuery.of(context).size.width / 1.0,
-            height: MediaQuery.of(context).size.height,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 20.0,
+          itemBuilder: (context, index) =>
+              SizedBox(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 1.0,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 20.0,
+                  ),
+                  child: BabyCard(model: data[index]),
+                ),
               ),
-              child: BabyCard(model: data[index]),
-            ),
-          ),
         ),
       ),
     );
