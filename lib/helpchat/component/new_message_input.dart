@@ -39,6 +39,8 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
 
   void _sendMessage() async {
     // FocusScope.of(context).unfocus();
+    _textController.clear();
+
     FirebaseFirestore.instance
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(widget.groupChatId)
@@ -62,16 +64,16 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
     );
 
     await ref.read(helpChatProvider.notifier).updateLatestMessage(
-          widget.helpChatId,
-          HelpChatLatestMessage(
-            helpRequestUserId: widget.chatRequestUserId,
-            helpAnswerUserId: widget.chatAnswerUserId,
-            message: inputMessage,
-            messageTime: DateTime.now(),
-          ),
-        );
+      widget.helpChatId,
+      HelpChatLatestMessage(
+        helpRequestUserId: widget.chatRequestUserId,
+        helpAnswerUserId: widget.chatAnswerUserId,
+        message: inputMessage,
+        messageTime: DateTime.now(),
+      ),
+    );
 
-    _textController.clear();
+
     if (widget.controller.hasClients) {
       widget.controller.animateTo(
         // reverse를 해줬으므로, minScrollExtent를 해줘야 함!
@@ -119,7 +121,9 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
           ),
           IconButton(
             onPressed: () {
-              inputMessage.trim().isEmpty ? null : _sendMessage();
+              inputMessage
+                  .trim()
+                  .isEmpty ? null : _sendMessage();
             },
             icon: const Icon(Icons.send),
             color: PRIMARY_COLOR,
