@@ -172,7 +172,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           }
 
           final response = await dio.post(
-            'http://$ip/api/v1/babies',
+            '$ip/api/v1/babies',
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
             }),

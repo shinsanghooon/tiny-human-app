@@ -14,7 +14,7 @@ part 'helpchat_repository.g.dart';
 
 final helpChatRepositoryProvider = Provider<HelpChatRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return HelpChatRepository(dio, baseUrl: 'http://$ip/api/v1/helpchat');
+  return HelpChatRepository(dio, baseUrl: '$ip/api/v1/helpchat');
 });
 
 @RestApi()

@@ -9,7 +9,7 @@ import '../model/login_response.dart';
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dio = ref.watch(dioProvider);
 
-  return AuthRepository(baseUrl: 'http://$ip/api/v1', dio: dio);
+  return AuthRepository(baseUrl: '$ip/api/v1', dio: dio);
 });
 
 class AuthRepository {
@@ -37,7 +37,7 @@ class AuthRepository {
         options: Options(headers: {
           'refreshToken': 'true',
         }));
-    
+
     return TokenResponse.fromJson(response.data);
   }
 

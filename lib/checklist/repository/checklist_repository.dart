@@ -12,7 +12,7 @@ part 'checklist_repository.g.dart';
 
 final checklistRepositoryProvider = Provider<ChecklistRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return ChecklistRepository(dio, baseUrl: 'http://$ip/api/v1/checklist');
+  return ChecklistRepository(dio, baseUrl: '$ip/api/v1/checklist');
 });
 
 @RestApi()
@@ -29,31 +29,27 @@ abstract class ChecklistRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<ChecklistModel> registerChecklist(
-      {@Body() required ChecklistCreateModel checklistCreateModel});
+  Future<ChecklistModel> registerChecklist({@Body() required ChecklistCreateModel checklistCreateModel});
 
   @PATCH('')
   @Headers({
     'accessToken': 'true',
   })
-  Future<void> updateChecklist(
-      {@Body() required ChecklistCreateModel updateChecklist});
+  Future<void> updateChecklist({@Body() required ChecklistCreateModel updateChecklist});
 
   @PATCH('/{checklistId}/detail/{checklistDetailId}/toggle')
   @Headers({
     'accessToken': 'true',
   })
   Future<void> toggleChecklistDetail(
-      {@Path('checklistId') required int checklistId,
-      @Path('checklistDetailId') required int checklistDetailId});
+      {@Path('checklistId') required int checklistId, @Path('checklistDetailId') required int checklistDetailId});
 
   @PATCH('/{checklistId}/toggle-all')
   @Headers({
     'accessToken': 'true',
   })
   Future<void> toggleAllChecklistDetail(
-      {@Path('checklistId') required int checklistId,
-      @Body() required ToggleAllUpdateRequest toggleAllUpdateRequest});
+      {@Path('checklistId') required int checklistId, @Body() required ToggleAllUpdateRequest toggleAllUpdateRequest});
 
   @DELETE('/{checklistId}')
   @Headers({

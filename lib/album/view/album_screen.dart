@@ -76,6 +76,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   void onScaleEnd(ScaleEndDetails details) {
     setState(() {
+      if (endScale == 1.0) {
+        return;
+      }
+
       if (endScale < 1) {
         gridCount += 1;
       } else {

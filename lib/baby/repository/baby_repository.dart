@@ -11,7 +11,7 @@ part 'baby_repository.g.dart';
 
 final babyRepositoryProvider = Provider<BabyRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  final repository = BabyRepository(dio, baseUrl: 'http://$ip/api/v1/babies');
+  final repository = BabyRepository(dio, baseUrl: '$ip/api/v1/babies');
   return repository;
 });
 

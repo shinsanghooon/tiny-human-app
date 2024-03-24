@@ -86,7 +86,7 @@ class CustomInterceptor extends Interceptor {
       print('!!!!');
       try {
         final response = await dio.post(
-          'http://$ip/api/v1/token',
+          '$ip/api/v1/token',
           data: {'refreshToken': refreshToken},
           options: Options(headers: {'authorization': 'Bearer $refreshToken'}),
         );

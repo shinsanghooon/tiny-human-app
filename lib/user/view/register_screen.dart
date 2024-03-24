@@ -38,8 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 const ScreenTitle(title: "회원가입을 진행합니다."),
                 const SizedBox(height: 20.0),
-                const ScreenSubTitle(
-                    subTitle: "이메일, 패스워드, 이름을 입력하여 회원가입을 진행해주세요."),
+                const ScreenSubTitle(subTitle: "이메일, 패스워드, 이름을 입력하여 회원가입을 진행해주세요."),
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -138,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             print('Request to register');
 
             final response = await dio.post(
-              'http://$ip/api/v1/users',
+              '$ip/api/v1/users',
               data: {
                 "name": username,
                 "email": email,
