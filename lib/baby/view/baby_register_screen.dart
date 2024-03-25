@@ -98,7 +98,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                           initialValue: nickname ?? '',
                         ),
                         const SizedBox(height: 20.0),
-                        genderSelectionButton(),
+                        genderSelectionButton(context),
                         const SizedBox(height: 20.0),
                         IntrinsicHeight(
                           child: Row(
@@ -249,32 +249,34 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  ToggleButtons genderSelectionButton() {
-    return ToggleButtons(
-      constraints: const BoxConstraints(
-        minHeight: 50.0,
-        minWidth: 170.0,
+  Widget genderSelectionButton(BuildContext context) {
+    return Center(
+      child: ToggleButtons(
+        constraints: BoxConstraints(
+          minHeight: 50.0,
+          minWidth: (MediaQuery.of(context).size.width) / 2.5,
+        ),
+        onPressed: (int index) {
+          setState(() {
+            gender = genderList[index];
+            for (int i = 0; i < _selectedGender.length; i++) {
+              _selectedGender[i] = i == index;
+            }
+          });
+        },
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+        selectedBorderColor: PRIMARY_COLOR,
+        selectedColor: Colors.black,
+        fillColor: Colors.white,
+        color: Colors.grey,
+        isSelected: _selectedGender,
+        children: genderList.map((gender) {
+          return Text(
+            gender,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          );
+        }).toList(),
       ),
-      onPressed: (int index) {
-        setState(() {
-          gender = genderList[index];
-          for (int i = 0; i < _selectedGender.length; i++) {
-            _selectedGender[i] = i == index;
-          }
-        });
-      },
-      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-      selectedBorderColor: PRIMARY_COLOR,
-      selectedColor: Colors.black,
-      fillColor: Colors.white,
-      color: Colors.grey,
-      isSelected: _selectedGender,
-      children: genderList.map((gender) {
-        return Text(
-          gender,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        );
-      }).toList(),
     );
   }
 
