@@ -39,6 +39,10 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
   }
 
   Future<UserModel> getMe() async {
+    if (state != null) {
+      return state as UserModel;
+    }
+
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
 
@@ -82,7 +86,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
       print('login!');
       print('state $state');
-      
+
       return userResponse;
     } catch (e) {
       state = UserModelError(message: '로그인에 실패했습니다.');
