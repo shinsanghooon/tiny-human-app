@@ -34,6 +34,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               fontWeight: FontWeight.w800,
             ),
           ),
+          toolbarHeight: 64.0,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           leading: IconButton(

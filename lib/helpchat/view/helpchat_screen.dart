@@ -26,21 +26,16 @@ class HelpChatScreen extends ConsumerStatefulWidget {
 }
 
 class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTickerProviderStateMixin {
-  TabController? _tabController;
-  int _limit = 20;
-
   final Stream<QuerySnapshot> chatStream =
       FirebaseFirestore.instance.collection(FirestoreConstants.pathChatCollection).snapshots();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController?.dispose();
     super.dispose();
   }
 
@@ -63,6 +58,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                 fontWeight: FontWeight.w800,
               ),
             ),
+            toolbarHeight: 64.0,
             leading: IconButton(
                 icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
                 onPressed: () => context.goNamed(BabyScreen.routeName)),

@@ -190,6 +190,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),

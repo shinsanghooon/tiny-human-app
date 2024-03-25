@@ -63,6 +63,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
+        toolbarHeight: 64.0,
         actions: [
           TextButton(
             onPressed: () {},

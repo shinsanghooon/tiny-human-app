@@ -28,6 +28,7 @@ class BabyScreen extends ConsumerWidget {
             fontWeight: FontWeight.w800,
           ),
         ),
+        toolbarHeight: 64.0,
         actions: [
           IconButton(
               icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -46,24 +47,17 @@ class BabyScreen extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           // shrinkWrap: true,
           itemCount: data.length,
-          itemBuilder: (context, index) =>
-              SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 1.0,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 20.0,
-                  ),
-                  child: BabyCard(model: data[index]),
-                ),
+          itemBuilder: (context, index) => SizedBox(
+            width: MediaQuery.of(context).size.width / 1.0,
+            height: MediaQuery.of(context).size.height,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10.0,
+                horizontal: 20.0,
               ),
+              child: BabyCard(model: data[index]),
+            ),
+          ),
         ),
       ),
     );

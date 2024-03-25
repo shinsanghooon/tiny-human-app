@@ -88,7 +88,7 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
                       ? CircularProgressIndicator(
                           strokeWidth: 8.0,
                         )
-                      : Text("마지막 데이터입니다."),
+                      : Text(""),
                 ),
               );
             }

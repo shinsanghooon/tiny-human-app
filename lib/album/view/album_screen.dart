@@ -148,6 +148,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+                toolbarHeight: 64.0,
                 leading: IconButton(
                     icon: const Icon(
                       Icons.home_outlined,

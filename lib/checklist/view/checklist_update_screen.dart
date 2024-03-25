@@ -21,8 +21,7 @@ class ChecklistUpdateScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ChecklistUpdateScreen> createState() =>
-      _ChecklistUpdateScreenState();
+  ConsumerState<ChecklistUpdateScreen> createState() => _ChecklistUpdateScreenState();
 }
 
 class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
@@ -38,22 +37,16 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
   void initState() {
     super.initState();
     originalChecklist = widget.model; // 부모로부터 전달받은 값을 사용하여 상태 초기화
-    originalChecklistDetailIds =
-        originalChecklist.checklistDetail.map((e) => e.id).toList();
+    originalChecklistDetailIds = originalChecklist.checklistDetail.map((e) => e.id).toList();
   }
 
   int generateTemporaryId() {
-    List<ChecklistDetailModel> targetList = [
-      ...originalChecklist.checklistDetail,
-      ...newChecklistDetails
-    ];
+    List<ChecklistDetailModel> targetList = [...originalChecklist.checklistDetail, ...newChecklistDetails];
     List<int> existingIds = targetList.map((e) => e.id).toList();
     if (existingIds.isEmpty) {
       return 1; // 리스트가 비어있을 경우 기본값으로 1을 사용
     }
-    return existingIds.reduce(max) +
-        1 +
-        Random().nextInt(10000); // 가장 큰 id 값에 1을 더함
+    return existingIds.reduce(max) + 1 + Random().nextInt(10000); // 가장 큰 id 값에 1을 더함
   }
 
   @override
@@ -73,18 +66,15 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                   children: [
                     const Text(
                       "제목",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
                     ),
-                    _titleTextCard(
-                        originalChecklist.id, originalChecklist.title),
+                    _titleTextCard(originalChecklist.id, originalChecklist.title),
                     const SizedBox(
                       height: 20.0,
                     ),
                     const Text(
                       "체크리스트",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -154,6 +144,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),
@@ -169,9 +160,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
         keyName: 'checklist_update_${id}_${UniqueKey()}',
         onSaved: (String? value) {
           originalChecklist = ChecklistModel(
-              id: originalChecklist.id,
-              title: value!,
-              checklistDetail: originalChecklist.checklistDetail);
+              id: originalChecklist.id, title: value!, checklistDetail: originalChecklist.checklistDetail);
         },
         hintText: "체크리스트 제목을 입력해주세요.",
         initialValue: originalTitle!,
@@ -180,8 +169,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
   }
 
   Widget _checklistTextCard(int index) {
-    ChecklistDetailModel checklistDetail =
-    originalChecklist.checklistDetail[index];
+    ChecklistDetailModel checklistDetail = originalChecklist.checklistDetail[index];
 
     return SizedBox(
       child: IntrinsicHeight(
@@ -199,15 +187,14 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                           id: originalChecklist.id,
                           title: originalChecklist.title,
                           checklistDetail: originalChecklist.checklistDetail
-                              .map((e) =>
-                          e.id == checklistDetail.id
-                              ? ChecklistDetailModel(
-                            id: e.id,
-                            contents: value!,
-                            reason: e.reason,
-                            isChecked: e.isChecked,
-                          )
-                              : e)
+                              .map((e) => e.id == checklistDetail.id
+                                  ? ChecklistDetailModel(
+                                      id: e.id,
+                                      contents: value!,
+                                      reason: e.reason,
+                                      isChecked: e.isChecked,
+                                    )
+                                  : e)
                               .toList());
                     });
                   },
@@ -231,9 +218,8 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                   }
 
                   // 새로 추가한 detail list 중에서 삭제되면 여기서 제외
-                  newChecklistDetails = newChecklistDetails
-                      .where((element) => element.id != checklistDetail.id)
-                      .toList();
+                  newChecklistDetails =
+                      newChecklistDetails.where((element) => element.id != checklistDetail.id).toList();
 
                   setState(() {
                     originalChecklist = ChecklistModel(
@@ -268,8 +254,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
           return null;
         }
 
-        ChecklistCreateModel updatedModel =
-        ChecklistCreateModel.fromModel(originalChecklist);
+        ChecklistCreateModel updatedModel = ChecklistCreateModel.fromModel(originalChecklist);
 
         ref.read(checklistProvider.notifier).updateChecklist(updatedModel);
 

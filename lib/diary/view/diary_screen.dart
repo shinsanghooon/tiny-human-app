@@ -34,6 +34,7 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
               fontWeight: FontWeight.w800,
             ),
           ),
+          toolbarHeight: 64.0,
           leading: IconButton(
               icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
               onPressed: () => context.goNamed(BabyScreen.routeName)),
