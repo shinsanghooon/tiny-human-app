@@ -123,30 +123,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () => onGoogleLoginPress(context),
-                        child: Text("구글 로그인",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                            )),
                         style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.blueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             )),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => onKakaoLoginPress(context),
-                        child: Text("카카오 로그인",
+                        child: const Text("구글 로그인",
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.w600,
                             )),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => onKakaoLoginPress(context),
                         style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
                             backgroundColor: Colors.yellow,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
+                            )),
+                        child: const Text("카카오 로그인",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
                             )),
                       )
                     ],
@@ -219,7 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     user = await UserApi.instance.me();
     print(user.kakaoAccount);
 
-    ref.read(userMeProvider.notifier).googleLogin(
+    ref.read(userMeProvider.notifier).kakaoLogin(
           email: '${user.id}@kakao.com',
           accessToken: user.id.toString(),
           name: user.kakaoAccount!.profile!.nickname!,

@@ -56,8 +56,12 @@ class AuthRepository {
     return LoginResponse.fromJson(response.data);
   }
 
-  Future<LoginResponse> kakaoLogin(
-      {required String email, required String accessToken, required String name, required String photoURL}) async {
+  Future<LoginResponse> kakaoLogin({
+    required String email,
+    required String accessToken,
+    required String name,
+    required String photoURL,
+  }) async {
     final response = await dio.post('$baseUrl/auth/kakao', data: {
       "email": email,
       "socialAccessToken": accessToken,
