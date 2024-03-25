@@ -355,8 +355,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
           ).then((value) {
             setState(() {
               diaryDate = value;
-              print(diaryDate);
-
               calculateDaysAfterBirth(selectedBaby, diaryDate!);
             });
           });

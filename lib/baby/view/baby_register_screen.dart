@@ -158,9 +158,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
-          print('Request to register baby');
-          print(accessToken);
-
           if (formKey.currentState == null) {
             return null;
           }
@@ -215,8 +212,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                 contentType: mimeType,
               ));
 
-          print('baby');
-          print(response);
           ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
 
           Navigator.of(context).pop();
@@ -297,7 +292,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
             ).then((value) {
               setState(() {
                 dayOfBirth = value;
-                print(dayOfBirth);
               });
             });
           },

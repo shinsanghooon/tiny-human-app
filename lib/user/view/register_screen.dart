@@ -134,8 +134,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 });
           } else {
             // 서버에 요청을 보낸다.
-            print('Request to register');
-
             final response = await dio.post(
               '$ip/api/v1/users',
               data: {
@@ -144,8 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 "password": password,
               },
             );
-            print(response.statusCode);
-            print(response);
 
             if (response.statusCode != 201) {
               showDialog(

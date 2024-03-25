@@ -42,7 +42,6 @@ class CustomTextTitleFormField extends StatelessWidget {
         }
 
         if (keyName == 'email' && !isValidEmail(value)) {
-          print(value);
           return '올바른 이메일 주소를 입력해주세요';
         }
 

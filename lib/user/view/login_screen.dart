@@ -170,7 +170,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             photoURL: photoURL!,
           );
     } catch (error) {
-      print(error);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('로그인 실패')),
       );

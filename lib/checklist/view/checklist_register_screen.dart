@@ -154,7 +154,6 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
-        print('체크리스트를 등록하자.');
         if (formKey.currentState == null) {
           return null;
         }

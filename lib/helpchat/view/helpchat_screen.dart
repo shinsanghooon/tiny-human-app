@@ -122,7 +122,6 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
 
                     HelpChatModel chatModel;
                     if (!isExistedChat) {
-                      print('get new help chat ${items[index]['id']}');
                       chatModel = await ref.read(helpChatProvider.notifier).getNewHelpChat(items[index]['id']);
                     } else {
                       chatModel = helpChatInfo.firstWhere((chat) => chat.id == items[index]['id']);

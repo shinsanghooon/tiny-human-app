@@ -26,7 +26,6 @@ final diaryDetailProvider = Provider.family<DiaryResponseModel?, int>((ref, id) 
 
 final diaryPaginationProvider = StateNotifierProvider<DiaryPaginationStateNotifier, CursorPaginationBase>((ref) {
   ref.watch(userMeProvider);
-  print('diary-userme');
   final repo = ref.watch(diaryPaginationRepositoryProvider);
   final babyId = ref.watch(selectedBabyProvider);
   String order = 'uploadedAt';

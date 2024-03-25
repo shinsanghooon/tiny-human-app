@@ -164,54 +164,76 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
   GestureDetector profileMainImage() {
     return (baseImageUrl == null)
         ? GestureDetector(
-            onTap: () async {
-              final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-              if (pickedFile != null) {
-                setState(() {
-                  pickedFilePath = pickedFile.path;
-                  profileImage = Image.file(File(pickedFile.path)).image;
-                  fileName = pickedFile.name;
-                });
-              }
-            },
-            child: Container(
-              height: MediaQuery.of(context).size.width / 1.2,
-              width: MediaQuery.of(context).size.width / 1.2,
-              color: Colors.deepOrange.shade500,
-              child: _uploadPhotoLabel(),
-            ),
-          )
+      onTap: () async {
+        final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          setState(() {
+            pickedFilePath = pickedFile.path;
+            profileImage = Image
+                .file(File(pickedFile.path))
+                .image;
+            fileName = pickedFile.name;
+          });
+        }
+      },
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width / 1.2,
+        color: Colors.deepOrange.shade500,
+        child: _uploadPhotoLabel(),
+      ),
+    )
         : GestureDetector(
-            onTap: () async {
-              final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-              if (pickedFile != null) {
-                setState(() {
-                  pickedFilePath = pickedFile.path;
-                  profileImage = Image.file(File(pickedFile.path)).image;
-                  fileName = pickedFile.name;
-                });
-              }
-            },
-            child: pickedFilePath == null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(24.0),
-                    child: Image.network(
-                      baseImageUrl!,
-                      width: MediaQuery.of(context).size.width / 1.3,
-                      height: MediaQuery.of(context).size.width / 1.3,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(24.0),
-                    child: Image.asset(
-                      pickedFilePath!,
-                      width: MediaQuery.of(context).size.width / 1.3,
-                      height: MediaQuery.of(context).size.width / 1.3,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-          );
+      onTap: () async {
+        final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          setState(() {
+            pickedFilePath = pickedFile.path;
+            profileImage = Image
+                .file(File(pickedFile.path))
+                .image;
+            fileName = pickedFile.name;
+          });
+        }
+      },
+      child: pickedFilePath == null
+          ? ClipRRect(
+        borderRadius: BorderRadius.circular(24.0),
+        child: Image.network(
+          baseImageUrl!,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width / 1.3,
+          height: MediaQuery
+              .of(context)
+              .size
+              .width / 1.3,
+          fit: BoxFit.cover,
+        ),
+      )
+          : ClipRRect(
+        borderRadius: BorderRadius.circular(24.0),
+        child: Image.asset(
+          pickedFilePath!,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width / 1.3,
+          height: MediaQuery
+              .of(context)
+              .size
+              .width / 1.3,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 
   Widget _uploadPhotoLabel() {
@@ -238,9 +260,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
-          print('Request to register baby');
-          print(accessToken);
-
           if (formKey.currentState == null) {
             return null;
           }
@@ -254,6 +273,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           // 수정된 필드 확인하기
           // 사진, 이름, 태명, 성별, 날짜, 시간, 설명
 
+          // TODO
           int babyId = 1;
 
           try {
@@ -289,7 +309,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           // 이미지 업로드
           if (fileName != null) {
             final response =
-                await ref.read(babyProvider.notifier).updateBabyProfile(babyId: babyId, body: {"fileName": fileName});
+            await ref.read(babyProvider.notifier).updateBabyProfile(babyId: babyId, body: {"fileName": fileName});
 
             String preSignedUrl = response.preSignedUrl;
             File file = File(pickedFilePath!);
@@ -309,8 +329,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           ref.read(babyProvider.notifier).getMyBabies();
 
           if (mounted) {
-            print('수정하기 버튼 클릭!');
-            // context.goNamed(BabyScreen.routeName);
             context.pop();
           }
         },
@@ -386,15 +404,15 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
         children: [
           gender == '여자 아기'
               ? const Icon(
-                  Icons.female_outlined,
-                  // color: Colors.pink,
-                  size: 20.0,
-                )
+            Icons.female_outlined,
+            // color: Colors.pink,
+            size: 20.0,
+          )
               : const Icon(
-                  Icons.male_outlined,
-                  // color: Colors.blueAccent,
-                  size: 20.0,
-                ),
+            Icons.male_outlined,
+            // color: Colors.blueAccent,
+            size: 20.0,
+          ),
           const SizedBox(
             width: 4.0,
           ),
@@ -402,15 +420,15 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
             gender,
             style: gender == '여자 아기'
                 ? const TextStyle(
-                    fontSize: 16.0,
-                    // color: Colors.pink,
-                    fontWeight: FontWeight.w600,
-                  )
+              fontSize: 16.0,
+              // color: Colors.pink,
+              fontWeight: FontWeight.w600,
+            )
                 : const TextStyle(
-                    fontSize: 16.0,
-                    // color: Colors.blueAccent,
-                    fontWeight: FontWeight.w600,
-                  ),
+              fontSize: 16.0,
+              // color: Colors.blueAccent,
+              fontWeight: FontWeight.w600,
+            ),
           )
         ],
       ),
@@ -517,7 +535,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
                   timeOfBirth = value!;
                 },
                 dropdownMenuEntries: times.map(
-                  (t) {
+                      (t) {
                     return DropdownMenuEntry(value: t, label: '${t}시');
                   },
                 ).toList(),

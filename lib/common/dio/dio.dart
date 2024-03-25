@@ -70,20 +70,14 @@ class CustomInterceptor extends Interceptor {
     }
 
     final isStatus401 = err.response?.statusCode == 401;
-    print(err.response?.statusCode);
-    print(err.response?.data);
 
     // 토큰을 발급 받으려다가 에러가 난 것이다.
     final isPathRefresh = err.requestOptions.path == '/api/v1/token';
-    print(err.requestOptions.path);
-    print(isPathRefresh);
-    print('refreshToken $refreshToken');
 
     if (isStatus401 && !isPathRefresh) {
       debugPrint('[ERROR] RefreshToken Error');
       final dio = Dio();
 
-      print('!!!!');
       try {
         final response = await dio.post(
           '$ip/api/v1/token',
@@ -91,8 +85,6 @@ class CustomInterceptor extends Interceptor {
           options: Options(headers: {'authorization': 'Bearer $refreshToken'}),
         );
         final accessToken = response.data['accessToken'];
-        print('newAccesstoken: $accessToken');
-
         final options = err.requestOptions;
 
         options.headers.addAll({'authorization': 'Bearer $accessToken'});
@@ -101,7 +93,6 @@ class CustomInterceptor extends Interceptor {
 
         // 요청 재전송. 헤더만 변경해서
         final newResponse = await dio.fetch(options);
-        print(newResponse);
         return handler.resolve(newResponse);
       } on DioError catch (e) {
         // jwt 관련 다른 에러(토큰 만료)

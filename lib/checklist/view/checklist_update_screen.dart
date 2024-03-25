@@ -181,7 +181,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
 
   Widget _checklistTextCard(int index) {
     ChecklistDetailModel checklistDetail =
-        originalChecklist.checklistDetail[index];
+    originalChecklist.checklistDetail[index];
 
     return SizedBox(
       child: IntrinsicHeight(
@@ -199,14 +199,15 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                           id: originalChecklist.id,
                           title: originalChecklist.title,
                           checklistDetail: originalChecklist.checklistDetail
-                              .map((e) => e.id == checklistDetail.id
-                                  ? ChecklistDetailModel(
-                                      id: e.id,
-                                      contents: value!,
-                                      reason: e.reason,
-                                      isChecked: e.isChecked,
-                                    )
-                                  : e)
+                              .map((e) =>
+                          e.id == checklistDetail.id
+                              ? ChecklistDetailModel(
+                            id: e.id,
+                            contents: value!,
+                            reason: e.reason,
+                            isChecked: e.isChecked,
+                          )
+                              : e)
                               .toList());
                     });
                   },
@@ -228,7 +229,6 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                   if (originalChecklistDetailIds.contains(checklistDetail.id)) {
                     deleteChecklistDetails.add(checklistDetail.id);
                   }
-                  print(deleteChecklistDetails);
 
                   // 새로 추가한 detail list 중에서 삭제되면 여기서 제외
                   newChecklistDetails = newChecklistDetails
@@ -269,7 +269,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
         }
 
         ChecklistCreateModel updatedModel =
-            ChecklistCreateModel.fromModel(originalChecklist);
+        ChecklistCreateModel.fromModel(originalChecklist);
 
         ref.read(checklistProvider.notifier).updateChecklist(updatedModel);
 

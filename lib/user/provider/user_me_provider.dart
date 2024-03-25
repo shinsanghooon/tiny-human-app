@@ -124,7 +124,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
       state = userResponse;
 
-      print('login!');
+      print('google login!');
       print('state $state');
 
       return userResponse;

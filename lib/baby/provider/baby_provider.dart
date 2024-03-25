@@ -6,7 +6,6 @@ import '../model/baby_model_with_presigned.dart';
 import '../repository/baby_repository.dart';
 
 final selectedBabyProvider = StateProvider<int>((ref) {
-  ref.watch(userMeProvider);
   return 0;
 });
 
@@ -32,6 +31,7 @@ class BabyNotifier extends StateNotifier<List<BabyModel>> {
   }
 
   void addBaby(BabyModel baby) {
+    // TODO 아기 추가하는 API 요청 추가
     state = [...state, baby];
   }
 

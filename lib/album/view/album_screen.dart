@@ -471,7 +471,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   Future<List<XFile>> uploadImages() async {
     List<XFile>? images = await imagePicker.pickMultipleMedia();
-    debugPrint('[ALBUM UPLOAD] selected images count: ${images.length}');
     return images;
   }
 }
