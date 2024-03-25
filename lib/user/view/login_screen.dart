@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -133,6 +134,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             )),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => onKakaoLoginPress(context),
+                        child: Text("카카오 로그인",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                            )),
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.yellow,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            )),
                       )
                     ],
                   ),
@@ -174,5 +189,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         SnackBar(content: Text('로그인 실패')),
       );
     }
+  }
+
+  onKakaoLoginPress(BuildContext context) async {
+    User user;
+    if (await isKakaoTalkInstalled()) {
+      try {
+        await UserApi.instance.loginWithKakaoTalk();
+        print('카카오톡으로 로그인 성공');
+      } catch (error) {
+        print('카카오톡으로 로그인 실패 $error');
+        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
+        try {
+          await UserApi.instance.loginWithKakaoAccount();
+          print('카카오계정으로 로그인 성공');
+        } catch (error) {
+          print('카카오계정으로 로그인 실패 $error');
+        }
+      }
+    } else {
+      try {
+        await UserApi.instance.loginWithKakaoAccount();
+        print('카카오계정으로 로그인 성공');
+      } catch (error) {
+        print('카카오계정으로 로그인 실패 $error');
+      }
+    }
+
+    user = await UserApi.instance.me();
+    print(user.kakaoAccount);
+
+    ref.read(userMeProvider.notifier).googleLogin(
+          email: '${user.id}@kakao.com',
+          accessToken: user.id.toString(),
+          name: user.kakaoAccount!.profile!.nickname!,
+          photoURL: user.kakaoAccount!.profile!.profileImageUrl!,
+        );
   }
 }

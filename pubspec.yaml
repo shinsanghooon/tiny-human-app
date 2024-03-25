@@ -75,6 +75,7 @@ dependencies:
   dotted_border: ^2.1.0
 
   device_info_plus: ^9.1.2
+  kakao_flutter_sdk_user: ^1.4.2
 
 dev_dependencies:
   flutter_test:
