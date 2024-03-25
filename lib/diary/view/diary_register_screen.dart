@@ -303,8 +303,6 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
-          ref.read(diaryPaginationProvider.notifier).refreshPagination();
-
           if (mounted) {
             Navigator.of(context).pop();
           }
