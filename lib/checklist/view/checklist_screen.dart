@@ -52,37 +52,38 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 })
           ],
         ),
-        child: ListView.separated(
-          itemBuilder: (context, index) {
-            return ExpansionTile(
-              title: _checklistTitle(data, index),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              children: [
-                ...checklistWidget(data[index], context),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _toggleAllChecklistDetailButton(data[index]),
-                    _checklistEditButton(data[index]),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: 20.0,
-                      ),
-                      child: _todoDeleteButton(data[index].id),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: ListView.separated(
+            itemBuilder: (context, index) {
+              return ExpansionTile(
+                title: _checklistTitle(data, index),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                children: [
+                  ...checklistWidget(data[index], context),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 30.0, bottom: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _toggleAllChecklistDetailButton(data[index]),
+                        _checklistEditButton(data[index]),
+                        _todoDeleteButton(data[index].id),
+                      ],
                     ),
-                  ],
-                )
-              ],
-            );
-          },
-          itemCount: data.length,
-          separatorBuilder: (context, index) => const Divider(
-            color: DIVIDER_COLOR,
-            indent: 16.0,
-            endIndent: 16.0,
-            height: 0.0,
+                  )
+                ],
+              );
+            },
+            itemCount: data.length,
+            separatorBuilder: (context, index) => const Divider(
+              color: DIVIDER_COLOR,
+              indent: 16.0,
+              endIndent: 16.0,
+              height: 0.0,
+            ),
           ),
         ));
   }
@@ -96,26 +97,31 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 data[index].title,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(
                 width: 10.0,
               ),
-              const Icon(Icons.check_circle, color: MAIN_GREEN_COLOR)
+              const Icon(
+                Icons.check_circle_outline_outlined,
+                color: MAIN_GREEN_COLOR,
+                size: 20.0,
+              )
             ],
           )
         : Text(
             data[index].title,
             style: const TextStyle(
               fontSize: 18.0,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           );
   }
 
   IconButton _todoDeleteButton(int checklistId) {
     return IconButton(
+      visualDensity: VisualDensity.compact,
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
         backgroundColor: Colors.white,
@@ -127,7 +133,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       },
       icon: const Icon(
         Icons.delete_outlined,
-        size: 28.0,
+        size: 20.0,
       ),
     );
   }
@@ -182,6 +188,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
 
   IconButton _checklistEditButton(ChecklistModel data) {
     return IconButton(
+      visualDensity: VisualDensity.compact,
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
         backgroundColor: Colors.white,
@@ -195,13 +202,14 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       },
       icon: const Icon(
         Icons.edit,
-        size: 28.0,
+        size: 20.0,
       ),
     );
   }
 
   IconButton _toggleAllChecklistDetailButton(ChecklistModel checklist) {
     return IconButton(
+        visualDensity: VisualDensity.compact,
         style: ElevatedButton.styleFrom(
           foregroundColor: PRIMARY_COLOR,
           backgroundColor: Colors.white,
@@ -212,7 +220,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         },
         icon: const Icon(
           Icons.checklist,
-          size: 28.0,
+          size: 20.0,
         ));
   }
 
@@ -220,7 +228,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
     return checklistModel.checklistDetail.map((checkDetail) {
       return Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
+          horizontal: 8.0,
           vertical: 4.0,
         ),
         child: Row(
@@ -234,7 +242,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               },
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width / 1.3,
+              width: MediaQuery.of(context).size.width / 1.4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -250,11 +250,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ],
     );
 
-    print(credential);
-    print(credential.email);
-    print(credential.familyName);
-    print(credential.givenName);
-    print(credential.userIdentifier);
-    print(credential.identityToken);
+    ref.read(userMeProvider.notifier).appleLogin(
+          email: '${credential.userIdentifier}@apple.com',
+          accessToken: credential.identityToken!,
+          name: credential.givenName ?? "",
+          photoURL: "",
+        );
   }
 }
