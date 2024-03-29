@@ -54,30 +54,18 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
     return DefaultLayout(
       appBar: _checklistAppbar(context),
       child: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Form(
                 key: formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "제목",
-                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
-                    ),
                     _titleTextCard(originalChecklist.id, originalChecklist.title),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    const Text(
-                      "체크리스트",
-                      style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
-                    ),
                     ListView.builder(
                       shrinkWrap: true,
+                      padding: const EdgeInsets.only(bottom: 4.0),
                       itemBuilder: (context, index) {
                         return _checklistTextCard(index);
                       },
@@ -125,7 +113,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                 ],
               ),
               const SizedBox(
-                height: 36.0,
+                height: 20.0,
               ),
               registerActionButton(context, '수정하기'),
             ],
@@ -210,6 +198,7 @@ class _ChecklistUpdateScreenState extends ConsumerState<ChecklistUpdateScreen> {
                 icon: const Icon(
                   Icons.delete_outlined,
                   color: Colors.black38,
+                  size: 20.0,
                 ),
                 onPressed: () {
                   // 기존 존재하는 detail 중에 삭제된 것

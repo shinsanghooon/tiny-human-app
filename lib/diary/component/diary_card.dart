@@ -63,16 +63,18 @@ class DiaryCard extends StatelessWidget {
                         ),
                       ),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         child: Container(
-                          color: PRIMARY_COLOR.withOpacity(0.8),
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                          child: Text('+$afterBirthDay일',
-                              style: const TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              )),
+                          color: PRIMARY_COLOR,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
+                          child: Text(
+                            '+$afterBirthDay일',
+                            style: const TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ],

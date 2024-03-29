@@ -32,7 +32,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
     return DefaultLayout(
       appBar: checklistAppbar(context),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -41,20 +41,10 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Title",
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-                    ),
                     titleTextCard(),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    const Text(
-                      "Checklist",
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-                    ),
                     ListView.builder(
                       shrinkWrap: true,
+                      padding: const EdgeInsets.only(bottom: 4.0),
                       itemBuilder: (context, index) {
                         return checklistTextCard(index);
                       },
@@ -64,9 +54,6 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 ),
               ),
               // ...checklistsWidgets,
-              const SizedBox(
-                height: 8.0,
-              ),
               Stack(
                 alignment: AlignmentDirectional.center,
                 children: [
@@ -93,7 +80,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 ],
               ),
               const SizedBox(
-                height: 36.0,
+                height: 20.0,
               ),
               registerActionButton(context, '등록'),
             ],
@@ -182,7 +169,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
           buttonText,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 20.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.w600,
           ),
         ),

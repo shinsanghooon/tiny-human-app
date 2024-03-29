@@ -493,8 +493,8 @@ class PhotoRoute extends StatelessWidget {
     return InteractiveViewer(
       child: Scaffold(
         appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 date,
@@ -503,15 +503,30 @@ class PhotoRoute extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 4.0,
+                width: 8.0,
               ),
-              Text(
-                '+$daysAfterBirth일',
-                style: const TextStyle(
-                  fontSize: 14.0,
+              // Text(
+              //   '+$daysAfterBirth일',
+              //   style: const TextStyle(
+              //     fontSize: 14.0,
+              //     color: PRIMARY_COLOR,
+              //   ),
+              // )
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Container(
                   color: PRIMARY_COLOR,
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Text(
+                    '+$daysAfterBirth일',
+                    style: const TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
           backgroundColor: Colors.white,

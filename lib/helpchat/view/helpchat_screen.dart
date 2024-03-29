@@ -176,7 +176,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 18.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -198,7 +198,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           latestMessage ?? "메시지를 보내주세요. 🙂",
           maxLines: 2,
           style: const TextStyle(
-            fontSize: 16.0,
+            fontSize: 14.0,
             color: Colors.black54,
           ),
           overflow: TextOverflow.ellipsis,

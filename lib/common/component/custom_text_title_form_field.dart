@@ -52,6 +52,7 @@ class CustomTextTitleFormField extends StatelessWidget {
         fontWeight: FontWeight.w500,
       ),
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(0.0),
         hintText: hintText,
         errorText: errorText,
         hintStyle: const TextStyle(
@@ -61,7 +62,6 @@ class CustomTextTitleFormField extends StatelessWidget {
         fillColor: INPUT_BG_COLOR,
         filled: true,
         border: baseBorder,
-
         // 기본으로 세팅한 보더를 넣어준다.
         enabledBorder: baseBorder,
         focusedBorder: baseBorder.copyWith(borderSide: baseBorder.borderSide.copyWith(color: Colors.transparent)),

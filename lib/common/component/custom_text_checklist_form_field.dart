@@ -54,6 +54,7 @@ class _CustomTextChecklistFormFieldState extends State<CustomTextChecklistFormFi
         fontSize: 18.0,
       ),
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8.0),
         icon: const Icon(
           Icons.keyboard_arrow_right,
           color: PRIMARY_COLOR,
