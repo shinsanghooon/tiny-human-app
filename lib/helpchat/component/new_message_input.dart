@@ -60,6 +60,8 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
         'title': widget.title,
         'latest_message': inputMessage,
         'date': Timestamp.now(),
+        // chatRequestUserId: help를 요청한 사람
+        // chatAnswerUserId: help에 대답을 한 사람
         'request_user_id': widget.chatRequestUserId,
         'response_user_id': widget.chatAnswerUserId,
       },

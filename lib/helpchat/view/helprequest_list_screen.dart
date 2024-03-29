@@ -186,8 +186,8 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
 
                                         final helpChatCreateModel = HelpChatCreateModel(
                                           helpRequestId: helpRequestData[index].id,
-                                          helpRequestUserId: widget.userId,
-                                          helpAnswerUserId: helpRequestData[index].userId,
+                                          helpRequestUserId: helpRequestData[index].userId,
+                                          helpAnswerUserId: widget.userId,
                                         );
 
                                         final helpChatModel =
