@@ -47,62 +47,57 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
         .snapshots();
 
     return DefaultLayout(
-      child: RefreshIndicator(
-        edgeOffset: 120.0, // TODO: AppBar 높이 알아내서 반영하기
-        color: PRIMARY_COLOR,
-        onRefresh: () async {},
-        child: CustomScrollView(physics: const AlwaysScrollableScrollPhysics(), slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.transparent,
-            title: const Text(
-              "HELP CHAT",
-              style: TextStyle(
-                color: Colors.deepOrange,
-                fontWeight: FontWeight.w800,
-              ),
+      child: CustomScrollView(physics: const AlwaysScrollableScrollPhysics(), slivers: [
+        SliverAppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text(
+            "HELP CHAT",
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontWeight: FontWeight.w800,
             ),
-            toolbarHeight: 64.0,
-            leading: IconButton(
-                icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-                onPressed: () => context.goNamed(BabyScreen.routeName)),
-            actions: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.add, color: PRIMARY_COLOR),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const HelpRequestRegisterScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.list_alt_outlined, color: PRIMARY_COLOR),
-                    onPressed: () async {
-                      UserModel user = await ref.read(userMeProvider.notifier).getMe();
-                      int userId = user.id;
-
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => HelpRequestListScreen(userId: userId),
-                        ),
-                      );
-                      // 내가 요청한 help, 내가 푸시 받은 help를 표시하는 메뉴
-                    },
-                  ),
-                ],
-              ),
-            ],
           ),
-          chattingList(helpChatInfo, chatStream),
-        ]),
-      ),
+          toolbarHeight: 64.0,
+          leading: IconButton(
+              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+              onPressed: () => context.goNamed(BabyScreen.routeName)),
+          actions: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.add, color: PRIMARY_COLOR),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const HelpRequestRegisterScreen(),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.list_alt_outlined, color: PRIMARY_COLOR),
+                  onPressed: () async {
+                    UserModel user = await ref.read(userMeProvider.notifier).getMe();
+                    int userId = user.id;
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => HelpRequestListScreen(userId: userId),
+                      ),
+                    );
+                    // 내가 요청한 help, 내가 푸시 받은 help를 표시하는 메뉴
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+        chattingList(helpChatInfo, chatStream, user),
+      ]),
     );
   }
 
-  Widget chattingList(List<HelpChatModel> helpChatInfo, Stream<QuerySnapshot> chatStream) {
+  Widget chattingList(List<HelpChatModel> helpChatInfo, Stream<QuerySnapshot> chatStream, UserModel user) {
     return StreamBuilder(
       stream: chatStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -141,8 +136,12 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     left: 24.0,
                     top: 8.0,
                   ),
-                  child: chatCard(items[index]['title'], items[index]['latest_message'],
-                      (items[index]['date'] as Timestamp).toDate()),
+                  child: chatCard(
+                    items[index]['title'],
+                    items[index]['latest_message'],
+                    (items[index]['date'] as Timestamp).toDate(),
+                    user.id == items[index]['request_user_id'],
+                  ),
                 ),
               );
             },
@@ -166,47 +165,76 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
     );
   }
 
-  Widget chatCard(String title, String? latestMessage, DateTime latestMessageTime) {
+  Widget chatCard(String title, String? latestMessage, DateTime latestMessageTime, bool isMyHelpChat) {
     return Container(
       color: Colors.white,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w500,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (isMyHelpChat)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Container(
+                            color: MAIN_GREEN_COLOR,
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
+                            child: const Text(
+                              '내 글',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-                overflow: TextOverflow.ellipsis,
-              ),
+                const SizedBox(
+                  height: 6.0,
+                ),
+                Text(
+                  latestMessage ?? "메시지를 보내주세요. 🙂",
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black54,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            const SizedBox(
-              width: 10.0,
-            ),
-            Text(
-              DateConvertor.convertoToRelativeTime(latestMessageTime),
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 6.0,
-        ),
-        Text(
-          latestMessage ?? "메시지를 보내주세요. 🙂",
-          maxLines: 2,
-          style: const TextStyle(
-            fontSize: 14.0,
-            color: Colors.black54,
           ),
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(
-          height: 6.0,
-        ),
-      ]),
+          const SizedBox(
+            width: 10.0,
+          ),
+          Text(
+            DateConvertor.convertoToRelativeTime(latestMessageTime),
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
