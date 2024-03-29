@@ -60,19 +60,20 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
         'title': widget.title,
         'latest_message': inputMessage,
         'date': Timestamp.now(),
+        'request_user_id': widget.chatRequestUserId,
+        'response_user_id': widget.chatAnswerUserId,
       },
     );
 
     await ref.read(helpChatProvider.notifier).updateLatestMessage(
-      widget.helpChatId,
-      HelpChatLatestMessage(
-        helpRequestUserId: widget.chatRequestUserId,
-        helpAnswerUserId: widget.chatAnswerUserId,
-        message: inputMessage,
-        messageTime: DateTime.now(),
-      ),
-    );
-
+          widget.helpChatId,
+          HelpChatLatestMessage(
+            helpRequestUserId: widget.chatRequestUserId,
+            helpAnswerUserId: widget.chatAnswerUserId,
+            message: inputMessage,
+            messageTime: DateTime.now(),
+          ),
+        );
 
     if (widget.controller.hasClients) {
       widget.controller.animateTo(
@@ -121,9 +122,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
           ),
           IconButton(
             onPressed: () {
-              inputMessage
-                  .trim()
-                  .isEmpty ? null : _sendMessage();
+              inputMessage.trim().isEmpty ? null : _sendMessage();
             },
             icon: const Icon(Icons.send),
             color: PRIMARY_COLOR,

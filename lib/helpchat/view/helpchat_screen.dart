@@ -26,9 +26,6 @@ class HelpChatScreen extends ConsumerStatefulWidget {
 }
 
 class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTickerProviderStateMixin {
-  final Stream<QuerySnapshot> chatStream =
-      FirebaseFirestore.instance.collection(FirestoreConstants.pathChatCollection).snapshots();
-
   @override
   void initState() {
     super.initState();
@@ -42,6 +39,12 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     List<HelpChatModel> helpChatInfo = ref.watch(helpChatProvider);
+    UserModel user = ref.watch(userMeProvider) as UserModel;
+
+    final Stream<QuerySnapshot> chatStream = FirebaseFirestore.instance
+        .collection(FirestoreConstants.pathChatCollection)
+        .where(Filter.or(Filter('request_user_id', isEqualTo: user.id), Filter('response_user_id', isEqualTo: user.id)))
+        .snapshots();
 
     return DefaultLayout(
       child: RefreshIndicator(
@@ -93,13 +96,13 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
               ),
             ],
           ),
-          chattingList(helpChatInfo),
+          chattingList(helpChatInfo, chatStream),
         ]),
       ),
     );
   }
 
-  Widget chattingList(List<HelpChatModel> helpChatInfo) {
+  Widget chattingList(List<HelpChatModel> helpChatInfo, Stream<QuerySnapshot> chatStream) {
     return StreamBuilder(
       stream: chatStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -174,7 +177,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                 title,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -196,9 +199,13 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           maxLines: 2,
           style: const TextStyle(
             fontSize: 16.0,
+            color: Colors.black54,
           ),
           overflow: TextOverflow.ellipsis,
-        )
+        ),
+        const SizedBox(
+          height: 6.0,
+        ),
       ]),
     );
   }
