@@ -31,7 +31,8 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   // profile image
   final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
   XFile? pickedFile;
-  ImageProvider profileImage = const NetworkImage(SAMPLE_BABY_IMAGE_URL);
+  ImageProvider profileImage = const AssetImage('asset/images/logo.png');
+
   String? pickedFilePath;
 
   // gender
@@ -68,13 +69,13 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _babyRegisterImage(),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 24.0),
                   Form(
                     key: formKey,
                     child: Column(
