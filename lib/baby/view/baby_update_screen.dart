@@ -251,8 +251,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           // 수정된 필드 확인하기
           // 사진, 이름, 태명, 성별, 날짜, 시간, 설명
 
-          // TODO
-          int babyId = 1;
+          int babyId = widget.model.id;
 
           try {
             final response = await ref.read(babyProvider.notifier).updateBaby(

@@ -6,6 +6,7 @@ import '../model/baby_model_with_presigned.dart';
 import '../repository/baby_repository.dart';
 
 final selectedBabyProvider = StateProvider<int>((ref) {
+  ref.watch(babyProvider);
   return 0;
 });
 
