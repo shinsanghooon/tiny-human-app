@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/baby/component/baby_card.dart';
+import 'package:tiny_human_app/user/provider/auth_provider.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
@@ -29,6 +32,18 @@ class BabyScreen extends ConsumerWidget {
           ),
         ),
         toolbarHeight: 64.0,
+        leading: Transform.rotate(
+          angle: math.pi,
+          child: IconButton(
+            icon: const Icon(
+              Icons.logout_outlined,
+              color: PRIMARY_COLOR,
+            ),
+            onPressed: () {
+              ref.read(authProvider.notifier).logout();
+            },
+          ),
+        ),
         actions: [
           IconButton(
               icon: const Icon(Icons.add, color: PRIMARY_COLOR),

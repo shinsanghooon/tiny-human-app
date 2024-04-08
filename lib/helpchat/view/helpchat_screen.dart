@@ -27,16 +27,6 @@ class HelpChatScreen extends ConsumerStatefulWidget {
 
 class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTickerProviderStateMixin {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     List<HelpChatModel> helpChatInfo = ref.watch(helpChatProvider);
     UserModel user = ref.watch(userMeProvider) as UserModel;
@@ -44,6 +34,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
     final Stream<QuerySnapshot> chatStream = FirebaseFirestore.instance
         .collection(FirestoreConstants.pathChatCollection)
         .where(Filter.or(Filter('request_user_id', isEqualTo: user.id), Filter('response_user_id', isEqualTo: user.id)))
+        .orderBy('date', descending: true)
         .snapshots();
 
     return DefaultLayout(
@@ -101,8 +92,10 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
     return StreamBuilder(
       stream: chatStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        print(snapshot.error);
         if (snapshot.hasData) {
           var items = snapshot.data!.docs;
+
           return SliverList.separated(
             key: UniqueKey(),
             itemBuilder: (context, index) {

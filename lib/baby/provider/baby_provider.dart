@@ -6,8 +6,9 @@ import '../model/baby_model_with_presigned.dart';
 import '../repository/baby_repository.dart';
 
 final selectedBabyProvider = StateProvider<int>((ref) {
-  ref.watch(babyProvider);
-  return 0;
+  List<BabyModel> babies = ref.watch(babyProvider);
+  return babies[0].id;
+  ;
 });
 
 final babyProvider = StateNotifierProvider<BabyNotifier, List<BabyModel>>((ref) {

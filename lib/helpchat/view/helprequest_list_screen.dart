@@ -120,14 +120,14 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                       children: [
                         Text(
                           helpRequestData[index].contents,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                           ),
                         ),
                         const SizedBox(
-                          height: 6.0,
+                          height: 8.0,
                         ),
                         Text(
                           DateConvertor.convertoToRelativeTime(helpRequestData[index].createdAt!),
@@ -154,6 +154,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                   data[index].contents,
                                   style: const TextStyle(
                                     fontSize: 16.0,
+                                    height: 1.8,
                                   ),
                                 ),
                               ),
@@ -204,12 +205,15 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                           );
                                         }
                                       },
-                                      child: Text(
-                                        "채팅하기",
-                                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                                      ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: PRIMARY_COLOR,
+                                      ),
+                                      child: const Text(
+                                        "채팅하기",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16.0,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -229,7 +233,10 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                         onPressed: null,
                                         child: Text(
                                           "채팅하기",
-                                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.0,
+                                          ),
                                         ),
                                       ),
                                     ),
