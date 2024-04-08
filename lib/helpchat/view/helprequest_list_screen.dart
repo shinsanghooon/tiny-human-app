@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 import 'package:tiny_human_app/helpchat/provider/help_chat_provider.dart';
 import 'package:tiny_human_app/helpchat/provider/help_request_provider.dart';
-import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
+import 'package:tiny_human_app/user/model/user_model.dart';
+import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../../common/constant/colors.dart';
 
 class HelpRequestListScreen extends ConsumerStatefulWidget {
-  final int userId;
-
   const HelpRequestListScreen({
-    required this.userId,
     super.key,
   });
 
@@ -29,10 +28,12 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(helpRequestProvider);
+    final user = ref.watch(userMeProvider) as UserModel;
+    int userId = user.id;
 
     final List<HelpRequestModel> helpRequestData;
     if (showOnlyMyPost) {
-      helpRequestData = data.where((request) => widget.userId == request.userId).toList()
+      helpRequestData = data.where((request) => userId == request.userId).toList()
         ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
     } else {
       helpRequestData = data..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
@@ -162,7 +163,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                             const SizedBox(
                               height: 10.0,
                             ),
-                            widget.userId != helpRequestData[index].userId
+                            userId != helpRequestData[index].userId
                                 ? Align(
                                     alignment: Alignment.centerRight,
                                     child: ElevatedButton(
@@ -170,7 +171,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                         final chatList = ref.read(helpChatProvider);
                                         bool isExistedChat = chatList.any((chat) =>
                                             chat.helpRequestId == helpRequestData[index].id &&
-                                            chat.helpRequestUserId == widget.userId &&
+                                            chat.helpRequestUserId == userId &&
                                             chat.helpAnswerUserId == helpRequestData[index].userId);
 
                                         if (isExistedChat) {
@@ -188,21 +189,14 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                         final helpChatCreateModel = HelpChatCreateModel(
                                           helpRequestId: helpRequestData[index].id,
                                           helpRequestUserId: helpRequestData[index].userId,
-                                          helpAnswerUserId: widget.userId,
+                                          helpAnswerUserId: userId,
                                         );
 
                                         final helpChatModel =
                                             await ref.read(helpChatProvider.notifier).addHelpChat(helpChatCreateModel);
 
                                         if (mounted) {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) => ChattingScreen(
-                                                userId: widget.userId,
-                                                model: helpChatModel,
-                                              ),
-                                            ),
-                                          );
+                                          context.go('/help-chat/${helpChatModel.id}', extra: [userId, helpChatModel]);
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -248,7 +242,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                   ),
                 );
               },
-              itemCount: showOnlyMyPost ? data.where((d) => d.userId == widget.userId).length : data.length,
+              itemCount: showOnlyMyPost ? data.where((d) => d.userId == userId).length : data.length,
               separatorBuilder: (context, index) => const Divider(
                 color: DIVIDER_COLOR,
                 indent: 16.0,

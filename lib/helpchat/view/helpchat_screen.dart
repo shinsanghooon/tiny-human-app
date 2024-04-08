@@ -12,7 +12,6 @@ import '../../common/layout/default_layout.dart';
 import '../../user/model/user_model.dart';
 import '../../user/provider/user_me_provider.dart';
 import '../provider/help_chat_provider.dart';
-import 'chatting_screen.dart';
 import 'helpchat_request_screen.dart';
 import 'helprequest_list_screen.dart';
 
@@ -73,7 +72,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
 
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => HelpRequestListScreen(userId: userId),
+                        builder: (_) => HelpRequestListScreen(),
                       ),
                     );
                     // 내가 요청한 help, 내가 푸시 받은 help를 표시하는 메뉴
@@ -113,14 +112,8 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                     } else {
                       chatModel = helpChatInfo.firstWhere((chat) => chat.id == items[index]['id']);
                     }
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ChattingScreen(
-                          userId: userId,
-                          model: chatModel,
-                        ),
-                      ),
-                    );
+
+                    context.go('/help-chat/${chatModel.id}', extra: [userId, chatModel]);
                   }
                 },
                 child: Padding(

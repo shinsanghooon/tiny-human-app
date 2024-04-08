@@ -55,11 +55,13 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
         itemBuilder: <DiaryResponseModel>(_, index, model) {
           return InkWell(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => DiaryDetailScreen(model: model),
-                ),
-              );
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (_) => DiaryDetailScreen(model: model),
+              //   ),
+              // );
+
+              context.go('/diary/${model.id}', extra: model);
             },
             child: DiaryCard.fromDiaryModel(
               model: model,
