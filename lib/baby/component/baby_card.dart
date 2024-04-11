@@ -5,7 +5,7 @@ import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
-import 'package:tiny_human_app/common/view/root_screen.dart';
+import 'package:tiny_human_app/diary/view/diary_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
@@ -171,7 +171,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                       ElevatedButton(
                         onPressed: () {
                           ref.read(selectedBabyProvider.notifier).update((state) => widget.model.id);
-                          context.goNamed(RootScreen.routeName);
+                          context.goNamed(DiaryScreen.routeName);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

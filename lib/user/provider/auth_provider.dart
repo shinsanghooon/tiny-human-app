@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
+import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/view/root_screen.dart';
 import 'package:tiny_human_app/common/view/splash_screen.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
@@ -16,6 +17,7 @@ import 'package:tiny_human_app/user/view/login_screen.dart';
 import '../../diary/view/diary_detail_screen.dart';
 import '../../helpchat/view/helprequest_list_screen.dart';
 import '../model/user_model.dart';
+import '../view/setting_screen.dart';
 
 final authProvider = ChangeNotifierProvider<AuthProvider>((ref) {
   return AuthProvider(ref: ref);
@@ -38,63 +40,73 @@ class AuthProvider extends ChangeNotifier {
   List<GoRoute> get routes => [
         GoRoute(
           path: '/',
-          name: BabyScreen.routeName,
-          builder: (_, __) => const BabyScreen(),
-        ),
-        GoRoute(
-          path: '/home',
-          name: RootScreen.routeName,
-          builder: (_, __) => const RootScreen(),
-        ),
-        GoRoute(
-          path: '/splash',
-          name: SplashScreen.routeName,
-          builder: (_, __) => SplashScreen(),
-        ),
-        GoRoute(
-          path: '/login',
-          name: LoginScreen.routeName,
-          builder: (_, __) => const LoginScreen(),
-        ),
-        GoRoute(
-          path: '/diary',
-          name: DiaryScreen.routeName,
-          builder: (_, __) => const DiaryScreen(),
+          builder: (context, state) {
+            return const BabyScreen();
+          },
           routes: [
             GoRoute(
-              path: ':id',
+              path: 'splash',
+              name: SplashScreen.routeName,
+              builder: (_, __) => SplashScreen(),
+            ),
+            GoRoute(
+              path: 'login',
+              name: LoginScreen.routeName,
+              builder: (_, __) => const LoginScreen(),
+            ),
+            GoRoute(
+              path: 'help-request',
+              builder: (_, __) => HelpRequestListScreen(),
+            ),
+            ShellRoute(
+              builder: (context, state, child) {
+                return RootScreen(child: child);
+              },
+              routes: [
+                GoRoute(
+                  path: 'diary',
+                  name: DiaryScreen.routeName,
+                  builder: (_, state) => const DiaryScreen(),
+                ),
+                GoRoute(
+                  path: 'album',
+                  name: AlbumScreen.routeName,
+                  builder: (_, state) => AlbumScreen(),
+                ),
+                GoRoute(
+                  path: 'help-chat',
+                  name: HelpChatScreen.routeName,
+                  builder: (_, state) => HelpChatScreen(),
+                ),
+                GoRoute(
+                  path: 'checklist',
+                  builder: (_, __) => CheckListScreen(),
+                ),
+                GoRoute(
+                  path: 'profile',
+                  builder: (_, __) => SettingScreen(),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: 'diary/:id',
               builder: (_, state) => DiaryDetailScreen(
                 model: state.extra as DiaryResponseModel,
               ),
             ),
-          ],
-        ),
-        GoRoute(
-          path: '/album',
-          name: AlbumScreen.routeName,
-          builder: (_, __) => AlbumScreen(),
-        ),
-        GoRoute(
-          path: '/help-chat',
-          name: HelpChatScreen.routeName,
-          builder: (_, __) => HelpChatScreen(),
-          routes: [
             GoRoute(
-                path: ':id',
-                builder: (_, state) {
-                  List details = state.extra as List;
-                  int userId = details[0];
-                  HelpChatModel model = details[1];
-                  return ChattingScreen(
-                    userId: userId,
-                    model: model,
-                  );
-                }),
+              path: 'help-chat/:id',
+              builder: (_, state) {
+                List details = state.extra as List;
+                int userId = details[0];
+                HelpChatModel model = details[1];
+                return ChattingScreen(
+                  userId: userId,
+                  model: model,
+                );
+              },
+            ),
           ],
-        ),
-        GoRoute(
-          path: '/help-request',
-          builder: (_, __) => HelpRequestListScreen(),
         ),
       ];
 
