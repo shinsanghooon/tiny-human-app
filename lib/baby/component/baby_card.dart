@@ -36,9 +36,10 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
           ),
           color: Colors.white,
           surfaceTintColor: Colors.white,
-          elevation: 7,
+          elevation: 2,
           child: SizedBox(
             height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width / 1.2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,8 +54,8 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                             url: widget.model.profileImgKeyName == ""
                                 ? SAMPLE_BABY_IMAGE_URL
                                 : S3UrlGenerator.getThumbnailUrlWith1000wh(widget.model.profileImgKeyName),
-                            width: 350,
-                            height: 350,
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.width / 1.2,
                           ),
                         ),
                         Padding(
