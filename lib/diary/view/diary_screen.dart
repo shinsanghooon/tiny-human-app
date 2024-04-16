@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/pagenation_list_view.dart';
 import 'package:tiny_human_app/diary/component/diary_card.dart';
 import 'package:tiny_human_app/diary/provider/diary_pagination_provider.dart';
-import 'package:tiny_human_app/diary/view/diary_detail_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
@@ -36,8 +34,9 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
           ),
           toolbarHeight: 64.0,
           leading: IconButton(
-              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-              onPressed: () => context.goNamed(BabyScreen.routeName)),
+            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+            onPressed: () => context.go('/'),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -55,13 +54,7 @@ class _DiaryScreenState extends ConsumerState<DiaryScreen> {
         itemBuilder: <DiaryResponseModel>(_, index, model) {
           return InkWell(
             onTap: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (_) => DiaryDetailScreen(model: model),
-              //   ),
-              // );
-
-              context.go('/diary/${model.id}', extra: model);
+              context.push('/diary/${model.id}', extra: model);
             },
             child: DiaryCard.fromDiaryModel(
               model: model,

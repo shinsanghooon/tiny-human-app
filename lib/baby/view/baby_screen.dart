@@ -11,7 +11,7 @@ import '../provider/baby_provider.dart';
 import 'baby_register_screen.dart';
 
 class BabyScreen extends ConsumerWidget {
-  static String get routeName => 'baby';
+  static String get routeName => '/';
 
   const BabyScreen({super.key});
 
@@ -63,8 +63,8 @@ class BabyScreen extends ConsumerWidget {
           // shrinkWrap: true,
           itemCount: data.length,
           itemBuilder: (context, index) => SizedBox(
-            width: MediaQuery.of(context).size.width / 1.0,
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width / 1.2,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10.0,

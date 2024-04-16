@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
 
-import '../../baby/view/baby_screen.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/firestore_constants.dart';
 import '../../common/layout/default_layout.dart';
@@ -49,8 +48,9 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
           ),
           toolbarHeight: 64.0,
           leading: IconButton(
-              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-              onPressed: () => context.goNamed(BabyScreen.routeName)),
+            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+            onPressed: () => context.go('/'),
+          ),
           actions: [
             Row(
               children: [
@@ -113,7 +113,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
                       chatModel = helpChatInfo.firstWhere((chat) => chat.id == items[index]['id']);
                     }
 
-                    context.go('/help-chat/${chatModel.id}', extra: [userId, chatModel]);
+                    context.push('/help-chat/${chatModel.id}', extra: [userId, chatModel]);
                   }
                 },
                 child: Padding(

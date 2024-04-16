@@ -47,6 +47,7 @@ class _RootScreenState extends State<RootScreen> with SingleTickerProviderStateM
   }
 
   int getIndex(BuildContext context) {
+    print('getIndex');
     if (GoRouterState.of(context).location == '/diary') {
       return 0;
     } else if (GoRouterState.of(context).location == '/album') {
@@ -62,64 +63,67 @@ class _RootScreenState extends State<RootScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: PRIMARY_COLOR,
-        unselectedItemColor: BODY_TEXT_COLOR,
-        selectedFontSize: 10.0,
-        unselectedFontSize: 10.0,
-        type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
-          controller.animateTo(index);
-          if (index == 0) {
-            context.go('/diary');
-          } else if (index == 1) {
-            context.go('/album');
-          } else if (index == 2) {
-            context.go('/help-chat');
-          } else if (index == 3) {
-            context.go('/checklist');
-          } else {
-            context.go('/profile');
-          }
-        },
-        currentIndex: getIndex(context),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event_note_outlined),
-            label: 'Diary',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_outlined),
-            label: 'Album',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.mark_chat_unread_outlined),
-            label: 'Help Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_box_outlined),
-            label: 'Checklist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
-            label: 'Profile',
-          ),
-        ],
+    return PopScope(
+      canPop: false,
+      child: DefaultLayout(
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          selectedItemColor: PRIMARY_COLOR,
+          unselectedItemColor: BODY_TEXT_COLOR,
+          selectedFontSize: 10.0,
+          unselectedFontSize: 10.0,
+          type: BottomNavigationBarType.fixed,
+          onTap: (int index) {
+            controller.animateTo(index);
+            if (index == 0) {
+              context.go('/diary');
+            } else if (index == 1) {
+              context.go('/album');
+            } else if (index == 2) {
+              context.go('/help-chat');
+            } else if (index == 3) {
+              context.go('/checklist');
+            } else {
+              context.go('/profile');
+            }
+          },
+          currentIndex: getIndex(context),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_note_outlined),
+              label: 'Diary',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.photo_outlined),
+              label: 'Album',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mark_chat_unread_outlined),
+              label: 'Help Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.check_box_outlined),
+              label: 'Checklist',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outlined),
+              label: 'Profile',
+            ),
+          ],
+        ),
+        child: widget.child,
+        // child: TabBarView(
+        //   physics: const NeverScrollableScrollPhysics(),
+        //   controller: controller,
+        //   children: const [
+        //     DiaryScreen(),
+        //     AlbumScreen(),
+        //     HelpChatScreen(),
+        //     CheckListScreen(),
+        //     SettingScreen(),
+        //   ],
+        // ),
       ),
-      child: widget.child,
-      // child: TabBarView(
-      //   physics: const NeverScrollableScrollPhysics(),
-      //   controller: controller,
-      //   children: const [
-      //     DiaryScreen(),
-      //     AlbumScreen(),
-      //     HelpChatScreen(),
-      //     CheckListScreen(),
-      //     SettingScreen(),
-      //   ],
-      // ),
     );
   }
 }

@@ -6,7 +6,6 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 import 'package:tiny_human_app/checklist/view/checklist_update_screen.dart';
 
-import '../../baby/view/baby_screen.dart';
 import '../../common/component/checkbox.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
@@ -38,8 +37,9 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           leading: IconButton(
-              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-              onPressed: () => context.goNamed(BabyScreen.routeName)),
+            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
+            onPressed: () => context.go('/'),
+          ),
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),

@@ -196,7 +196,8 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                             await ref.read(helpChatProvider.notifier).addHelpChat(helpChatCreateModel);
 
                                         if (mounted) {
-                                          context.go('/help-chat/${helpChatModel.id}', extra: [userId, helpChatModel]);
+                                          context
+                                              .push('/help-chat/${helpChatModel.id}', extra: [userId, helpChatModel]);
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(

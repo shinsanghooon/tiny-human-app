@@ -13,7 +13,6 @@ import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
-import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
@@ -150,11 +149,12 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 ),
                 toolbarHeight: 64.0,
                 leading: IconButton(
-                    icon: const Icon(
-                      Icons.home_outlined,
-                      color: PRIMARY_COLOR,
-                    ),
-                    onPressed: () => context.goNamed(BabyScreen.routeName)),
+                  icon: const Icon(
+                    Icons.home_outlined,
+                    color: PRIMARY_COLOR,
+                  ),
+                  onPressed: () => context.go('/'),
+                ),
                 actions: [
                   Row(
                     children: [

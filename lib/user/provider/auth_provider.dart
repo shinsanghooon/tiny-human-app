@@ -56,10 +56,12 @@ class AuthProvider extends ChangeNotifier {
             ),
             GoRoute(
               path: 'help-request',
-              builder: (_, __) => HelpRequestListScreen(),
+              builder: (_, __) => const HelpRequestListScreen(),
             ),
             ShellRoute(
               builder: (context, state, child) {
+                print('shell');
+                print(context);
                 return RootScreen(child: child);
               },
               routes: [
@@ -71,20 +73,20 @@ class AuthProvider extends ChangeNotifier {
                 GoRoute(
                   path: 'album',
                   name: AlbumScreen.routeName,
-                  builder: (_, state) => AlbumScreen(),
+                  builder: (_, state) => const AlbumScreen(),
                 ),
                 GoRoute(
                   path: 'help-chat',
                   name: HelpChatScreen.routeName,
-                  builder: (_, state) => HelpChatScreen(),
+                  builder: (_, state) => const HelpChatScreen(),
                 ),
                 GoRoute(
                   path: 'checklist',
-                  builder: (_, __) => CheckListScreen(),
+                  builder: (_, __) => const CheckListScreen(),
                 ),
                 GoRoute(
                   path: 'profile',
-                  builder: (_, __) => SettingScreen(),
+                  builder: (_, __) => const SettingScreen(),
                 ),
               ],
             ),
