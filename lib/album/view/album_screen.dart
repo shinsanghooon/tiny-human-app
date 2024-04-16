@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -18,6 +17,7 @@ import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
+import '../../common/component/leading_logo_icon.dart';
 import '../../common/constant/colors.dart';
 import '../../common/dio/dio.dart';
 import '../../common/enum/album_sort.dart';
@@ -148,13 +148,7 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                   ),
                 ),
                 toolbarHeight: 64.0,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.home_outlined,
-                    color: PRIMARY_COLOR,
-                  ),
-                  onPressed: () => context.go('/'),
-                ),
+                leading: const LeadingLogoIcon(),
                 actions: [
                   Row(
                     children: [

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
 
+import '../../common/component/leading_logo_icon.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/firestore_constants.dart';
 import '../../common/layout/default_layout.dart';
@@ -47,10 +48,7 @@ class _HelpChatScreenState extends ConsumerState<HelpChatScreen> with SingleTick
             ),
           ),
           toolbarHeight: 64.0,
-          leading: IconButton(
-            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-            onPressed: () => context.go('/'),
-          ),
+          leading: const LeadingLogoIcon(),
           actions: [
             Row(
               children: [

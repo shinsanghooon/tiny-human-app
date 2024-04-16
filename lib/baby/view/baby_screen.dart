@@ -25,7 +25,7 @@ class BabyScreen extends ConsumerWidget {
     return DefaultLayout(
       appBar: AppBar(
         title: const Text(
-          "BABY HOME",
+          "BABY",
           style: TextStyle(
             color: Colors.deepOrange,
             fontWeight: FontWeight.w800,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 import 'package:tiny_human_app/checklist/view/checklist_update_screen.dart';
 
 import '../../common/component/checkbox.dart';
+import '../../common/component/leading_logo_icon.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
 import '../provider/checklist_provider.dart';
@@ -36,10 +36,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
           toolbarHeight: 64.0,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-          leading: IconButton(
-            icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-            onPressed: () => context.go('/'),
-          ),
+          leading: const LeadingLogoIcon(),
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),
