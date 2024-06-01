@@ -30,10 +30,10 @@ void initializeNotification() async {
   await flutterLocalNotificationPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(const AndroidNotificationChannel(
-        'high_importance_channel',
-        'high_importance_notification',
-        importance: Importance.max,
-      ));
+    'high_importance_channel',
+    'high_importance_notification',
+    importance: Importance.max,
+  ));
 
   await flutterLocalNotificationPlugin.initialize(
     const InitializationSettings(
@@ -46,6 +46,8 @@ void initializeNotification() async {
       // 추가 액션 정의
       print('onDidReceiveNotificationResponse');
       print(detail);
+
+      // TODO
     },
     // Android Background, Android Terminated, iOS Terminated
     onDidReceiveBackgroundNotificationResponse: backgroundHandler,
@@ -96,6 +98,12 @@ void initializeNotification() async {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // 앱이 백그라운드나 종료 상태에 있을 때 사용자가 푸시 알림을 탭하여 앱을 열었을 경우에 발생하는 이벤트를 처리하는 리스너
       // 액션 추가
+      if (message.data['type'] == 'chat') {
+        message.data['chatId'];
+      } else {
+        // type == help
+        message.data['helpRequestId'];
+      }
     });
   }
 }
@@ -144,17 +152,17 @@ class _App extends ConsumerWidget {
         dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
         dropdownMenuTheme: const DropdownMenuThemeData(
             menuStyle: MenuStyle(
-          backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-          surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
-        )),
+              backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+              surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
+            )),
         datePickerTheme: const DatePickerThemeData(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
         ),
         textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-          foregroundColor: PRIMARY_COLOR,
-        )),
+              foregroundColor: PRIMARY_COLOR,
+            )),
         fontFamily: 'Pretendard',
       ),
       localizationsDelegates: const [

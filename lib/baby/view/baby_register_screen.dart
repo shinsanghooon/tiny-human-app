@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
-import 'package:tiny_human_app/baby/component/gradient_border_avatar.dart';
+import 'package:tiny_human_app/baby/component/baby_image_register.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 
@@ -69,7 +69,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

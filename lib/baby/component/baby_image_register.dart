@@ -24,31 +24,31 @@ class _BabyRegisterImageState extends State<BabyRegisterImage> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 이미지를 배경으로 설정
             Container(
               decoration: BoxDecoration(
+                color: PRIMARY_COLOR,
                 image: DecorationImage(
                   image: widget.selectedProfileImage,
-                  fit: BoxFit.scaleDown,
-                  scale: 1.0,
+                  fit: widget.selectedProfileImage is AssetImage ? BoxFit.scaleDown : BoxFit.cover,
+                  scale: 1.2,
                 ),
-                color: PRIMARY_COLOR,
               ),
             ), // 텍스트를 이미지 위에 중앙 아래에 위치시킴
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                child: const Text(
-                  "사진을 선택해주세요.",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
+            if (widget.selectedProfileImage is AssetImage)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: const Text(
+                    "사진을 선택해주세요.",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
