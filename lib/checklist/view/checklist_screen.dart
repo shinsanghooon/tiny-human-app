@@ -49,39 +49,75 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 })
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: ListView.separated(
-            itemBuilder: (context, index) {
-              return ExpansionTile(
-                title: _checklistTitle(data, index),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                children: [
-                  ...checklistWidget(data[index], context),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30.0, bottom: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        _toggleAllChecklistDetailButton(data[index]),
-                        _checklistEditButton(data[index]),
-                        _todoDeleteButton(data[index].id),
-                      ],
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                child: Container(
+                  color: Colors.grey.shade200,
+                  height: 120,
+                  width: double.infinity,
+                  child: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "💡이런 용도로 사용해보세요.",
+                            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? \n체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
-                ],
-              );
-            },
-            itemCount: data.length,
-            separatorBuilder: (context, index) => const Divider(
-              color: DIVIDER_COLOR,
-              indent: 16.0,
-              endIndent: 16.0,
-              height: 0.0,
+                  ),
+                ),
+              ),
             ),
-          ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    return ExpansionTile(
+                      title: _checklistTitle(data, index),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      children: [
+                        ...checklistWidget(data[index], context),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 30.0, bottom: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              _toggleAllChecklistDetailButton(data[index]),
+                              _checklistEditButton(data[index]),
+                              _todoDeleteButton(data[index].id),
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                  itemCount: data.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    color: DIVIDER_COLOR,
+                    indent: 16.0,
+                    endIndent: 16.0,
+                    height: 0.0,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ));
   }
 

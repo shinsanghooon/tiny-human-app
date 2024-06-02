@@ -27,8 +27,8 @@ class DiaryCard extends StatelessWidget {
       id: model.id,
       image: ImageContainer(
         url: S3UrlGenerator.getThumbnailUrlWith300wh(model.pictures.first.keyName),
-        width: 120,
-        height: 120,
+        width: 110,
+        height: 110,
       ),
       detail: model.sentences.first.sentence,
       createdAt: model.date,
@@ -80,14 +80,19 @@ class DiaryCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(
-                    height: 8.0,
+                    height: 4.0,
                   ),
-                  Text(
-                    detail,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 16.0, color: BODY_TEXT_COLOR, height: 1.5, fontWeight: FontWeight.w500),
+                  SizedBox(
+                    child: Text(
+                      detail,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: BODY_TEXT_COLOR,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),

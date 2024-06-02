@@ -30,10 +30,10 @@ void initializeNotification() async {
   await flutterLocalNotificationPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(const AndroidNotificationChannel(
-    'high_importance_channel',
-    'high_importance_notification',
-    importance: Importance.max,
-  ));
+        'high_importance_channel',
+        'high_importance_notification',
+        importance: Importance.max,
+      ));
 
   await flutterLocalNotificationPlugin.initialize(
     const InitializationSettings(
@@ -124,7 +124,7 @@ void main() async {
   );
 
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: _App(),
     ),
   );
@@ -152,17 +152,17 @@ class _App extends ConsumerWidget {
         dialogTheme: const DialogTheme(surfaceTintColor: Colors.white),
         dropdownMenuTheme: const DropdownMenuThemeData(
             menuStyle: MenuStyle(
-              backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-              surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
-            )),
+          backgroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+          surfaceTintColor: MaterialStatePropertyAll<Color>(Colors.white),
+        )),
         datePickerTheme: const DatePickerThemeData(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
         ),
         textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-              foregroundColor: PRIMARY_COLOR,
-            )),
+          foregroundColor: PRIMARY_COLOR,
+        )),
         fontFamily: 'Pretendard',
       ),
       localizationsDelegates: const [

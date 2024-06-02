@@ -14,6 +14,8 @@ import 'package:tiny_human_app/helpchat/view/helpchat_screen.dart';
 import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
+import '../../album/model/album_response_model.dart';
+import '../../common/utils/date_convertor.dart';
 import '../../diary/view/diary_detail_screen.dart';
 import '../../helpchat/view/helprequest_list_screen.dart';
 import '../model/user_model.dart';
@@ -60,26 +62,62 @@ class AuthProvider extends ChangeNotifier {
             ),
             ShellRoute(
               builder: (context, state, child) {
-                print('shell');
-                print(context);
-                return RootScreen(child: child);
+                return RootScreen(
+                  child: child,
+                );
               },
               routes: [
                 GoRoute(
-                  path: 'diary',
-                  name: DiaryScreen.routeName,
-                  builder: (_, state) => const DiaryScreen(),
-                ),
+                    path: 'diary',
+                    name: DiaryScreen.routeName,
+                    builder: (_, state) => const DiaryScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) => DiaryDetailScreen(
+                          model: state.extra as DiaryResponseModel,
+                        ),
+                      )
+                    ]),
                 GoRoute(
-                  path: 'album',
-                  name: AlbumScreen.routeName,
-                  builder: (_, state) => const AlbumScreen(),
-                ),
+                    path: 'album',
+                    name: AlbumScreen.routeName,
+                    builder: (_, state) => const AlbumScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) {
+                          List details = state.extra as List;
+                          AlbumResponseModel selectedModel = details[0];
+                          String imageUrl = details[1];
+                          int daysAfterBirth = details[2];
+
+                          return PhotoRoute(
+                            image: imageUrl,
+                            date: DateConvertor.dateTimeToKoreanDateString(selectedModel.originalCreatedAt!),
+                            daysAfterBirth: daysAfterBirth,
+                          );
+                        },
+                      )
+                    ]),
                 GoRoute(
-                  path: 'help-chat',
-                  name: HelpChatScreen.routeName,
-                  builder: (_, state) => const HelpChatScreen(),
-                ),
+                    path: 'help-chat',
+                    name: HelpChatScreen.routeName,
+                    builder: (_, state) => const HelpChatScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) {
+                          List details = state.extra as List;
+                          int userId = details[0];
+                          HelpChatModel model = details[1];
+                          return ChattingScreen(
+                            userId: userId,
+                            model: model,
+                          );
+                        },
+                      ),
+                    ]),
                 GoRoute(
                   path: 'checklist',
                   builder: (_, __) => const CheckListScreen(),
@@ -89,24 +127,6 @@ class AuthProvider extends ChangeNotifier {
                   builder: (_, __) => const SettingScreen(),
                 ),
               ],
-            ),
-            GoRoute(
-              path: 'diary/:id',
-              builder: (_, state) => DiaryDetailScreen(
-                model: state.extra as DiaryResponseModel,
-              ),
-            ),
-            GoRoute(
-              path: 'help-chat/:id',
-              builder: (_, state) {
-                List details = state.extra as List;
-                int userId = details[0];
-                HelpChatModel model = details[1];
-                return ChattingScreen(
-                  userId: userId,
-                  model: model,
-                );
-              },
             ),
           ],
         ),

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -286,16 +287,11 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               : GestureDetector(
                                   onTap: () {
                                     final selectedModel = (data[index] as AlbumResponseModel);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PhotoRoute(
-                                            image: s3ImageUrls[index],
-                                            date: DateConvertor.dateTimeToKoreanDateString(
-                                                selectedModel.originalCreatedAt!),
-                                            daysAfterBirth: DateConvertor.calculateDaysAfterBaseDate(
-                                                selectedBaby.dayOfBirth, selectedModel.originalCreatedAt!)),
-                                      ),
+                                    final daysAfterBirth = DateConvertor.calculateDaysAfterBaseDate(
+                                        selectedBaby.dayOfBirth, selectedModel.originalCreatedAt!);
+                                    context.push(
+                                      '/album/${selectedModel.id}',
+                                      extra: [selectedModel, s3ImageUrls[index], daysAfterBirth],
                                     );
                                   },
                                   child: ClipRRect(
@@ -499,13 +495,6 @@ class PhotoRoute extends StatelessWidget {
               const SizedBox(
                 width: 8.0,
               ),
-              // Text(
-              //   '+$daysAfterBirth일',
-              //   style: const TextStyle(
-              //     fontSize: 14.0,
-              //     color: PRIMARY_COLOR,
-              //   ),
-              // )
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Container(
