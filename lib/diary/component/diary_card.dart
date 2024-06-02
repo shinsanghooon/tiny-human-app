@@ -88,7 +88,7 @@ class DiaryCard extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         color: BODY_TEXT_COLOR,
                         fontWeight: FontWeight.w500,
                       ),

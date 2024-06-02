@@ -56,7 +56,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(16.0)),
                 child: Container(
-                  color: Colors.grey.shade200,
+                  color: Colors.grey.shade100,
                   height: 120,
                   width: double.infinity,
                   child: const Padding(
@@ -71,7 +71,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
                           ),
                           Text(
-                            "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? \n체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
+                            "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
                             style: TextStyle(fontSize: 16.0),
                           ),
                         ],
