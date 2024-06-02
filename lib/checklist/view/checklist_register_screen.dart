@@ -125,16 +125,38 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   Widget checklistTextCard(int idx) {
     return Padding(
       padding: const EdgeInsets.only(left: 12.0),
-      child: CustomTextChecklistFormField(
-        keyName: 'checklist_detail_$idx',
-        onSaved: (String? value) {
-          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
-        },
-        onChanged: (String? value) {
-          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
-        },
-        hintText: "체크할 항목을 입력해주세요.",
-        initialValue: checklistDetails[idx].contents,
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextChecklistFormField(
+              keyName: 'checklist_detail_$idx',
+              onSaved: (String? value) {
+                checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
+              },
+              onChanged: (String? value) {
+                checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
+              },
+              hintText: "체크할 항목을 입력해주세요.",
+              initialValue: checklistDetails[idx].contents,
+            ),
+          ),
+          Container(
+            width: 50,
+            color: Colors.white,
+            child: IconButton(
+              icon: const Icon(
+                Icons.delete_outlined,
+                color: Colors.black38,
+                size: 20.0,
+              ),
+              onPressed: () {
+                setState(() {
+                  checklistDetails.removeAt(idx);
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
