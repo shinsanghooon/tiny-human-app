@@ -20,11 +20,21 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   final GlobalKey<FormState> formKey = GlobalKey();
   String title = '';
   List<ChecklistDetailCreateModel> checklistDetails = [];
+  List<FocusNode> focusNodes = [];
 
   @override
   void initState() {
     checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
+    focusNodes.add(FocusNode());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    for (FocusNode node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -70,6 +80,11 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                         onPressed: () {
                           setState(() {
                             checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
+                            focusNodes.add(FocusNode());
+                          });
+                          // Delay the focus request to ensure the widget tree is updated
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            FocusScope.of(context).requestFocus(focusNodes.last);
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -130,6 +145,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
           Expanded(
             child: CustomTextChecklistFormField(
               keyName: 'checklist_detail_$idx',
+              focusNode: focusNodes[idx],
               onSaved: (String? value) {
                 checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
               },
@@ -152,6 +168,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
               onPressed: () {
                 setState(() {
                   checklistDetails.removeAt(idx);
+                  focusNodes.removeAt(idx).dispose();
                 });
               },
             ),

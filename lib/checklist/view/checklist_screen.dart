@@ -68,7 +68,10 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                         children: [
                           Text(
                             "💡이런 용도로 사용해보세요.",
-                            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
+                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(
+                            height: 4.0,
                           ),
                           Text(
                             "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
