@@ -447,7 +447,8 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 );
 
             if (mounted) {
-              Navigator.of(context).pop();
+              GoRouter.of(context).pop();
+              context.go('/album');
             }
           },
           text: '삭제하기',

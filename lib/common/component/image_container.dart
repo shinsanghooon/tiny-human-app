@@ -58,8 +58,8 @@ class _ImageContainerState extends State<ImageContainer> {
           ),
         ),
       ),
-      fadeInDuration: const Duration(milliseconds: 100),
-      fadeOutDuration: const Duration(milliseconds: 100),
+      fadeInDuration: const Duration(milliseconds: 500),
+      fadeOutDuration: const Duration(milliseconds: 500),
       errorWidget: (context, url, error) {
         _retryLoadingImage();
 
@@ -75,7 +75,7 @@ class _ImageContainerState extends State<ImageContainer> {
             child: const SpinKitDoubleBounce(
               color: PRIMARY_COLOR,
               size: 40.0,
-              duration: const Duration(milliseconds: 1500),
+              duration: Duration(milliseconds: 2000),
             ),
           ),
         );
