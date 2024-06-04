@@ -108,7 +108,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '🎊 ${DateConvertor.dateTimeToKoreanDateString(DateTime.parse(widget.model.dayOfBirth))}',
+                                '${DateConvertor.dateTimeToKoreanDateString(DateTime.parse(widget.model.dayOfBirth))}',
                                 style: const TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w500,
@@ -117,17 +117,17 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  widget.model.gender == 'FEMALE'
-                                      ? const Icon(
-                                          Icons.female_outlined,
-                                          color: Colors.pink,
-                                          size: 20.0,
-                                        )
-                                      : const Icon(
-                                          Icons.male_outlined,
-                                          color: Colors.blueAccent,
-                                          size: 20.0,
-                                        ),
+                                  // widget.model.gender == 'FEMALE'
+                                  //     ? const Icon(
+                                  //         Icons.female_outlined,
+                                  //         color: Colors.pink,
+                                  //         size: 20.0,
+                                  //       )
+                                  //     : const Icon(
+                                  //         Icons.male_outlined,
+                                  //         color: Colors.blueAccent,
+                                  //         size: 20.0,
+                                  //       ),
                                   const SizedBox(
                                     width: 4.0,
                                   ),
@@ -136,12 +136,12 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                                     style: widget.model.gender == 'FEMALE'
                                         ? const TextStyle(
                                             fontSize: 16.0,
-                                            color: Colors.pink,
+                                            color: Colors.redAccent,
                                             fontWeight: FontWeight.w600,
                                           )
                                         : const TextStyle(
                                             fontSize: 16.0,
-                                            color: Colors.blueAccent,
+                                            color: Colors.blue,
                                             fontWeight: FontWeight.w600,
                                           ),
                                   ),

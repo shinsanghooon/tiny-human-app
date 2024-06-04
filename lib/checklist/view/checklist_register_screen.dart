@@ -83,6 +83,9 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                             focusNodes.add(FocusNode());
                           });
                           // Delay the focus request to ensure the widget tree is updated
+                          // WidgetsBinding.instance.addPostFrameCallback 사용
+                          // - WidgetsBinding.instance.addPostFrameCallback을 사용하여 위젯 트리가 업데이트된 후 포커스를 설정합니다.
+                          // - 이렇게 하면 setState가 호출된 후 새로 추가된 TextFormField가 포커스를 받을 수 있습니다.
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             FocusScope.of(context).requestFocus(focusNodes.last);
                           });
