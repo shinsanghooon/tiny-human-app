@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 import 'package:tiny_human_app/user/model/user_model.dart';
@@ -34,21 +33,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final state = ref.watch(userMeProvider);
 
     return DefaultLayout(
-      child: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(36.0),
+          child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const ScreenTitle(title: "환영합니다."),
-                const SizedBox(
-                  height: 20.0,
+                const Text(
+                  APP_TITLE,
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.w900,
+                    color: PRIMARY_COLOR,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                const ScreenSubTitle(subTitle: "이메일과 비밀번호를 입력해서 로그인해주세요.\n오늘도 ${APP_TITLE}에 하루를 남겨보세요!"),
                 const SizedBox(
-                  height: 20.0,
+                  height: 24.0,
+                ),
+                Image.asset(
+                  'asset/images/logo.png',
+                  height: 160,
+                  width: 160,
+                ),
+                const SizedBox(
+                  height: 72.0,
                 ),
                 Form(
                   key: formKey,
@@ -122,48 +133,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () => onGoogleLoginPress(context),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.blueAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            )),
-                        child: const Text("구글 로그인",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                            )),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => onKakaoLoginPress(context),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            )),
-                        child: const Text("카카오 로그인",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                            )),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => onAppleLoginPress(context),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            )),
-                        child: const Text("Apple 로그인",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                            )),
-                      )
+                      // ElevatedButton(
+                      //   onPressed: () => onGoogleLoginPress(context),
+                      //   style: ElevatedButton.styleFrom(
+                      //       foregroundColor: Colors.white,
+                      //       backgroundColor: Colors.blueAccent,
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(20.0),
+                      //       )),
+                      //   child: const Text("구글 로그인",
+                      //       style: TextStyle(
+                      //         fontSize: 18.0,
+                      //         fontWeight: FontWeight.w600,
+                      //       )),
+                      // ),
+                      // ElevatedButton(
+                      //   onPressed: () => onKakaoLoginPress(context),
+                      //   style: ElevatedButton.styleFrom(
+                      //       foregroundColor: Colors.black,
+                      //       backgroundColor: Colors.yellow,
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(20.0),
+                      //       )),
+                      //   child: const Text("카카오 로그인",
+                      //       style: TextStyle(
+                      //         fontSize: 18.0,
+                      //         fontWeight: FontWeight.w600,
+                      //       )),
+                      // ),
+                      // ElevatedButton(
+                      //   onPressed: () => onAppleLoginPress(context),
+                      //   style: ElevatedButton.styleFrom(
+                      //       foregroundColor: Colors.white,
+                      //       backgroundColor: Colors.black,
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(20.0),
+                      //       )),
+                      //   child: const Text("Apple 로그인",
+                      //       style: TextStyle(
+                      //         fontSize: 18.0,
+                      //         fontWeight: FontWeight.w600,
+                      //       )),
+                      // )
                     ],
                   ),
                 ),

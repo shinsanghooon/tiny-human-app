@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:tiny_human_app/common/component/alert_dialog.dart';
-import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
@@ -28,20 +27,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      child: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
+      child: SafeArea(
+        child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(36.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const ScreenTitle(title: "회원가입을 진행합니다."),
-                const SizedBox(height: 20.0),
-                const ScreenSubTitle(subTitle: "이메일, 패스워드, 이름을 입력하여 회원가입을 진행해주세요."),
-                const SizedBox(
-                  height: 20.0,
+                const SizedBox(height: 40.0),
+                const Text(
+                  'Join us!',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 40.0),
 
                 // input 필드를 동시에 관리한다.
                 Form(
@@ -86,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: "비밀번호를 다시 한 번 입력해주세요.",
                         initialValue: confirmedPassword ?? '',
                       ),
-                      const SizedBox(height: 14.0),
+                      const SizedBox(height: 48.0),
                       registerActionButton(context),
                     ],
                   ),
@@ -143,6 +145,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             );
 
+            print(response);
+
             if (response.statusCode != 201) {
               showDialog(
                   context: context,
@@ -170,6 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "가입 하기",
           style: TextStyle(
             fontSize: 18.0,
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
