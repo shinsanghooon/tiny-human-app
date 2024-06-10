@@ -34,151 +34,111 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return DefaultLayout(
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(36.0),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  APP_TITLE,
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.w900,
-                    color: PRIMARY_COLOR,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 64.0, horizontal: 36.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    APP_TITLE,
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.w900,
+                      color: PRIMARY_COLOR,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 24.0,
-                ),
-                Image.asset(
-                  'asset/images/logo.png',
-                  height: 160,
-                  width: 160,
-                ),
-                const SizedBox(
-                  height: 72.0,
-                ),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      CustomTextFormField(
-                        keyName: 'email',
-                        onSaved: (String? value) {
-                          email = value!;
-                        },
-                        hintText: "이메일을 입력해주세요.",
-                        initialValue: email ?? '',
-                      ),
-                      const SizedBox(height: 16.0),
-                      CustomTextFormField(
-                        keyName: 'password',
-                        onSaved: (String? value) {
-                          password = value!;
-                        },
-                        obscureText: true,
-                        hintText: "비밀번호를 입력해주세요.",
-                        initialValue: password ?? '',
-                      ),
-                      const SizedBox(height: 16.0),
-                      ElevatedButton(
-                        onPressed: state is UserModelLoading
-                            ? null
-                            : () async {
-                                if (formKey.currentState == null) {
-                                  // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
-                                  return null;
-                                }
-
-                                // form을 쓸 때 동일하게 하는 패턴
-                                // Form 아래 TextFormField의 validator가 모두 실행됨
-                                if (formKey.currentState!.validate()) {
-                                  // save를 해주면 TextFormField의 onSaved 함수가 호출된다.
-                                  formKey.currentState!.save();
-                                } else {
-                                  // 어떤 필드가 문제가 있는 경우.
-                                  return null;
-                                }
-
-                                ref.read(userMeProvider.notifier).login(email: email, password: password);
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
+                  const SizedBox(
+                    height: 24.0,
+                  ),
+                  Image.asset(
+                    'asset/images/logo.png',
+                    height: 160,
+                    width: 160,
+                  ),
+                  const SizedBox(
+                    height: 72.0,
+                  ),
+                  Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CustomTextFormField(
+                          keyName: 'email',
+                          onSaved: (String? value) {
+                            email = value!;
+                          },
+                          hintText: "이메일을 입력해주세요.",
+                          initialValue: email ?? '',
                         ),
-                        child: const Text(
-                          "로그인",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                        const SizedBox(height: 16.0),
+                        CustomTextFormField(
+                          keyName: 'password',
+                          onSaved: (String? value) {
+                            password = value!;
+                          },
+                          obscureText: true,
+                          hintText: "비밀번호를 입력해주세요.",
+                          initialValue: password ?? '',
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          onPressed: state is UserModelLoading
+                              ? null
+                              : () async {
+                                  if (formKey.currentState == null) {
+                                    // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
+                                    return null;
+                                  }
+
+                                  // form을 쓸 때 동일하게 하는 패턴
+                                  // Form 아래 TextFormField의 validator가 모두 실행됨
+                                  if (formKey.currentState!.validate()) {
+                                    // save를 해주면 TextFormField의 onSaved 함수가 호출된다.
+                                    formKey.currentState!.save();
+                                  } else {
+                                    // 어떤 필드가 문제가 있는 경우.
+                                    return null;
+                                  }
+
+                                  ref.read(userMeProvider.notifier).login(email: email, password: password);
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: PRIMARY_COLOR,
+                          ),
+                          child: const Text(
+                            "로그인",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: PRIMARY_COLOR,
-                        ),
-                        child: const Text(
-                          "회원 가입",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w400,
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: PRIMARY_COLOR,
+                          ),
+                          child: const Text(
+                            "회원 가입",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
-                      ),
-                      // ElevatedButton(
-                      //   onPressed: () => onGoogleLoginPress(context),
-                      //   style: ElevatedButton.styleFrom(
-                      //       foregroundColor: Colors.white,
-                      //       backgroundColor: Colors.blueAccent,
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(20.0),
-                      //       )),
-                      //   child: const Text("구글 로그인",
-                      //       style: TextStyle(
-                      //         fontSize: 18.0,
-                      //         fontWeight: FontWeight.w600,
-                      //       )),
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: () => onKakaoLoginPress(context),
-                      //   style: ElevatedButton.styleFrom(
-                      //       foregroundColor: Colors.black,
-                      //       backgroundColor: Colors.yellow,
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(20.0),
-                      //       )),
-                      //   child: const Text("카카오 로그인",
-                      //       style: TextStyle(
-                      //         fontSize: 18.0,
-                      //         fontWeight: FontWeight.w600,
-                      //       )),
-                      // ),
-                      // ElevatedButton(
-                      //   onPressed: () => onAppleLoginPress(context),
-                      //   style: ElevatedButton.styleFrom(
-                      //       foregroundColor: Colors.white,
-                      //       backgroundColor: Colors.black,
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(20.0),
-                      //       )),
-                      //   child: const Text("Apple 로그인",
-                      //       style: TextStyle(
-                      //         fontSize: 18.0,
-                      //         fontWeight: FontWeight.w600,
-                      //       )),
-                      // )
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

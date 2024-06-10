@@ -49,45 +49,46 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 })
           ],
         ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                child: Container(
-                  color: Colors.grey.shade100,
-                  height: 120,
-                  width: double.infinity,
-                  child: const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            "💡이런 용도로 사용해보세요.",
-                            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            height: 4.0,
-                          ),
-                          Text(
-                            "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                  child: Container(
+                    color: Colors.grey.shade100,
+                    width: double.infinity,
+                    child: const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                              "💡이런 용도로 사용해보세요.",
+                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                            ),
+                            SizedBox(
+                              height: 4.0,
+                            ),
+                            Text(
+                              "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Padding(
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ExpansionTile(
                       title: _checklistTitle(data, index),
@@ -119,8 +120,8 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 
