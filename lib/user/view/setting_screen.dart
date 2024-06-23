@@ -18,9 +18,14 @@ class SettingScreen extends ConsumerStatefulWidget {
 
 class _SettingScreenState extends ConsumerState<SettingScreen> {
   bool isChatPushAllowed = true;
+  bool isDiaryPushAllowed = true;
 
   @override
   Widget build(BuildContext context) {
+    print(isDiaryPushAllowed);
+    print(isChatPushAllowed);
+    print('----');
+
     final user = ref.watch(userMeProvider) as UserModel;
 
     return DefaultLayout(
@@ -66,34 +71,17 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
               ],
             ),
             dividerWithPadding(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('채팅 알림 여부',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500,
-                    )),
-                Platform.isIOS == true
-                    ? CupertinoSwitch(
-                        value: isChatPushAllowed,
-                        activeColor: CupertinoColors.activeBlue,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChatPushAllowed = value ?? false;
-                          });
-                        },
-                      )
-                    : Switch(
-                        value: isChatPushAllowed,
-                        onChanged: (value) {
-                          setState(() {
-                            isChatPushAllowed = value;
-                          });
-                        },
-                      ),
-              ],
-            ),
+            notificationDetailToggle("일기 알림", isDiaryPushAllowed, (value) {
+              setState(() {
+                isDiaryPushAllowed = value;
+              });
+            }),
+            dividerWithPadding(),
+            notificationDetailToggle("채팅 알림", isChatPushAllowed, (value) {
+              setState(() {
+                isChatPushAllowed = value;
+              });
+            }),
             dividerWithPadding(),
             InkWell(
               child: const Text(
@@ -111,6 +99,35 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Row notificationDetailToggle(String title, bool switchValue, ValueChanged<bool> onChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Platform.isIOS
+            ? CupertinoSwitch(
+                value: switchValue,
+                key: ValueKey(title),
+                activeColor: CupertinoColors.activeBlue,
+                onChanged: (bool? value) {
+                  onChanged(value ?? false);
+                },
+              )
+            : Switch(
+                value: switchValue,
+                key: ValueKey(title),
+                onChanged: onChanged,
+              ),
+      ],
     );
   }
 
