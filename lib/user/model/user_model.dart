@@ -21,6 +21,8 @@ class UserModel extends UserModelBase {
   final String email;
   final String status;
   final String? lastLoginAt;
+  final bool isAllowChatNotifications;
+  final bool isAllowDiaryNotifications;
 
   UserModel({
     required this.id,
@@ -28,8 +30,9 @@ class UserModel extends UserModelBase {
     required this.email,
     required this.status,
     this.lastLoginAt,
+    required this.isAllowChatNotifications,
+    required this.isAllowDiaryNotifications,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 }

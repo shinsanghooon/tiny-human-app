@@ -4,6 +4,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/user/model/notification_settings_update_model.dart';
 import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../../common/layout/default_layout.dart';
@@ -22,11 +23,11 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(isDiaryPushAllowed);
-    print(isChatPushAllowed);
-    print('----');
-
     final user = ref.watch(userMeProvider) as UserModel;
+    final userId = user.id;
+
+    isChatPushAllowed = user.isAllowChatNotifications;
+    isDiaryPushAllowed = user.isAllowDiaryNotifications;
 
     return DefaultLayout(
       appBar: AppBar(
@@ -71,16 +72,25 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
               ],
             ),
             dividerWithPadding(),
-            notificationDetailToggle("일기 알림", isDiaryPushAllowed, (value) {
+            notificationDetailToggle("일기 알림", isDiaryPushAllowed, subTitle: "밤 9시에 알림을 전달해드려요.", (value) async {
               setState(() {
                 isDiaryPushAllowed = value;
               });
+
+              await ref.read(userMeProvider.notifier).updateNotificationSettings(
+                  userId,
+                  NotificationSettingsUpdates(
+                      isAllowChatNotifications: isChatPushAllowed, isAllowDiaryNotifications: isDiaryPushAllowed));
             }),
             dividerWithPadding(),
-            notificationDetailToggle("채팅 알림", isChatPushAllowed, (value) {
+            notificationDetailToggle("채팅 알림", isChatPushAllowed, (value) async {
               setState(() {
                 isChatPushAllowed = value;
               });
+              await ref.read(userMeProvider.notifier).updateNotificationSettings(
+                  userId,
+                  NotificationSettingsUpdates(
+                      isAllowChatNotifications: isChatPushAllowed, isAllowDiaryNotifications: isDiaryPushAllowed));
             }),
             dividerWithPadding(),
             InkWell(
@@ -102,31 +112,46 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
     );
   }
 
-  Row notificationDetailToggle(String title, bool switchValue, ValueChanged<bool> onChanged) {
+  Row notificationDetailToggle(String title, bool switchValue, ValueChanged<bool> onChanged, {String? subTitle}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.w500,
-          ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (subTitle != null)
+              Text(
+                subTitle,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+          ],
         ),
         Platform.isIOS
             ? CupertinoSwitch(
-                value: switchValue,
-                key: ValueKey(title),
-                activeColor: CupertinoColors.activeBlue,
-                onChanged: (bool? value) {
-                  onChanged(value ?? false);
-                },
-              )
+          value: switchValue,
+          key: ValueKey(title),
+          activeColor: CupertinoColors.activeBlue,
+          onChanged: (bool? value) {
+            onChanged(value ?? false);
+          },
+        )
             : Switch(
-                value: switchValue,
-                key: ValueKey(title),
-                onChanged: onChanged,
-              ),
+          value: switchValue,
+          key: ValueKey(title),
+          onChanged: onChanged,
+        ),
       ],
     );
   }

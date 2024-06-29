@@ -11,6 +11,7 @@ import 'package:tiny_human_app/user/model/user_push_create_model.dart';
 import 'package:tiny_human_app/user/repository/auth_repository.dart';
 
 import '../../common/utils/device_info.dart';
+import '../model/notification_settings_update_model.dart';
 import '../repository/user_me_repository.dart';
 
 final userMeProvider = StateNotifierProvider<UserMeStateNotifier, UserModelBase?>((ref) {
@@ -56,6 +57,18 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
     state = response;
     return response;
+  }
+
+  Future<void> updateNotificationSettings(int userId, NotificationSettingsUpdates notificationSettingUpdate) async {
+    print("Notification Update!");
+    print(userId);
+    print(notificationSettingUpdate.isAllowDiaryNotifications);
+    print(notificationSettingUpdate.isAllowChatNotifications);
+
+    final user =
+        await repository.updateNotificationSettings(id: userId, notificationSettingUpdate: notificationSettingUpdate);
+
+    state = user;
   }
 
   Future<UserModelBase> login({required String email, required String password}) async {
