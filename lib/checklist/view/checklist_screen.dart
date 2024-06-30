@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
@@ -52,38 +53,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                  child: Container(
-                    color: Colors.grey.shade100,
-                    width: double.infinity,
-                    child: const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                              "💡이런 용도로 사용해보세요.",
-                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-                            ),
-                            SizedBox(
-                              height: 4.0,
-                            ),
-                            Text(
-                              "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              _checklistGuide(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: ListView.separated(
@@ -91,6 +61,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ExpansionTile(
+                      key: ValueKey(data[index].id),
                       title: _checklistTitle(data, index),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -123,6 +94,41 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
             ],
           ),
         ));
+  }
+
+  Padding _checklistGuide() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        child: Container(
+          color: Colors.grey.shade100,
+          width: double.infinity,
+          child: const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "💡이런 용도로 사용해보세요.",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    height: 4.0,
+                  ),
+                  Text(
+                    "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _checklistTitle(List<ChecklistModel> data, int index) {
@@ -211,7 +217,8 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         IconsButton(
           onPressed: () async {
             ref.read(checklistProvider.notifier).deleteChecklist(checklistId);
-            Navigator.of(context).pop();
+            GoRouter.of(context).pop();
+            context.go('/checklist');
           },
           text: '삭제하기',
           iconData: Icons.delete,
