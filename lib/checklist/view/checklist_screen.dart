@@ -295,14 +295,14 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                       ? Text(
                           checkDetail.contents,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             decoration: TextDecoration.lineThrough,
                           ),
                         )
                       : Text(
                           checkDetail.contents,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                           ),
                         ),
                 ],

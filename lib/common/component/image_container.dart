@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
@@ -63,20 +62,14 @@ class _ImageContainerState extends State<ImageContainer> {
       errorWidget: (context, url, error) {
         _retryLoadingImage();
 
-        return DottedBorder(
-          color: PRIMARY_COLOR.withOpacity(0.7),
-          borderType: BorderType.RRect,
-          radius: const Radius.circular(8.0),
-          strokeWidth: 5.0,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: const SpinKitDoubleBounce(
-              color: PRIMARY_COLOR,
-              size: 40.0,
-              duration: Duration(milliseconds: 2000),
-            ),
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: const SpinKitDoubleBounce(
+            color: PRIMARY_COLOR,
+            size: 40.0,
+            duration: Duration(milliseconds: 2000),
           ),
         );
       },

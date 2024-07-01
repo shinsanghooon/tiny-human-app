@@ -113,7 +113,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
                 ),
               ),
               style: const TextStyle(
-                fontSize: 18.0,
+                fontSize: 16.0,
               ),
               onChanged: (value) {
                 setState(() {
