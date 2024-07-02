@@ -24,7 +24,7 @@ class ChecklistNotifier extends StateNotifier<List<ChecklistModel>> {
     getMyChecklist();
   }
 
-  void addChecklist(ChecklistCreateModel model) async {
+  Future<void> addChecklist(ChecklistCreateModel model) async {
     final response = await repository.registerChecklist(checklistCreateModel: model);
     state = [response, ...state];
   }

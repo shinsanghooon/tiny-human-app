@@ -8,10 +8,10 @@ const FCM_TOKEN = 'FCM_TOKEN';
 
 const storage = FlutterSecureStorage();
 
-// final emulatorIp = 'http://10.0.2.2:8080';
-// final simulatorIp = 'http://127.0.0.1:8080';
-final emulatorIp = 'https://api.tinyhuman.today';
-final simulatorIp = 'https://api.tinyhuman.today';
+final emulatorIp = 'http://10.0.2.2:8080';
+final simulatorIp = 'http://127.0.0.1:8080';
+// final emulatorIp = 'https://api.tinyhuman.today';
+// final simulatorIp = 'https://api.tinyhuman.today';
 
 final ip = Platform.isIOS == true ? simulatorIp : emulatorIp;
 

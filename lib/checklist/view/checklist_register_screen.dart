@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
 import 'package:tiny_human_app/checklist/model/checklistdetail_create_model.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
@@ -183,43 +184,54 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
     );
   }
 
-  TextButton registerActionButton(BuildContext context, String buttonText) {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          isLoading = true;
-        });
+  SizedBox registerActionButton(BuildContext context, String buttonText) {
+    return SizedBox(
+      height: 46.0,
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
 
-        if (formKey.currentState == null) {
-          return null;
-        }
+          if (formKey.currentState == null) {
+            setState(() {
+              isLoading = false;
+            });
 
-        if (formKey.currentState!.validate()) {
-          formKey.currentState!.save();
-        } else {
-          return null;
-        }
+            return null;
+          }
 
-        ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
-          title: title,
-          checklistDetailCreate: checklistDetails,
-        );
+          if (formKey.currentState!.validate()) {
+            formKey.currentState!.save();
+          } else {
+            setState(() {
+              isLoading = false;
+            });
 
-        ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
+            return null;
+          }
 
-        setState(() {
-          isLoading = false;
-        });
+          ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
+            title: title,
+            checklistDetailCreate: checklistDetails,
+          );
 
-        Navigator.of(context).pop();
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: PRIMARY_COLOR,
-      ),
-      child: isLoading
-          ? const LoadingSpinner()
-          : Center(
-              child: Text(
+          await ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
+
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+            GoRouter.of(context).pop();
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: PRIMARY_COLOR,
+        ),
+        child: isLoading
+            ? const LoadingSpinner()
+            : Text(
                 buttonText,
                 style: const TextStyle(
                   color: Colors.white,
@@ -227,7 +239,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
+      ),
     );
   }
 }

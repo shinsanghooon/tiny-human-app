@@ -60,11 +60,6 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
   }
 
   Future<void> updateNotificationSettings(int userId, NotificationSettingsUpdates notificationSettingUpdate) async {
-    print("Notification Update!");
-    print(userId);
-    print(notificationSettingUpdate.isAllowDiaryNotifications);
-    print(notificationSettingUpdate.isAllowChatNotifications);
-
     final user =
         await repository.updateNotificationSettings(id: userId, notificationSettingUpdate: notificationSettingUpdate);
 
