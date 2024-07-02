@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
+import 'package:tiny_human_app/common/component/loading_spinner.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/diary/model/diary_create_model.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
@@ -261,6 +262,10 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+
           if (formKey.currentState == null) {
             return;
           }
@@ -303,6 +308,10 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
                 ));
           }
 
+          setState(() {
+            isLoading = false;
+          });
+
           if (mounted) {
             Navigator.of(context).pop();
           }
@@ -310,14 +319,16 @@ class _DiaryRegisterScreenState extends ConsumerState<DiaryRegisterScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
-          "등록 하기",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
+                "등록 하기",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

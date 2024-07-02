@@ -6,6 +6,7 @@ import 'package:tiny_human_app/common/layout/default_layout.dart';
 
 import '../../common/component/custom_text_checklist_form_field.dart';
 import '../../common/component/custom_text_title_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/constant/colors.dart';
 import '../provider/checklist_provider.dart';
 
@@ -21,6 +22,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   String title = '';
   List<ChecklistDetailCreateModel> checklistDetails = [];
   List<FocusNode> focusNodes = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -184,6 +186,10 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   TextButton registerActionButton(BuildContext context, String buttonText) {
     return TextButton(
       onPressed: () {
+        setState(() {
+          isLoading = true;
+        });
+
         if (formKey.currentState == null) {
           return null;
         }
@@ -201,21 +207,27 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
 
         ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
 
+        setState(() {
+          isLoading = false;
+        });
+
         Navigator.of(context).pop();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: PRIMARY_COLOR,
       ),
-      child: Center(
-        child: Text(
-          buttonText,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      child: isLoading
+          ? const LoadingSpinner()
+          : Center(
+              child: Text(
+                buttonText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
     );
   }
 }

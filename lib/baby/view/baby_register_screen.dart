@@ -13,6 +13,7 @@ import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
@@ -47,6 +48,8 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   String? fileName;
   String? relation;
   String? description;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -144,7 +147,9 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         if (pickedFile != null) {
           setState(() {
             pickedFilePath = pickedFile!.path;
-            profileImage = Image.file(File(pickedFile!.path)).image;
+            profileImage = Image
+                .file(File(pickedFile!.path))
+                .image;
             fileName = pickedFile.name;
           });
         }
@@ -158,6 +163,10 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
       height: 46.0,
       child: ElevatedButton(
         onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+
           // 서버에 요청을 보낸다.
           if (formKey.currentState == null) {
             return null;
@@ -215,12 +224,18 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
 
           ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
 
+          setState(() {
+            isLoading = false;
+          });
+
           Navigator.of(context).pop();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
           "등록 하기",
           style: TextStyle(
             fontSize: 18.0,
@@ -255,7 +270,10 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
       child: ToggleButtons(
         constraints: BoxConstraints(
           minHeight: 50.0,
-          minWidth: (MediaQuery.of(context).size.width) / 2.5,
+          minWidth: (MediaQuery
+              .of(context)
+              .size
+              .width) / 2.5,
         ),
         onPressed: (int index) {
           setState(() {
@@ -359,7 +377,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                   timeOfBirth = value!;
                 },
                 dropdownMenuEntries: times.map(
-                  (t) {
+                      (t) {
                     return DropdownMenuEntry(value: t, label: '${t}시');
                   },
                 ).toList(),

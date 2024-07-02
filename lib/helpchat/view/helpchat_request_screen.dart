@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tiny_human_app/common/component/loading_spinner.dart';
 import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 
@@ -26,6 +27,8 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
   String? requestContents;
 
   ChatRequestType chatRequestType = ChatRequestType.KEYWORD;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -140,6 +143,10 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
         onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+
           if (formKey.currentState == null) {
             return;
           }
@@ -162,6 +169,10 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
 
           ref.read(helpRequestProvider.notifier).addHelpRequest(helpChatCreateModel);
 
+          setState(() {
+            isLoading = false;
+          });
+
           if (mounted) {
             Navigator.of(context).pop();
           }
@@ -169,14 +180,16 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
-          "채팅 요청하기",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
+                "채팅 요청하기",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

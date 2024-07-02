@@ -141,7 +141,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                 child: Text(
                   state.sentences.first.sentence,
                   style: const TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                     height: 1.8,
                   ),
                 ),
@@ -159,7 +159,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                           child: Text(
                             'From. 티니 ☺️',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 18.0,
                               height: 1.8,
                               color: MAIN_GREEN_COLOR,
                               fontWeight: FontWeight.w600,
