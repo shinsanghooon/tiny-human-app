@@ -29,6 +29,7 @@ class AuthRepository {
       "email": email,
       "password": password,
     });
+
     return LoginResponse.fromJson(response.data);
   }
 

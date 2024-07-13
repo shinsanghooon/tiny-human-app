@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:tiny_human_app/common/component/alert_dialog.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/show_toast.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
@@ -123,17 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           }
 
           if (password != confirmedPassword) {
-            // 비밀번호 확인을 한다.
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return CustomAlertDialog(
-                    title: '확인 필요',
-                    content: '비밀번호와 확인 비밀번호가 다릅니다. 다시 한 번 확인해주세요.',
-                    buttonText: '확인',
-                  );
-                });
+            showToastWithMessage('입력하신 두 개의 비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요.');
           } else {
             // 서버에 요청을 보낸다.
             final response = await dio.post(
@@ -145,24 +135,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             );
 
-            print(response);
-
-            if (response.statusCode != 201) {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return CustomAlertDialog(
-                      title: '가입 실패',
-                      content: '가입이 실패하였습니다. 잠시 후에 다시 시도해주세요.',
-                      buttonText: '확인',
-                    );
-                  });
+            if (response.statusCode == 201) {
+              showToastWithMessage("회원가입이 완료 되었습니다. 로그인을 해주세요.");
+            } else {
+              showToastWithMessage("가입이 실패하였습니다. 잠시 후에 다시 시도해주세요.");
             }
 
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => LoginScreen(),
+                builder: (_) => const LoginScreen(),
               ),
             );
           }

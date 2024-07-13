@@ -61,7 +61,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
   Future<void> updateNotificationSettings(int userId, NotificationSettingsUpdates notificationSettingUpdate) async {
     final user =
-        await repository.updateNotificationSettings(id: userId, notificationSettingUpdate: notificationSettingUpdate);
+    await repository.updateNotificationSettings(id: userId, notificationSettingUpdate: notificationSettingUpdate);
 
     state = user;
   }
@@ -74,6 +74,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
         email: email,
         password: password,
       );
+
 
       await storage.write(key: REFRESH_TOKEN_KEY, value: response.refreshToken);
       await storage.write(key: ACCESS_TOKEN_KEY, value: response.accessToken);
@@ -94,6 +95,8 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
 
       print('login!');
       print('state $state');
+
+      return Future.value(state);
 
       return userResponse;
     } catch (e) {

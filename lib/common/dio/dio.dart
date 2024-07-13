@@ -66,6 +66,10 @@ class CustomInterceptor extends Interceptor {
     // 리프레시 토큰이 아예 없으면 에러를 던진다.
     if (refreshToken == null) {
       // handler.reject로 에러가 생성된다.
+      print('refresh token is null');
+      print('err');
+      print('err $err');
+      print('---');
       return handler.reject(err);
     }
 
@@ -95,6 +99,7 @@ class CustomInterceptor extends Interceptor {
         final newResponse = await dio.fetch(options);
         return handler.resolve(newResponse);
       } on DioError catch (e) {
+        print('Else error');
         // jwt 관련 다른 에러(토큰 만료)
 
         // 여기서 userMeProvider를 불러와서 logout을 해주면

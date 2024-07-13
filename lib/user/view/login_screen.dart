@@ -11,6 +11,7 @@ import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/register_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/show_toast.dart';
 import '../../common/constant/data.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -105,7 +106,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     return null;
                                   }
 
-                                  ref.read(userMeProvider.notifier).login(email: email, password: password);
+                                  var result =
+                                      await ref.read(userMeProvider.notifier).login(email: email, password: password);
+
+                                  if (result is UserModelError) {
+                                    showToastWithMessage("로그인에 실패했습니다.\n이메일 또는 비밀번호를 확인해주세요.");
+                                  }
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: PRIMARY_COLOR,
