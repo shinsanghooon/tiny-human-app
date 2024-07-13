@@ -11,6 +11,7 @@ import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/register_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/component/show_toast.dart';
 import '../../common/constant/data.dart';
 
@@ -28,6 +29,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   String email = '';
   String password = '';
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +95,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               : () async {
                                   if (formKey.currentState == null) {
                                     // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
+
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+
                                     return null;
                                   }
 
@@ -103,6 +110,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     formKey.currentState!.save();
                                   } else {
                                     // 어떤 필드가 문제가 있는 경우.
+
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+
                                     return null;
                                   }
 
@@ -112,18 +124,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   if (result is UserModelError) {
                                     showToastWithMessage("로그인에 실패했습니다.\n이메일 또는 비밀번호를 확인해주세요.");
                                   }
+
+                                  setState(() {
+                                    isLoading = true;
+                                  });
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: PRIMARY_COLOR,
                           ),
-                          child: const Text(
-                            "로그인",
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: isLoading
+                              ? const LoadingSpinner()
+                              : const Text(
+                                  "로그인",
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                         TextButton(
                           onPressed: () {

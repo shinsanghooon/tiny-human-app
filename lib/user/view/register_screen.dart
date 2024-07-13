@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/component/show_toast.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
@@ -23,6 +24,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? password;
   String? confirmedPassword;
   String? username;
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +112,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // formkey를 사용해서 텍스트 필드 검증
           if (formKey.currentState == null) {
             // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
+            setState(() {
+              isLoading = true;
+            });
             return null;
           }
 
@@ -119,6 +125,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             formKey.currentState!.save();
           } else {
             // 어떤 필드가 문제가 있는 경우.
+            setState(() {
+              isLoading = true;
+            });
             return null;
           }
 
@@ -141,6 +150,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               showToastWithMessage("가입이 실패하였습니다. 잠시 후에 다시 시도해주세요.");
             }
 
+            setState(() {
+              isLoading = true;
+            });
+
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => const LoginScreen(),
@@ -151,7 +164,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
           "가입 하기",
           style: TextStyle(
             fontSize: 18.0,
