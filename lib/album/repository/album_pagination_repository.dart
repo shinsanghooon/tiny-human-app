@@ -16,7 +16,7 @@ part 'album_pagination_repository.g.dart';
 
 final albumPaginationRepositoryProvider = Provider<AlbumPaginationRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return AlbumPaginationRepository(dio, baseUrl: "http://$ip/api/v1/babies");
+  return AlbumPaginationRepository(dio, baseUrl: "$ip/api/v1/babies");
 });
 
 @RestApi()

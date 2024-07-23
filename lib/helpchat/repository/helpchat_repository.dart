@@ -14,12 +14,18 @@ part 'helpchat_repository.g.dart';
 
 final helpChatRepositoryProvider = Provider<HelpChatRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return HelpChatRepository(dio, baseUrl: 'http://$ip/api/v1/helpchat');
+  return HelpChatRepository(dio, baseUrl: '$ip/api/v1/helpchat');
 });
 
 @RestApi()
 abstract class HelpChatRepository {
   factory HelpChatRepository(Dio dio, {String baseUrl}) = _HelpChatRepository;
+
+  @GET('/{id}')
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<HelpChatModel> getNewHelpChat({@Path('id') required int helpChatId});
 
   @GET('')
   @Headers({

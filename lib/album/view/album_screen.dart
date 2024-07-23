@@ -13,12 +13,12 @@ import 'package:tiny_human_app/album/model/album_delete_request_model.dart';
 import 'package:tiny_human_app/album/model/album_response_model.dart';
 import 'package:tiny_human_app/album/provider/album_pagination_provider.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
-import 'package:tiny_human_app/baby/view/baby_screen.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/common/utils/s3_url_generator.dart';
 
+import '../../common/component/leading_logo_icon.dart';
 import '../../common/constant/colors.dart';
 import '../../common/dio/dio.dart';
 import '../../common/enum/album_sort.dart';
@@ -76,6 +76,10 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   void onScaleEnd(ScaleEndDetails details) {
     setState(() {
+      if (endScale == 1.0) {
+        return;
+      }
+
       if (endScale < 1) {
         gridCount += 1;
       } else {
@@ -144,12 +148,8 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                leading: IconButton(
-                    icon: const Icon(
-                      Icons.home_outlined,
-                      color: PRIMARY_COLOR,
-                    ),
-                    onPressed: () => context.goNamed(BabyScreen.routeName)),
+                toolbarHeight: 64.0,
+                leading: const LeadingLogoIcon(),
                 actions: [
                   Row(
                     children: [
@@ -287,16 +287,11 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                               : GestureDetector(
                                   onTap: () {
                                     final selectedModel = (data[index] as AlbumResponseModel);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PhotoRoute(
-                                            image: s3ImageUrls[index],
-                                            date: DateConvertor.dateTimeToKoreanDateString(
-                                                selectedModel.originalCreatedAt!),
-                                            daysAfterBirth: DateConvertor.calculateDaysAfterBaseDate(
-                                                selectedBaby.dayOfBirth, selectedModel.originalCreatedAt!)),
-                                      ),
+                                    final daysAfterBirth = DateConvertor.calculateDaysAfterBaseDate(
+                                        selectedBaby.dayOfBirth, selectedModel.originalCreatedAt!);
+                                    context.push(
+                                      '/album/${selectedModel.id}',
+                                      extra: [selectedModel, s3ImageUrls[index], daysAfterBirth],
                                     );
                                   },
                                   child: ClipRRect(
@@ -452,7 +447,8 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
                 );
 
             if (mounted) {
-              Navigator.of(context).pop();
+              GoRouter.of(context).pop();
+              context.go('/album');
             }
           },
           text: '삭제하기',
@@ -467,7 +463,6 @@ class _AlbumScreenState extends ConsumerState<AlbumScreen> {
 
   Future<List<XFile>> uploadImages() async {
     List<XFile>? images = await imagePicker.pickMultipleMedia();
-    debugPrint('[ALBUM UPLOAD] selected images count: ${images.length}');
     return images;
   }
 }
@@ -489,8 +484,8 @@ class PhotoRoute extends StatelessWidget {
     return InteractiveViewer(
       child: Scaffold(
         appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 date,
@@ -499,15 +494,23 @@ class PhotoRoute extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 4.0,
+                width: 8.0,
               ),
-              Text(
-                '+$daysAfterBirth일',
-                style: const TextStyle(
-                  fontSize: 14.0,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Container(
                   color: PRIMARY_COLOR,
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: Text(
+                    '+$daysAfterBirth일',
+                    style: const TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
           backgroundColor: Colors.white,

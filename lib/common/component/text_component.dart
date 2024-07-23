@@ -10,8 +10,7 @@ class ScreenTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800));
+    return Text(title, style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w800));
   }
 }
 
@@ -22,7 +21,6 @@ class ScreenSubTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(subTitle,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400));
+    return Text(subTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400));
   }
 }

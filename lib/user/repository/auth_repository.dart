@@ -9,7 +9,7 @@ import '../model/login_response.dart';
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dio = ref.watch(dioProvider);
 
-  return AuthRepository(baseUrl: 'http://$ip/api/v1', dio: dio);
+  return AuthRepository(baseUrl: '$ip/api/v1', dio: dio);
 });
 
 class AuthRepository {
@@ -29,6 +29,7 @@ class AuthRepository {
       "email": email,
       "password": password,
     });
+
     return LoginResponse.fromJson(response.data);
   }
 
@@ -37,7 +38,7 @@ class AuthRepository {
         options: Options(headers: {
           'refreshToken': 'true',
         }));
-    
+
     return TokenResponse.fromJson(response.data);
   }
 
@@ -48,6 +49,36 @@ class AuthRepository {
     required String photoURL,
   }) async {
     final response = await dio.post('$baseUrl/auth/google', data: {
+      "email": email,
+      "socialAccessToken": accessToken,
+      "name": name,
+      "photoUrl": photoURL,
+    });
+    return LoginResponse.fromJson(response.data);
+  }
+
+  Future<LoginResponse> kakaoLogin({
+    required String email,
+    required String accessToken,
+    required String name,
+    required String photoURL,
+  }) async {
+    final response = await dio.post('$baseUrl/auth/kakao', data: {
+      "email": email,
+      "socialAccessToken": accessToken,
+      "name": name,
+      "photoUrl": photoURL,
+    });
+    return LoginResponse.fromJson(response.data);
+  }
+
+  Future<LoginResponse> appleLogin({
+    required String email,
+    required String accessToken,
+    required String name,
+    required String photoURL,
+  }) async {
+    final response = await dio.post('$baseUrl/auth/apple', data: {
       "email": email,
       "socialAccessToken": accessToken,
       "name": name,

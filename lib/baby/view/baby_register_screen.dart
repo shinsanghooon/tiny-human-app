@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
-import 'package:tiny_human_app/baby/component/gradient_border_avatar.dart';
+import 'package:tiny_human_app/baby/component/baby_image_register.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 
-import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
@@ -31,7 +31,8 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   // profile image
   final ImagePicker picker = ImagePicker(); //ImagePicker 초기화
   XFile? pickedFile;
-  ImageProvider profileImage = const NetworkImage(SAMPLE_BABY_IMAGE_URL);
+  ImageProvider profileImage = const AssetImage('asset/images/logo.png');
+
   String? pickedFilePath;
 
   // gender
@@ -46,6 +47,8 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
   String? fileName;
   String? relation;
   String? description;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -68,13 +71,13 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _babyRegisterImage(),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 24.0),
                   Form(
                     key: formKey,
                     child: Column(
@@ -98,7 +101,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                           initialValue: nickname ?? '',
                         ),
                         const SizedBox(height: 20.0),
-                        genderSelectionButton(),
+                        genderSelectionButton(context),
                         const SizedBox(height: 20.0),
                         IntrinsicHeight(
                           child: Row(
@@ -157,10 +160,11 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
       height: 46.0,
       child: ElevatedButton(
         onPressed: () async {
-          // 서버에 요청을 보낸다.
-          print('Request to register baby');
-          print(accessToken);
+          setState(() {
+            isLoading = true;
+          });
 
+          // 서버에 요청을 보낸다.
           if (formKey.currentState == null) {
             return null;
           }
@@ -172,7 +176,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           }
 
           final response = await dio.post(
-            'http://$ip/api/v1/babies',
+            '$ip/api/v1/babies',
             options: Options(headers: {
               'Authorization': 'Bearer $accessToken',
             }),
@@ -189,16 +193,9 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           );
 
           if (response.statusCode != 201) {
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return CustomAlertDialog(
-                    title: '등록 실패',
-                    content: '등록에 실패하였습니다. 잠시 후에 다시 시도해주세요.',
-                    buttonText: '확인',
-                  );
-                });
+            setState(() {
+              isLoading = false;
+            });
           }
 
           String preSignedUrl = response.data['preSignedUrl'];
@@ -215,23 +212,27 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                 contentType: mimeType,
               ));
 
-          print('baby');
-          print(response);
           ref.read(babyProvider.notifier).addBaby(BabyModel.fromJson(response.data));
+
+          setState(() {
+            isLoading = false;
+          });
 
           Navigator.of(context).pop();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
-          "등록 하기",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
+                "등록 하기",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }
@@ -245,6 +246,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),
@@ -253,32 +255,34 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
     );
   }
 
-  ToggleButtons genderSelectionButton() {
-    return ToggleButtons(
-      constraints: const BoxConstraints(
-        minHeight: 50.0,
-        minWidth: 170.0,
+  Widget genderSelectionButton(BuildContext context) {
+    return Center(
+      child: ToggleButtons(
+        constraints: BoxConstraints(
+          minHeight: 50.0,
+          minWidth: (MediaQuery.of(context).size.width) / 2.5,
+        ),
+        onPressed: (int index) {
+          setState(() {
+            gender = genderList[index];
+            for (int i = 0; i < _selectedGender.length; i++) {
+              _selectedGender[i] = i == index;
+            }
+          });
+        },
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+        selectedBorderColor: PRIMARY_COLOR,
+        selectedColor: Colors.black,
+        fillColor: Colors.white,
+        color: Colors.grey,
+        isSelected: _selectedGender,
+        children: genderList.map((gender) {
+          return Text(
+            gender,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          );
+        }).toList(),
       ),
-      onPressed: (int index) {
-        setState(() {
-          gender = genderList[index];
-          for (int i = 0; i < _selectedGender.length; i++) {
-            _selectedGender[i] = i == index;
-          }
-        });
-      },
-      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-      selectedBorderColor: PRIMARY_COLOR,
-      selectedColor: Colors.black,
-      fillColor: Colors.white,
-      color: Colors.grey,
-      isSelected: _selectedGender,
-      children: genderList.map((gender) {
-        return Text(
-          gender,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        );
-      }).toList(),
     );
   }
 
@@ -297,7 +301,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
             ).then((value) {
               setState(() {
                 dayOfBirth = value;
-                print(dayOfBirth);
               });
             });
           },

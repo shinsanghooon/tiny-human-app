@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:tiny_human_app/common/component/alert_dialog.dart';
-import 'package:tiny_human_app/common/component/text_component.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
 import '../../common/component/custom_text_form_field.dart';
+import '../../common/component/loading_spinner.dart';
+import '../../common/component/show_toast.dart';
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
 import '../../common/layout/default_layout.dart';
@@ -25,24 +25,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? confirmedPassword;
   String? username;
 
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      child: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
+      child: SafeArea(
+        child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(36.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const ScreenTitle(title: "회원가입을 진행합니다."),
-                const SizedBox(height: 20.0),
-                const ScreenSubTitle(
-                    subTitle: "이메일, 패스워드, 이름을 입력하여 회원가입을 진행해주세요."),
-                const SizedBox(
-                  height: 20.0,
+                const SizedBox(height: 40.0),
+                const Text(
+                  'Join us!',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 40.0),
 
                 // input 필드를 동시에 관리한다.
                 Form(
@@ -87,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         hintText: "비밀번호를 다시 한 번 입력해주세요.",
                         initialValue: confirmedPassword ?? '',
                       ),
-                      const SizedBox(height: 14.0),
+                      const SizedBox(height: 48.0),
                       registerActionButton(context),
                     ],
                   ),
@@ -108,6 +112,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // formkey를 사용해서 텍스트 필드 검증
           if (formKey.currentState == null) {
             // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
+            setState(() {
+              isLoading = true;
+            });
             return null;
           }
 
@@ -118,52 +125,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
             formKey.currentState!.save();
           } else {
             // 어떤 필드가 문제가 있는 경우.
+            setState(() {
+              isLoading = true;
+            });
             return null;
           }
 
           if (password != confirmedPassword) {
-            // 비밀번호 확인을 한다.
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return CustomAlertDialog(
-                    title: '확인 필요',
-                    content: '비밀번호와 확인 비밀번호가 다릅니다. 다시 한 번 확인해주세요.',
-                    buttonText: '확인',
-                  );
-                });
+            showToastWithMessage('입력하신 두 개의 비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요.');
           } else {
             // 서버에 요청을 보낸다.
-            print('Request to register');
-
             final response = await dio.post(
-              'http://$ip/api/v1/users',
+              '$ip/api/v1/users',
               data: {
                 "name": username,
                 "email": email,
                 "password": password,
               },
             );
-            print(response.statusCode);
-            print(response);
 
-            if (response.statusCode != 201) {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return CustomAlertDialog(
-                      title: '가입 실패',
-                      content: '가입이 실패하였습니다. 잠시 후에 다시 시도해주세요.',
-                      buttonText: '확인',
-                    );
-                  });
+            if (response.statusCode == 201) {
+              showToastWithMessage("회원가입이 완료 되었습니다. 로그인을 해주세요.");
+            } else {
+              showToastWithMessage("가입이 실패하였습니다. 잠시 후에 다시 시도해주세요.");
             }
+
+            setState(() {
+              isLoading = true;
+            });
 
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => LoginScreen(),
+                builder: (_) => const LoginScreen(),
               ),
             );
           }
@@ -171,10 +164,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
           "가입 하기",
           style: TextStyle(
             fontSize: 18.0,
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),

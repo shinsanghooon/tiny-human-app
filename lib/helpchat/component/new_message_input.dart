@@ -39,6 +39,8 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
 
   void _sendMessage() async {
     // FocusScope.of(context).unfocus();
+    _textController.clear();
+
     FirebaseFirestore.instance
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(widget.groupChatId)
@@ -58,6 +60,10 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
         'title': widget.title,
         'latest_message': inputMessage,
         'date': Timestamp.now(),
+        // chatRequestUserId: help를 요청한 사람
+        // chatAnswerUserId: help에 대답을 한 사람
+        'request_user_id': widget.chatRequestUserId,
+        'response_user_id': widget.chatAnswerUserId,
       },
     );
 
@@ -71,7 +77,6 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
           ),
         );
 
-    _textController.clear();
     if (widget.controller.hasClients) {
       widget.controller.animateTo(
         // reverse를 해줬으므로, minScrollExtent를 해줘야 함!
@@ -108,7 +113,7 @@ class _NewMessageInputState extends ConsumerState<NewMessageInput> {
                 ),
               ),
               style: const TextStyle(
-                fontSize: 18.0,
+                fontSize: 16.0,
               ),
               onChanged: (value) {
                 setState(() {

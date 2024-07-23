@@ -6,6 +6,7 @@ import 'package:tiny_human_app/user/model/user_model.dart';
 import 'package:tiny_human_app/user/model/user_push_response.dart';
 
 import '../../common/constant/data.dart';
+import '../model/notification_settings_update_model.dart';
 import '../model/user_push_create_model.dart';
 
 part 'user_me_repository.g.dart';
@@ -13,7 +14,7 @@ part 'user_me_repository.g.dart';
 final userMeRepositoryProvider = Provider<UserMeRepository>((ref) {
   final dio = ref.watch(dioProvider);
 
-  return UserMeRepository(dio, baseUrl: 'http://$ip/api/v1');
+  return UserMeRepository(dio, baseUrl: '$ip/api/v1');
 });
 
 @RestApi()
@@ -31,4 +32,9 @@ abstract class UserMeRepository {
     'accessToken': 'true',
   })
   Future<UserPushResponse> registerFcmTokenAndDeviceInfo({@Body() required UserPushCreateModel userPushCreate});
+
+  @PATCH('/users/{userId}/settings/notifications')
+  @Headers({'accessToken': 'true'})
+  Future<UserModel> updateNotificationSettings(
+      {@Path('userId') required int id, @Body() required NotificationSettingsUpdates notificationSettingUpdate});
 }

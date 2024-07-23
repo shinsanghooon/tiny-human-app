@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -63,6 +64,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0.0,
+        toolbarHeight: 64.0,
         actions: [
           TextButton(
             onPressed: () {},
@@ -139,7 +141,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                 child: Text(
                   state.sentences.first.sentence,
                   style: const TextStyle(
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                     height: 1.8,
                   ),
                 ),
@@ -157,7 +159,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
                           child: Text(
                             'From. 티니 ☺️',
                             style: TextStyle(
-                              fontSize: 20.0,
+                              fontSize: 18.0,
                               height: 1.8,
                               color: MAIN_GREEN_COLOR,
                               fontWeight: FontWeight.w600,
@@ -237,9 +239,7 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
       actions: [
         IconsButton(
           onPressed: () {
-            if (mounted) {
-              Navigator.of(context).pop();
-            }
+            GoRouter.of(context).pop();
           },
           text: '돌아가기',
           color: PRIMARY_COLOR,
@@ -251,8 +251,8 @@ class _DiaryDetailScreenState extends ConsumerState<DiaryDetailScreen> {
           onPressed: () async {
             await ref.read(diaryPaginationProvider.notifier).deleteDiary(diaryId: state.id);
             if (mounted) {
-              Navigator.of(context).pop();
-              Navigator.of(buildContext).pop();
+              GoRouter.of(context).pop();
+              context.go('/diary');
             }
           },
           text: '삭제하기',

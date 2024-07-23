@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/checklist/model/checklist_create_model.dart';
 import 'package:tiny_human_app/checklist/model/checklistdetail_create_model.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
 
 import '../../common/component/custom_text_checklist_form_field.dart';
 import '../../common/component/custom_text_title_form_field.dart';
+import '../../common/component/loading_spinner.dart';
 import '../../common/constant/colors.dart';
 import '../provider/checklist_provider.dart';
 
@@ -20,11 +22,22 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   final GlobalKey<FormState> formKey = GlobalKey();
   String title = '';
   List<ChecklistDetailCreateModel> checklistDetails = [];
+  List<FocusNode> focusNodes = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
+    focusNodes.add(FocusNode());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    for (FocusNode node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -32,7 +45,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
     return DefaultLayout(
       appBar: checklistAppbar(context),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -41,20 +54,10 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Title",
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-                    ),
                     titleTextCard(),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    const Text(
-                      "Checklist",
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-                    ),
                     ListView.builder(
                       shrinkWrap: true,
+                      padding: const EdgeInsets.only(bottom: 4.0),
                       itemBuilder: (context, index) {
                         return checklistTextCard(index);
                       },
@@ -64,9 +67,6 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 ),
               ),
               // ...checklistsWidgets,
-              const SizedBox(
-                height: 8.0,
-              ),
               Stack(
                 alignment: AlignmentDirectional.center,
                 children: [
@@ -83,6 +83,14 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                         onPressed: () {
                           setState(() {
                             checklistDetails.add(ChecklistDetailCreateModel(contents: '', reason: ''));
+                            focusNodes.add(FocusNode());
+                          });
+                          // Delay the focus request to ensure the widget tree is updated
+                          // WidgetsBinding.instance.addPostFrameCallback 사용
+                          // - WidgetsBinding.instance.addPostFrameCallback을 사용하여 위젯 트리가 업데이트된 후 포커스를 설정합니다.
+                          // - 이렇게 하면 setState가 호출된 후 새로 추가된 TextFormField가 포커스를 받을 수 있습니다.
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            FocusScope.of(context).requestFocus(focusNodes.last);
                           });
                         },
                         icon: const Icon(Icons.add_circle_outline),
@@ -93,7 +101,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
                 ],
               ),
               const SizedBox(
-                height: 36.0,
+                height: 20.0,
               ),
               registerActionButton(context, '등록'),
             ],
@@ -112,6 +120,7 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),
@@ -137,55 +146,99 @@ class _ChecklistRegisterScreenState extends ConsumerState<ChecklistRegisterScree
   Widget checklistTextCard(int idx) {
     return Padding(
       padding: const EdgeInsets.only(left: 12.0),
-      child: CustomTextChecklistFormField(
-        keyName: 'checklist_detail_$idx',
-        onSaved: (String? value) {
-          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
-        },
-        onChanged: (String? value) {
-          checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
-        },
-        hintText: "체크할 항목을 입력해주세요.",
-        initialValue: checklistDetails[idx].contents,
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextChecklistFormField(
+              keyName: 'checklist_detail_$idx',
+              focusNode: focusNodes[idx],
+              onSaved: (String? value) {
+                checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
+              },
+              onChanged: (String? value) {
+                checklistDetails[idx] = ChecklistDetailCreateModel(contents: value!, reason: '');
+              },
+              hintText: "체크할 항목을 입력해주세요.",
+              initialValue: checklistDetails[idx].contents,
+            ),
+          ),
+          Container(
+            width: 50,
+            color: Colors.white,
+            child: IconButton(
+              icon: const Icon(
+                Icons.delete_outlined,
+                color: Colors.black38,
+                size: 20.0,
+              ),
+              onPressed: () {
+                setState(() {
+                  checklistDetails.removeAt(idx);
+                  focusNodes.removeAt(idx).dispose();
+                });
+              },
+            ),
+          )
+        ],
       ),
     );
   }
 
-  TextButton registerActionButton(BuildContext context, String buttonText) {
-    return TextButton(
-      onPressed: () {
-        print('체크리스트를 등록하자.');
-        if (formKey.currentState == null) {
-          return null;
-        }
+  SizedBox registerActionButton(BuildContext context, String buttonText) {
+    return SizedBox(
+      height: 46.0,
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
 
-        if (formKey.currentState!.validate()) {
-          formKey.currentState!.save();
-        } else {
-          return null;
-        }
+          if (formKey.currentState == null) {
+            setState(() {
+              isLoading = false;
+            });
 
-        ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
-          title: title,
-          checklistDetailCreate: checklistDetails,
-        );
+            return null;
+          }
 
-        ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
+          if (formKey.currentState!.validate()) {
+            formKey.currentState!.save();
+          } else {
+            setState(() {
+              isLoading = false;
+            });
 
-        Navigator.of(context).pop();
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: PRIMARY_COLOR,
-      ),
-      child: Center(
-        child: Text(
-          buttonText,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
-            fontWeight: FontWeight.w600,
-          ),
+            return null;
+          }
+
+          ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
+            title: title,
+            checklistDetailCreate: checklistDetails,
+          );
+
+          await ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
+
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+            GoRouter.of(context).pop();
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: PRIMARY_COLOR,
         ),
+        child: isLoading
+            ? const LoadingSpinner()
+            : Text(
+                buttonText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }

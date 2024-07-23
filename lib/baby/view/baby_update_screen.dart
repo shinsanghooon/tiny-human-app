@@ -238,9 +238,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
       child: ElevatedButton(
         onPressed: () async {
           // 서버에 요청을 보낸다.
-          print('Request to register baby');
-          print(accessToken);
-
           if (formKey.currentState == null) {
             return null;
           }
@@ -254,7 +251,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           // 수정된 필드 확인하기
           // 사진, 이름, 태명, 성별, 날짜, 시간, 설명
 
-          int babyId = 1;
+          int babyId = widget.model.id;
 
           try {
             final response = await ref.read(babyProvider.notifier).updateBaby(
@@ -309,8 +306,6 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           ref.read(babyProvider.notifier).getMyBabies();
 
           if (mounted) {
-            print('수정하기 버튼 클릭!');
-            // context.goNamed(BabyScreen.routeName);
             context.pop();
           }
         },
@@ -338,6 +333,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyUpdateScreen> {
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () {

@@ -3,9 +3,11 @@ import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_latest_message.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
 
+import '../../user/provider/user_me_provider.dart';
 import '../repository/helpchat_repository.dart';
 
 final helpChatProvider = StateNotifierProvider<HelpChatNotifier, List<HelpChatModel>>((ref) {
+  ref.watch(userMeProvider);
   final repository = ref.watch(helpChatRepositoryProvider);
   return HelpChatNotifier(repository: repository);
 });
@@ -29,6 +31,12 @@ class HelpChatNotifier extends StateNotifier<List<HelpChatModel>> {
 
   Future<void> getHelpChat() async {
     state = await repository.getHelpChat();
+  }
+
+  Future<HelpChatModel> getNewHelpChat(int id) async {
+    final response = await repository.getNewHelpChat(helpChatId: id);
+    state = [response, ...state];
+    return response;
   }
 
   Future<void> updateLatestMessage(int helpChatId, HelpChatLatestMessage helpChatLatestMessage) async {

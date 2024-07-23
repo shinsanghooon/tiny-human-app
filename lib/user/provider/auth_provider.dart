@@ -3,14 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/album/view/album_screen.dart';
 import 'package:tiny_human_app/baby/view/baby_screen.dart';
+import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
 import 'package:tiny_human_app/common/view/root_screen.dart';
 import 'package:tiny_human_app/common/view/splash_screen.dart';
+import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/view/diary_screen.dart';
+import 'package:tiny_human_app/helpchat/model/helpchat_model.dart';
+import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
 import 'package:tiny_human_app/helpchat/view/helpchat_screen.dart';
 import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 import 'package:tiny_human_app/user/view/login_screen.dart';
 
+import '../../album/model/album_response_model.dart';
+import '../../common/utils/date_convertor.dart';
+import '../../diary/view/diary_detail_screen.dart';
+import '../../helpchat/view/helprequest_list_screen.dart';
 import '../model/user_model.dart';
+import '../view/setting_screen.dart';
 
 final authProvider = ChangeNotifierProvider<AuthProvider>((ref) {
   return AuthProvider(ref: ref);
@@ -33,46 +42,93 @@ class AuthProvider extends ChangeNotifier {
   List<GoRoute> get routes => [
         GoRoute(
           path: '/',
-          name: BabyScreen.routeName,
-          builder: (_, __) => const BabyScreen(),
-        ),
-        GoRoute(
-          path: '/home',
-          name: RootScreen.routeName,
-          builder: (_, __) => const RootScreen(),
-        ),
-        GoRoute(
-          path: '/splash',
-          name: SplashScreen.routeName,
-          builder: (_, __) => SplashScreen(),
-        ),
-        GoRoute(
-          path: '/login',
-          name: LoginScreen.routeName,
-          builder: (_, __) => const LoginScreen(),
-        ),
-        GoRoute(
-          path: '/diary',
-          name: DiaryScreen.routeName,
-          builder: (_, __) => const DiaryScreen(),
-          // routes: [
-          //   GoRoute(
-          //     path: 'diary/:id',
-          //     builder: (_, state) => DiaryDetailScreen(
-          //       id: state.pathParameters['id']!,
-          //     ),
-          //   ),
-          // ],
-        ),
-        GoRoute(
-          path: '/album',
-          name: AlbumScreen.routeName,
-          builder: (_, __) => AlbumScreen(),
-        ),
-        GoRoute(
-          path: '/help-chat',
-          name: HelpChatScreen.routeName,
-          builder: (_, __) => HelpChatScreen(),
+          builder: (context, state) {
+            return const BabyScreen();
+          },
+          routes: [
+            GoRoute(
+              path: 'splash',
+              name: SplashScreen.routeName,
+              builder: (_, __) => SplashScreen(),
+            ),
+            GoRoute(
+              path: 'login',
+              name: LoginScreen.routeName,
+              builder: (_, __) => const LoginScreen(),
+            ),
+            GoRoute(
+              path: 'help-request',
+              builder: (_, __) => const HelpRequestListScreen(),
+            ),
+            ShellRoute(
+              builder: (context, state, child) {
+                return RootScreen(
+                  child: child,
+                );
+              },
+              routes: [
+                GoRoute(
+                    path: 'diary',
+                    name: DiaryScreen.routeName,
+                    builder: (_, state) => const DiaryScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) => DiaryDetailScreen(
+                          model: state.extra as DiaryResponseModel,
+                        ),
+                      )
+                    ]),
+                GoRoute(
+                    path: 'album',
+                    name: AlbumScreen.routeName,
+                    builder: (_, state) => const AlbumScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) {
+                          List details = state.extra as List;
+                          AlbumResponseModel selectedModel = details[0];
+                          String imageUrl = details[1];
+                          int daysAfterBirth = details[2];
+
+                          return PhotoRoute(
+                            image: imageUrl,
+                            date: DateConvertor.dateTimeToKoreanDateString(selectedModel.originalCreatedAt!),
+                            daysAfterBirth: daysAfterBirth,
+                          );
+                        },
+                      )
+                    ]),
+                GoRoute(
+                    path: 'help-chat',
+                    name: HelpChatScreen.routeName,
+                    builder: (_, state) => const HelpChatScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        builder: (_, state) {
+                          List details = state.extra as List;
+                          int userId = details[0];
+                          HelpChatModel model = details[1];
+                          return ChattingScreen(
+                            userId: userId,
+                            model: model,
+                          );
+                        },
+                      ),
+                    ]),
+                GoRoute(
+                  path: 'checklist',
+                  builder: (_, __) => const CheckListScreen(),
+                ),
+                GoRoute(
+                  path: 'profile',
+                  builder: (_, __) => const SettingScreen(),
+                ),
+              ],
+            ),
+          ],
         ),
       ];
 

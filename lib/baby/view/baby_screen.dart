@@ -8,7 +8,7 @@ import '../provider/baby_provider.dart';
 import 'baby_register_screen.dart';
 
 class BabyScreen extends ConsumerWidget {
-  static String get routeName => 'baby';
+  static String get routeName => '/';
 
   const BabyScreen({super.key});
 
@@ -18,15 +18,17 @@ class BabyScreen extends ConsumerWidget {
     // 이 화면에서든 어떤 화면에서든 한 번 불리면 프로바이더가 생성이 되고 계속 기억이 된다.
     // 이제 future builder가 필요가 없다.
     final data = ref.watch(babyProvider);
+
     return DefaultLayout(
       appBar: AppBar(
         title: const Text(
-          "BABY HOME",
+          "BABY",
           style: TextStyle(
             color: Colors.deepOrange,
             fontWeight: FontWeight.w800,
           ),
         ),
+        toolbarHeight: 64.0,
         actions: [
           IconButton(
               icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -46,8 +48,8 @@ class BabyScreen extends ConsumerWidget {
           // shrinkWrap: true,
           itemCount: data.length,
           itemBuilder: (context, index) => SizedBox(
-            width: MediaQuery.of(context).size.width / 1.0,
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width / 1.2,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10.0,

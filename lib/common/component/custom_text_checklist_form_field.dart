@@ -9,6 +9,7 @@ class CustomTextChecklistFormField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final String? hintText;
   final String? errorText;
+  final FocusNode? focusNode;
   final String initialValue;
 
   const CustomTextChecklistFormField({
@@ -20,6 +21,7 @@ class CustomTextChecklistFormField extends StatefulWidget {
     this.hintText,
     this.errorText,
     required this.initialValue,
+    this.focusNode,
     super.key,
   });
 
@@ -35,8 +37,12 @@ class _CustomTextChecklistFormFieldState extends State<CustomTextChecklistFormFi
       color: Colors.transparent,
     ));
 
+    print('focusNode ${widget.focusNode}');
+    print('------');
+
     return TextFormField(
       key: GlobalKey<FormState>(debugLabel: widget.keyName),
+      focusNode: widget.focusNode,
       cursorColor: PRIMARY_COLOR,
       obscureText: widget.obscureText,
       autofocus: widget.autofocus,
@@ -54,6 +60,7 @@ class _CustomTextChecklistFormFieldState extends State<CustomTextChecklistFormFi
         fontSize: 18.0,
       ),
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(8.0),
         icon: const Icon(
           Icons.keyboard_arrow_right,
           color: PRIMARY_COLOR,

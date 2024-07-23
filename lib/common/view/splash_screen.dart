@@ -10,25 +10,34 @@ class SplashScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultLayout(
-      backgroundColor: PRIMARY_COLOR,
+      backgroundColor: Colors.white,
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'asset/images/logo.png',
+              height: 140,
+              width: 140,
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
             Text(
               APP_TITLE,
               style: TextStyle(
-                fontSize: 42.0,
+                fontSize: 32.0,
                 fontWeight: FontWeight.w900,
-                color: Colors.white,
+                color: PRIMARY_COLOR,
               ),
             ),
             SizedBox(
               height: 20.0,
             ),
             CircularProgressIndicator(
-              color: Colors.white,
+              color: PRIMARY_COLOR,
+              strokeWidth: 6.0,
             )
           ],
         ),

@@ -11,6 +11,7 @@ import 'package:tiny_human_app/user/model/user_push_create_model.dart';
 import 'package:tiny_human_app/user/repository/auth_repository.dart';
 
 import '../../common/utils/device_info.dart';
+import '../model/notification_settings_update_model.dart';
 import '../repository/user_me_repository.dart';
 
 final userMeProvider = StateNotifierProvider<UserMeStateNotifier, UserModelBase?>((ref) {
@@ -39,6 +40,10 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
   }
 
   Future<UserModel> getMe() async {
+    if (state is UserModel && state != null) {
+      return state as UserModel;
+    }
+
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
 
@@ -54,6 +59,13 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
     return response;
   }
 
+  Future<void> updateNotificationSettings(int userId, NotificationSettingsUpdates notificationSettingUpdate) async {
+    final user =
+    await repository.updateNotificationSettings(id: userId, notificationSettingUpdate: notificationSettingUpdate);
+
+    state = user;
+  }
+
   Future<UserModelBase> login({required String email, required String password}) async {
     try {
       state = UserModelLoading();
@@ -62,6 +74,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
         email: email,
         password: password,
       );
+
 
       await storage.write(key: REFRESH_TOKEN_KEY, value: response.refreshToken);
       await storage.write(key: ACCESS_TOKEN_KEY, value: response.accessToken);
@@ -79,6 +92,11 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
       });
       await repository.registerFcmTokenAndDeviceInfo(
           userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
+
+      print('login!');
+      print('state $state');
+
+      return Future.value(state);
 
       return userResponse;
     } catch (e) {
@@ -116,6 +134,90 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
           userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
 
       state = userResponse;
+
+      print('google login!');
+      print('state $state');
+
+      return userResponse;
+    } catch (e) {
+      state = UserModelError(message: '로그인에 실패했습니다.');
+      return Future.value(state);
+    }
+  }
+
+  Future<UserModelBase> kakaoLogin(
+      {required String email, required String accessToken, required String name, required String photoURL}) async {
+    try {
+      state = UserModelLoading();
+
+      final response = await authRepository.kakaoLogin(
+        email: email,
+        accessToken: accessToken,
+        name: name,
+        photoURL: photoURL,
+      );
+
+      await storage.write(key: REFRESH_TOKEN_KEY, value: response.refreshToken);
+      await storage.write(key: ACCESS_TOKEN_KEY, value: response.accessToken);
+
+      final jwt = JWT.decode(response.accessToken);
+      // 이렇게 요청을 다시 보내서 데이터를 받아오면 서버에서 검증이 됐으니까 유효한 토큰이라는 것을 알 수 있다.
+      final userResponse = await repository.getMe(id: jwt.payload['userId'] as int);
+
+      final deviceUniqueId = await getDeviceUniqueId();
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        await repository.registerFcmTokenAndDeviceInfo(
+            userPushCreate: UserPushCreateModel(fcmToken: newToken!, deviceInfo: deviceUniqueId));
+      });
+      await repository.registerFcmTokenAndDeviceInfo(
+          userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
+
+      state = userResponse;
+
+      print('kakao login!');
+      print('state $state');
+
+      return userResponse;
+    } catch (e) {
+      state = UserModelError(message: '로그인에 실패했습니다.');
+      return Future.value(state);
+    }
+  }
+
+  Future<UserModelBase> appleLogin(
+      {required String email, required String accessToken, required String name, required String photoURL}) async {
+    try {
+      state = UserModelLoading();
+
+      final response = await authRepository.appleLogin(
+        email: email,
+        accessToken: accessToken,
+        name: name,
+        photoURL: photoURL,
+      );
+
+      await storage.write(key: REFRESH_TOKEN_KEY, value: response.refreshToken);
+      await storage.write(key: ACCESS_TOKEN_KEY, value: response.accessToken);
+
+      final jwt = JWT.decode(response.accessToken);
+      // 이렇게 요청을 다시 보내서 데이터를 받아오면 서버에서 검증이 됐으니까 유효한 토큰이라는 것을 알 수 있다.
+      final userResponse = await repository.getMe(id: jwt.payload['userId'] as int);
+
+      final deviceUniqueId = await getDeviceUniqueId();
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        await repository.registerFcmTokenAndDeviceInfo(
+            userPushCreate: UserPushCreateModel(fcmToken: newToken!, deviceInfo: deviceUniqueId));
+      });
+      await repository.registerFcmTokenAndDeviceInfo(
+          userPushCreate: UserPushCreateModel(fcmToken: fcmToken!, deviceInfo: deviceUniqueId));
+
+      state = userResponse;
+
+      print('apple login!');
+      print('state $state');
+
       return userResponse;
     } catch (e) {
       state = UserModelError(message: '로그인에 실패했습니다.');
@@ -132,5 +234,7 @@ class UserMeStateNotifier extends StateNotifier<UserModelBase?> {
       GoogleSignIn().signOut(),
       FirebaseAuth.instance.signOut(),
     ]);
+    print('logout!');
+    print('state $state');
   }
 }

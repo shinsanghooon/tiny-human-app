@@ -5,6 +5,7 @@ import 'package:tiny_human_app/common/model/cursor_pagination_model.dart';
 import 'package:tiny_human_app/common/model/cursor_pagination_params.dart';
 import 'package:tiny_human_app/common/provider/pagination_provider.dart';
 import 'package:tiny_human_app/diary/model/diary_file_model.dart';
+import 'package:tiny_human_app/diary/model/diary_picture_model.dart';
 import 'package:tiny_human_app/diary/model/diary_response_model.dart';
 import 'package:tiny_human_app/diary/model/sentence_request_model.dart';
 import 'package:tiny_human_app/diary/repository/diary_pagination_repository.dart';
@@ -53,6 +54,29 @@ class DiaryPaginationStateNotifier extends PaginationProvider<DiaryResponseModel
   /// 일기 등록
   Future<DiaryResponseWithPresignedModel> addDiary(DiaryCreateModel model) async {
     final response = await repository.addDiary(model: model);
+
+    DiaryResponseModel newDiary = DiaryResponseModel(
+      id: id,
+      daysAfterBirth: response.daysAfterBirth,
+      writer: response.writer,
+      likeCount: response.likeCount,
+      isDeleted: false,
+      date: response.date,
+      sentences: response.sentences,
+      pictures: response.pictures
+          .map((picture) => DiaryPictureModel(
+                id: picture.id,
+                isMainPicture: picture.isMainPicture,
+                contentType: picture.contentType,
+                keyName: picture.keyName,
+              ))
+          .toList(),
+    );
+
+    final paginationState = state as CursorPagination;
+
+    state = paginationState.copyWith(body: <DiaryResponseModel>[newDiary, ...paginationState.body]);
+
     return response;
   }
 
@@ -142,7 +166,7 @@ class DiaryPaginationStateNotifier extends PaginationProvider<DiaryResponseModel
       {required int diaryId, required List<DiaryFileModel> diaryFileModels}) async {
     final response = await repository.addImages(diaryId: diaryId, models: diaryFileModels);
 
-    // TODO: 나중에 처리하기. state만 변경하도록
+    // TODO: state만 변경
     paginate(forceRefetch: true);
 
     return response;

@@ -27,8 +27,8 @@ class DiaryCard extends StatelessWidget {
       id: model.id,
       image: ImageContainer(
         url: S3UrlGenerator.getThumbnailUrlWith300wh(model.pictures.first.keyName),
-        width: 120,
-        height: 120,
+        width: 110,
+        height: 110,
       ),
       detail: model.sentences.first.sentence,
       createdAt: model.date,
@@ -62,22 +62,37 @@ class DiaryCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Text('+$afterBirthDay일',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
-                          )),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: Container(
+                          color: PRIMARY_COLOR,
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.5),
+                          child: Text(
+                            '+$afterBirthDay일',
+                            style: const TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(
-                    height: 8.0,
+                    height: 4.0,
                   ),
-                  Text(
-                    detail,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 16.0, color: BODY_TEXT_COLOR, height: 1.5, fontWeight: FontWeight.w500),
+                  SizedBox(
+                    child: Text(
+                      detail,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: BODY_TEXT_COLOR,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ],
               ),

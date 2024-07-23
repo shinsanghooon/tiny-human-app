@@ -6,8 +6,8 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/checklist/model/checklist_model.dart';
 import 'package:tiny_human_app/checklist/view/checklist_update_screen.dart';
 
-import '../../baby/view/baby_screen.dart';
 import '../../common/component/checkbox.dart';
+import '../../common/component/leading_logo_icon.dart';
 import '../../common/constant/colors.dart';
 import '../../common/layout/default_layout.dart';
 import '../provider/checklist_provider.dart';
@@ -34,11 +34,10 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               fontWeight: FontWeight.w800,
             ),
           ),
+          toolbarHeight: 64.0,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-          leading: IconButton(
-              icon: const Icon(Icons.home_outlined, color: PRIMARY_COLOR),
-              onPressed: () => context.goNamed(BabyScreen.routeName)),
+          leading: const LeadingLogoIcon(),
           actions: [
             IconButton(
                 icon: const Icon(Icons.add, color: PRIMARY_COLOR),
@@ -51,39 +50,85 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 })
           ],
         ),
-        child: ListView.separated(
-          itemBuilder: (context, index) {
-            return ExpansionTile(
-              title: _checklistTitle(data, index),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              children: [
-                ...checklistWidget(data[index], context),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _toggleAllChecklistDetailButton(data[index]),
-                    _checklistEditButton(data[index]),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: 20.0,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _checklistGuide(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return ExpansionTile(
+                      key: ValueKey(data[index].id),
+                      title: _checklistTitle(data, index),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: _todoDeleteButton(data[index].id),
-                    ),
-                  ],
-                )
-              ],
-            );
-          },
-          itemCount: data.length,
-          separatorBuilder: (context, index) => const Divider(
-            color: DIVIDER_COLOR,
-            indent: 16.0,
-            endIndent: 16.0,
-            height: 0.0,
+                      children: [
+                        ...checklistWidget(data[index], context),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 30.0, bottom: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              _toggleAllChecklistDetailButton(data[index]),
+                              _checklistEditButton(data[index]),
+                              _todoDeleteButton(data[index].id),
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                  itemCount: data.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    color: DIVIDER_COLOR,
+                    indent: 16.0,
+                    endIndent: 16.0,
+                    height: 0.0,
+                  ),
+                ),
+              ),
+            ],
           ),
         ));
+  }
+
+  Padding _checklistGuide() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+        child: Container(
+          color: Colors.grey.shade100,
+          width: double.infinity,
+          child: const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "💡이런 용도로 사용해보세요.",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    height: 4.0,
+                  ),
+                  Text(
+                    "아이와 외출할 때 이것 저것 챙기느라 정신 없으시죠? 체크리스트로 필요한 준비물을 빠짐없이 챙겨보세요.",
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _checklistTitle(List<ChecklistModel> data, int index) {
@@ -95,26 +140,31 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                 data[index].title,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(
                 width: 10.0,
               ),
-              const Icon(Icons.check_circle, color: MAIN_GREEN_COLOR)
+              const Icon(
+                Icons.check_circle_outline_outlined,
+                color: MAIN_GREEN_COLOR,
+                size: 20.0,
+              )
             ],
           )
         : Text(
             data[index].title,
             style: const TextStyle(
               fontSize: 18.0,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           );
   }
 
   IconButton _todoDeleteButton(int checklistId) {
     return IconButton(
+      visualDensity: VisualDensity.compact,
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
         backgroundColor: Colors.white,
@@ -126,7 +176,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       },
       icon: const Icon(
         Icons.delete_outlined,
-        size: 28.0,
+        size: 20.0,
       ),
     );
   }
@@ -167,7 +217,8 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         IconsButton(
           onPressed: () async {
             ref.read(checklistProvider.notifier).deleteChecklist(checklistId);
-            Navigator.of(context).pop();
+            GoRouter.of(context).pop();
+            context.go('/checklist');
           },
           text: '삭제하기',
           iconData: Icons.delete,
@@ -181,6 +232,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
 
   IconButton _checklistEditButton(ChecklistModel data) {
     return IconButton(
+      visualDensity: VisualDensity.compact,
       style: ElevatedButton.styleFrom(
         foregroundColor: PRIMARY_COLOR,
         backgroundColor: Colors.white,
@@ -194,13 +246,14 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
       },
       icon: const Icon(
         Icons.edit,
-        size: 28.0,
+        size: 20.0,
       ),
     );
   }
 
   IconButton _toggleAllChecklistDetailButton(ChecklistModel checklist) {
     return IconButton(
+        visualDensity: VisualDensity.compact,
         style: ElevatedButton.styleFrom(
           foregroundColor: PRIMARY_COLOR,
           backgroundColor: Colors.white,
@@ -211,7 +264,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
         },
         icon: const Icon(
           Icons.checklist,
-          size: 28.0,
+          size: 20.0,
         ));
   }
 
@@ -219,7 +272,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
     return checklistModel.checklistDetail.map((checkDetail) {
       return Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
+          horizontal: 8.0,
           vertical: 4.0,
         ),
         child: Row(
@@ -233,7 +286,7 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
               },
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.width / 1.3,
+              width: MediaQuery.of(context).size.width / 1.4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -242,14 +295,14 @@ class _CheckListScreenState extends ConsumerState<CheckListScreen> {
                       ? Text(
                           checkDetail.contents,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             decoration: TextDecoration.lineThrough,
                           ),
                         )
                       : Text(
                           checkDetail.contents,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                           ),
                         ),
                 ],

@@ -18,7 +18,7 @@ part 'diary_pagination_repository.g.dart';
 
 final diaryPaginationRepositoryProvider = Provider<DiaryPaginationRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return DiaryPaginationRepository(dio, baseUrl: "http://$ip/api/v1/diaries");
+  return DiaryPaginationRepository(dio, baseUrl: "$ip/api/v1/diaries");
 });
 
 @RestApi()

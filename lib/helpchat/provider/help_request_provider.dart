@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 
+import '../../user/provider/user_me_provider.dart';
 import '../repository/helpchat_repository.dart';
 
 final helpRequestProvider = StateNotifierProvider<HelpRequestNotifier, List<HelpRequestModel>>((ref) {
+  ref.watch(userMeProvider);
   final repository = ref.watch(helpChatRepositoryProvider);
   return HelpRequestNotifier(repository: repository);
 });
@@ -20,7 +22,7 @@ class HelpRequestNotifier extends StateNotifier<List<HelpRequestModel>> {
     getHelpRequestAll();
   }
 
-  void addHelpRequest(HelpRequestCreateModel model) async {
+  Future<void> addHelpRequest(HelpRequestCreateModel model) async {
     final response = await repository.registerHelpRequest(helpChatCreateModel: model);
     state = [response, ...state];
   }

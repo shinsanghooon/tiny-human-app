@@ -64,7 +64,7 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
     final cp = state as CursorPagination<T>;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: RefreshIndicator(
         edgeOffset: 100.0,
         color: PRIMARY_COLOR,
@@ -88,7 +88,7 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
                       ? CircularProgressIndicator(
                           strokeWidth: 8.0,
                         )
-                      : Text("마지막 데이터입니다."),
+                      : Text(""),
                 ),
               );
             }

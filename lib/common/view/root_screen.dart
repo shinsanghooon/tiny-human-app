@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:tiny_human_app/album/view/album_screen.dart';
-import 'package:tiny_human_app/checklist/view/checklist_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/common/layout/default_layout.dart';
-import 'package:tiny_human_app/diary/view/diary_screen.dart';
-import 'package:tiny_human_app/user/view/setting_screen.dart';
-
-import '../../helpchat/view/helpchat_screen.dart';
 
 class RootScreen extends StatefulWidget {
   static String get routeName => 'home';
 
-  const RootScreen({super.key});
+  final Widget child;
+
+  const RootScreen({
+    required this.child,
+    super.key,
+  });
 
   @override
   State<RootScreen> createState() => _RootScreenState();
@@ -49,53 +49,99 @@ class _RootScreenState extends State<RootScreen> with SingleTickerProviderStateM
     });
   }
 
+  int getIndex(BuildContext context) {
+    if (GoRouterState.of(context).location == '/diary') {
+      return 0;
+    } else if (GoRouterState.of(context).location == '/album') {
+      return 1;
+    } else if (GoRouterState.of(context).location == '/help-chat') {
+      return 2;
+    } else if (GoRouterState.of(context).location == '/checklist') {
+      return 3;
+    } else {
+      return 4;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          selectedItemColor: PRIMARY_COLOR,
-          unselectedItemColor: BODY_TEXT_COLOR,
-          selectedFontSize: 10.0,
-          unselectedFontSize: 10.0,
-          type: BottomNavigationBarType.fixed,
-          onTap: (int index) {
-            controller.animateTo(index);
-          },
-          currentIndex: index,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.event_note_outlined),
-              label: 'Diary',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.photo_outlined),
-              label: 'Album',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.mark_chat_unread_outlined),
-              label: 'Help Chat',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.check_box_outlined),
-              label: 'Checklist',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outlined),
-              label: 'Profile',
-            ),
-          ],
-        ),
-        child: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: controller,
-          children: const [
-            DiaryScreen(),
-            AlbumScreen(),
-            HelpChatScreen(),
-            CheckListScreen(),
-            SettingScreen(),
-          ],
-        ));
+    bool showBottomNavBar = isShowNavigationBar(GoRouter.of(context).location);
+
+    return PopScope(
+      canPop: false,
+      child: DefaultLayout(
+        bottomNavigationBar: showBottomNavBar
+            ? BottomNavigationBar(
+                backgroundColor: Colors.white,
+                selectedItemColor: PRIMARY_COLOR,
+                unselectedItemColor: BODY_TEXT_COLOR,
+                selectedFontSize: 10.0,
+                unselectedFontSize: 10.0,
+                type: BottomNavigationBarType.fixed,
+                onTap: (int index) {
+                  controller.animateTo(index);
+                  if (index == 0) {
+                    context.go('/diary');
+                  } else if (index == 1) {
+                    context.go('/album');
+                  } else if (index == 2) {
+                    context.go('/help-chat');
+                  } else if (index == 3) {
+                    context.go('/checklist');
+                  } else {
+                    context.go('/profile');
+                  }
+                },
+                currentIndex: getIndex(context),
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.event_note_outlined),
+                    label: 'Diary',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.photo_outlined),
+                    label: 'Album',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.mark_chat_unread_outlined),
+                    label: 'Help Chat',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.check_box_outlined),
+                    label: 'Checklist',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outlined),
+                    label: 'Profile',
+                  ),
+                ],
+              )
+            : null,
+        child: widget.child,
+        // child: TabBarView(
+        //   physics: const NeverScrollableScrollPhysics(),
+        //   controller: controller,
+        //   children: const [
+        //     DiaryScreen(),
+        //     AlbumScreen(),
+        //     HelpChatScreen(),
+        //     CheckListScreen(),
+        //     SettingScreen(),
+        //   ],
+        // ),
+      ),
+    );
+  }
+
+  bool isShowNavigationBar(String path) {
+    if (path.contains('/help-chat/')) {
+      return false;
+    } else if (path.contains('/diary/')) {
+      return false;
+    } else if (path.contains('/album/')) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

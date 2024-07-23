@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
 import 'package:tiny_human_app/helpchat/model/helpchat_create_model.dart';
+import 'package:tiny_human_app/helpchat/model/helprequest_model.dart';
 import 'package:tiny_human_app/helpchat/provider/help_chat_provider.dart';
 import 'package:tiny_human_app/helpchat/provider/help_request_provider.dart';
-import 'package:tiny_human_app/helpchat/view/chatting_screen.dart';
+import 'package:tiny_human_app/user/model/user_model.dart';
+import 'package:tiny_human_app/user/provider/user_me_provider.dart';
 
 import '../../common/constant/colors.dart';
 
 class HelpRequestListScreen extends ConsumerStatefulWidget {
-  final int userId;
-
   const HelpRequestListScreen({
-    required this.userId,
     super.key,
   });
 
@@ -28,6 +28,17 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(helpRequestProvider);
+    final user = ref.watch(userMeProvider) as UserModel;
+    int userId = user.id;
+
+    final List<HelpRequestModel> helpRequestData;
+    if (showOnlyMyPost) {
+      helpRequestData = data.where((request) => userId == request.userId).toList()
+        ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    } else {
+      helpRequestData = data..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -37,6 +48,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
             fontWeight: FontWeight.w800,
           ),
         ),
+        toolbarHeight: 64.0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_outlined,
@@ -46,61 +58,58 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                showOnlyMyPost = !showOnlyMyPost;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24.0),
+              child: Row(
+                children: [
+                  showOnlyMyPost
+                      ? const Icon(
+                          Icons.check_circle,
+                          size: 20.0,
+                          color: PRIMARY_COLOR,
+                        )
+                      : const Icon(
+                          Icons.circle_outlined,
+                          size: 20.0,
+                          color: PRIMARY_COLOR,
+                        ),
+                  const SizedBox(
+                    width: 4.0,
+                  ),
+                  const Text(
+                    'MY',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      color: PRIMARY_COLOR,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 14.0),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showOnlyMyPost = !showOnlyMyPost;
-                  });
-                },
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      showOnlyMyPost
-                          ? Icon(
-                              Icons.check_circle,
-                              size: 20.0,
-                              color: MAIN_GREEN_COLOR,
-                            )
-                          : Icon(
-                              Icons.circle_outlined,
-                              size: 20.0,
-                            ),
-                      const SizedBox(
-                        width: 4.0,
-                      ),
-                      Text(
-                        '내가 쓴 글만 보기',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             ListView.separated(
               // 여기에 key를 넣어줘야지 하나가 열렸을 때 다른 탭이 닫힌다. 하지만 애니메이션이 깨진다...
               // 확인해보기!
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                // 내가 쓴 글만 보기에 체크를 했는데, userId가 다를 때는 보여주지 않는다.
-                if (showOnlyMyPost && widget.userId != data[index].userId) {
-                  return null;
-                }
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ExpansionTile(
-                    key: ValueKey(data[index].id),
+                    key: ValueKey(helpRequestData[index].id),
                     onExpansionChanged: (bool expanding) {
                       setState(() {
                         _openedTileIndex = expanding ? index : -1;
@@ -111,18 +120,18 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          data[index].contents,
-                          maxLines: 1,
+                          helpRequestData[index].contents,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                           ),
                         ),
                         const SizedBox(
-                          height: 6.0,
+                          height: 8.0,
                         ),
                         Text(
-                          DateConvertor.convertoToRelativeTime(data[index].createdAt!),
+                          DateConvertor.convertoToRelativeTime(helpRequestData[index].createdAt!),
                           style: TextStyle(
                             fontSize: 14.0,
                             color: Colors.grey.shade600,
@@ -146,6 +155,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                   data[index].contents,
                                   style: const TextStyle(
                                     fontSize: 16.0,
+                                    height: 1.8,
                                   ),
                                 ),
                               ),
@@ -153,16 +163,16 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                             const SizedBox(
                               height: 10.0,
                             ),
-                            widget.userId != data[index].userId
+                            userId != helpRequestData[index].userId
                                 ? Align(
                                     alignment: Alignment.centerRight,
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         final chatList = ref.read(helpChatProvider);
                                         bool isExistedChat = chatList.any((chat) =>
-                                            chat.helpRequestId == data[index].id &&
-                                            chat.helpRequestUserId == widget.userId &&
-                                            chat.helpAnswerUserId == data[index].userId);
+                                            chat.helpRequestId == helpRequestData[index].id &&
+                                            chat.helpRequestUserId == userId &&
+                                            chat.helpAnswerUserId == helpRequestData[index].userId);
 
                                         if (isExistedChat) {
                                           Fluttertoast.showToast(
@@ -177,31 +187,28 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                         }
 
                                         final helpChatCreateModel = HelpChatCreateModel(
-                                          helpRequestId: data[index].id,
-                                          helpRequestUserId: widget.userId,
-                                          helpAnswerUserId: data[index].userId,
+                                          helpRequestId: helpRequestData[index].id,
+                                          helpRequestUserId: helpRequestData[index].userId,
+                                          helpAnswerUserId: userId,
                                         );
 
                                         final helpChatModel =
                                             await ref.read(helpChatProvider.notifier).addHelpChat(helpChatCreateModel);
 
                                         if (mounted) {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) => ChattingScreen(
-                                                userId: widget.userId,
-                                                model: helpChatModel,
-                                              ),
-                                            ),
-                                          );
+                                          context
+                                              .push('/help-chat/${helpChatModel.id}', extra: [userId, helpChatModel]);
                                         }
                                       },
-                                      child: Text(
-                                        "채팅하기",
-                                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                                      ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: PRIMARY_COLOR,
+                                      ),
+                                      child: const Text(
+                                        "채팅하기",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16.0,
+                                        ),
                                       ),
                                     ),
                                   )
@@ -217,11 +224,14 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                                           fontSize: 20.0,
                                         );
                                       },
-                                      child: ElevatedButton(
+                                      child: const ElevatedButton(
                                         onPressed: null,
                                         child: Text(
                                           "채팅하기",
-                                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16.0,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -233,7 +243,7 @@ class _HelpRequestListScreenState extends ConsumerState<HelpRequestListScreen> {
                   ),
                 );
               },
-              itemCount: showOnlyMyPost ? data.where((d) => d.userId == widget.userId).length : data.length,
+              itemCount: showOnlyMyPost ? data.where((d) => d.userId == userId).length : data.length,
               separatorBuilder: (context, index) => const Divider(
                 color: DIVIDER_COLOR,
                 indent: 16.0,

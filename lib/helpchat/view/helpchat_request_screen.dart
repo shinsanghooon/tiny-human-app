@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tiny_human_app/common/component/loading_spinner.dart';
 import 'package:tiny_human_app/helpchat/enum/chat_request_type.dart';
 import 'package:tiny_human_app/helpchat/model/helprequest_create_model.dart';
 
@@ -16,16 +18,18 @@ class HelpRequestRegisterScreen extends ConsumerStatefulWidget {
   const HelpRequestRegisterScreen({super.key});
 
   @override
-  ConsumerState<HelpRequestRegisterScreen> createState() => _DiaryRegisterScreenState();
+  ConsumerState<HelpRequestRegisterScreen> createState() => _HelpRequestRegisterScreen();
 }
 
-class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen> {
+class _HelpRequestRegisterScreen extends ConsumerState<HelpRequestRegisterScreen> {
   final dio = Dio();
   final GlobalKey<FormState> formKey = GlobalKey();
   String? accessToken;
   String? requestContents;
 
   ChatRequestType chatRequestType = ChatRequestType.KEYWORD;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -99,13 +103,13 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
         contentPadding: EdgeInsets.zero,
         fillColor: MaterialStateColor.resolveWith((states) => PRIMARY_COLOR),
         title: Text(selectedChatRequestType.displayName,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.w600,
             )),
         subtitle: Text(
           selectedChatRequestType.description,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
         ),
         value: selectedChatRequestType,
         groupValue: chatRequestType,
@@ -137,39 +141,50 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
   SizedBox _requestChatActionButton(BuildContext context) {
     return SizedBox(
       height: 46.0,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: ElevatedButton(
         onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+
           if (formKey.currentState == null) {
+            setState(() {
+              isLoading = false;
+            });
             return;
           }
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
           } else {
+            setState(() {
+              isLoading = false;
+            });
             return;
           }
-
-          // ChecklistCreateModel checklistCreateModel = ChecklistCreateModel(
-          //   title: title,
-          //   checklistDetailCreate: checklistDetails,
-          // );
-          //
-          // ref.read(checklistProvider.notifier).addChecklist(checklistCreateModel);
 
           UserModel user = await ref.read(userMeProvider.notifier).getMe();
           final helpChatCreateModel = HelpRequestCreateModel(
               userId: user.id, requestType: chatRequestType.name, contents: requestContents ?? '');
 
-          ref.read(helpRequestProvider.notifier).addHelpRequest(helpChatCreateModel);
+          await ref.read(helpRequestProvider.notifier).addHelpRequest(helpChatCreateModel);
 
           if (mounted) {
-            Navigator.of(context).pop();
+            setState(() {
+              isLoading = false;
+            });
+            GoRouter.of(context).pop();
           }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: PRIMARY_COLOR,
         ),
-        child: const Text(
+        child: isLoading
+            ? const LoadingSpinner()
+            : const Text(
           "채팅 요청하기",
           style: TextStyle(
             fontSize: 18.0,
@@ -190,6 +205,7 @@ class _DiaryRegisterScreenState extends ConsumerState<HelpRequestRegisterScreen>
           fontWeight: FontWeight.w800,
         ),
       ),
+      toolbarHeight: 64.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_rounded, color: PRIMARY_COLOR),
         onPressed: () => Navigator.of(context).pop(),

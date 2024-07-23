@@ -5,7 +5,7 @@ import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:tiny_human_app/common/component/image_container.dart';
 import 'package:tiny_human_app/common/utils/date_convertor.dart';
-import 'package:tiny_human_app/common/view/root_screen.dart';
+import 'package:tiny_human_app/diary/view/diary_screen.dart';
 
 import '../../common/constant/colors.dart';
 import '../../common/constant/data.dart';
@@ -36,9 +36,10 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
           ),
           color: Colors.white,
           surfaceTintColor: Colors.white,
-          elevation: 7,
+          elevation: 2,
           child: SizedBox(
             height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width / 1.2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,8 +54,8 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                             url: widget.model.profileImgKeyName == ""
                                 ? SAMPLE_BABY_IMAGE_URL
                                 : S3UrlGenerator.getThumbnailUrlWith1000wh(widget.model.profileImgKeyName),
-                            width: 350,
-                            height: 350,
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.width / 1.2,
                           ),
                         ),
                         Padding(
@@ -107,7 +108,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '🎊 ${DateConvertor.dateTimeToKoreanDateString(DateTime.parse(widget.model.dayOfBirth))}',
+                                '${DateConvertor.dateTimeToKoreanDateString(DateTime.parse(widget.model.dayOfBirth))}',
                                 style: const TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w500,
@@ -116,17 +117,17 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  widget.model.gender == 'FEMALE'
-                                      ? const Icon(
-                                          Icons.female_outlined,
-                                          color: Colors.pink,
-                                          size: 20.0,
-                                        )
-                                      : const Icon(
-                                          Icons.male_outlined,
-                                          color: Colors.blueAccent,
-                                          size: 20.0,
-                                        ),
+                                  // widget.model.gender == 'FEMALE'
+                                  //     ? const Icon(
+                                  //         Icons.female_outlined,
+                                  //         color: Colors.pink,
+                                  //         size: 20.0,
+                                  //       )
+                                  //     : const Icon(
+                                  //         Icons.male_outlined,
+                                  //         color: Colors.blueAccent,
+                                  //         size: 20.0,
+                                  //       ),
                                   const SizedBox(
                                     width: 4.0,
                                   ),
@@ -135,12 +136,12 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                                     style: widget.model.gender == 'FEMALE'
                                         ? const TextStyle(
                                             fontSize: 16.0,
-                                            color: Colors.pink,
+                                            color: Colors.redAccent,
                                             fontWeight: FontWeight.w600,
                                           )
                                         : const TextStyle(
                                             fontSize: 16.0,
-                                            color: Colors.blueAccent,
+                                            color: Colors.blue,
                                             fontWeight: FontWeight.w600,
                                           ),
                                   ),
@@ -171,7 +172,7 @@ class _BabyCardTwoState extends ConsumerState<BabyCard> {
                       ElevatedButton(
                         onPressed: () {
                           ref.read(selectedBabyProvider.notifier).update((state) => widget.model.id);
-                          context.goNamed(RootScreen.routeName);
+                          context.goNamed(DiaryScreen.routeName);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

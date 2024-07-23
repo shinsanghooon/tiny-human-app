@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:tiny_human_app/common/constant/colors.dart';
 import 'package:tiny_human_app/firebase/firebase_options.dart';
 
+import 'common/constant/keys.dart';
 import 'common/provider/route_provider.dart';
 
 @pragma('vm:entry-point')
@@ -44,6 +46,8 @@ void initializeNotification() async {
       // 추가 액션 정의
       print('onDidReceiveNotificationResponse');
       print(detail);
+
+      // TODO
     },
     // Android Background, Android Terminated, iOS Terminated
     onDidReceiveBackgroundNotificationResponse: backgroundHandler,
@@ -94,12 +98,21 @@ void initializeNotification() async {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // 앱이 백그라운드나 종료 상태에 있을 때 사용자가 푸시 알림을 탭하여 앱을 열었을 경우에 발생하는 이벤트를 처리하는 리스너
       // 액션 추가
+      if (message.data['type'] == 'chat') {
+        message.data['chatId'];
+      } else {
+        // type == help
+        message.data['helpRequestId'];
+      }
     });
   }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -111,7 +124,7 @@ void main() async {
   );
 
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: _App(),
     ),
   );
