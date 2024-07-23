@@ -93,11 +93,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: state is UserModelLoading
                               ? null
                               : () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
                                   if (formKey.currentState == null) {
                                     // formKey는 생성을 했는데, Form 위젯과 결합을 안했을때
 
                                     setState(() {
-                                      isLoading = true;
+                                      isLoading = false;
                                     });
 
                                     return null;
@@ -112,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     // 어떤 필드가 문제가 있는 경우.
 
                                     setState(() {
-                                      isLoading = true;
+                                      isLoading = false;
                                     });
 
                                     return null;
@@ -126,7 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   }
 
                                   setState(() {
-                                    isLoading = true;
+                                    isLoading = false;
                                   });
                                 },
                           style: ElevatedButton.styleFrom(

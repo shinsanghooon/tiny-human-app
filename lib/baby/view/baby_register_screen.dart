@@ -10,7 +10,6 @@ import 'package:tiny_human_app/baby/component/baby_image_register.dart';
 import 'package:tiny_human_app/baby/model/baby_model.dart';
 import 'package:tiny_human_app/baby/provider/baby_provider.dart';
 
-import '../../common/component/alert_dialog.dart';
 import '../../common/component/custom_long_text_form_field.dart';
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/component/loading_spinner.dart';
@@ -147,9 +146,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         if (pickedFile != null) {
           setState(() {
             pickedFilePath = pickedFile!.path;
-            profileImage = Image
-                .file(File(pickedFile!.path))
-                .image;
+            profileImage = Image.file(File(pickedFile!.path)).image;
             fileName = pickedFile.name;
           });
         }
@@ -196,16 +193,9 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
           );
 
           if (response.statusCode != 201) {
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return CustomAlertDialog(
-                    title: '등록 실패',
-                    content: '등록에 실패하였습니다. 잠시 후에 다시 시도해주세요.',
-                    buttonText: '확인',
-                  );
-                });
+            setState(() {
+              isLoading = false;
+            });
           }
 
           String preSignedUrl = response.data['preSignedUrl'];
@@ -236,13 +226,13 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
         child: isLoading
             ? const LoadingSpinner()
             : const Text(
-          "등록 하기",
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+                "등록 하기",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }
@@ -270,10 +260,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
       child: ToggleButtons(
         constraints: BoxConstraints(
           minHeight: 50.0,
-          minWidth: (MediaQuery
-              .of(context)
-              .size
-              .width) / 2.5,
+          minWidth: (MediaQuery.of(context).size.width) / 2.5,
         ),
         onPressed: (int index) {
           setState(() {
@@ -377,7 +364,7 @@ class _BabyRegisterScreenState extends ConsumerState<BabyRegisterScreen> {
                   timeOfBirth = value!;
                 },
                 dropdownMenuEntries: times.map(
-                      (t) {
+                  (t) {
                     return DropdownMenuEntry(value: t, label: '${t}시');
                   },
                 ).toList(),

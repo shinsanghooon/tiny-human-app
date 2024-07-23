@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tiny_human_app/user/provider/auth_provider.dart';
 
+import '../component/show_toast.dart';
 import '../constant/data.dart';
 import '../secure_storage/secure_storage.dart';
 
@@ -26,13 +27,11 @@ class CustomInterceptor extends Interceptor {
     debugPrint('[REQ] [${options.method}] ${options.uri}');
     debugPrint('[REQ] [BODY] [${options.data}]');
 
-    // 만약에 요청의 Header에 accessToken, true 값이 있다면
-    // 실제 토큰을 storage에서 가져와서 헤더를 변경한다.
+    // 만약에 요청의 Header에 accessToken, true 값이 있다면 실제 토큰을 storage에서 가져와서 헤더를 변경한다.
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');
 
       final token = await storage.read(key: ACCESS_TOKEN_KEY);
-      debugPrint('[ACCESS TOKEN] $token');
       options.headers.addAll({
         'Authorization': 'Bearer $token',
       });
@@ -41,7 +40,6 @@ class CustomInterceptor extends Interceptor {
     if (options.headers['refreshToken'] == 'true') {
       options.headers.remove('refreshToken');
       final token = await storage.read(key: REFRESH_TOKEN_KEY);
-      debugPrint('[REFRESH TOKEN] ${token}');
       options.headers.addAll({
         'Authorization': 'Bearer $token',
       });
@@ -54,22 +52,14 @@ class CustomInterceptor extends Interceptor {
   // 3. 에러가 났을때
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    // 401에러가 났을 때
-    // 토큰을 재발급 받는 시도를 하고 토큰이 재발급되면
-    // 다시 새로운 토큰으로 요청을 한다.
-    debugPrint('[ERROR] [${err.requestOptions.method}] ${err.requestOptions.uri} ${err.requestOptions.path}');
-    debugPrint('[ERROR] message: ${err.message}');
-    debugPrint('[ERROR] err object: ${err}');
-
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
 
     // 리프레시 토큰이 아예 없으면 에러를 던진다.
     if (refreshToken == null) {
       // handler.reject로 에러가 생성된다.
-      print('refresh token is null');
-      print('err');
-      print('err $err');
-      print('---');
+
+      // err.requestOptions.path 를 사용해서 요청별 에러 토스트 처리하기
+      showToastWithMessage('요청에 실패하였습니다. 잠시 후에 다시 시도해주세요.');
       return handler.reject(err);
     }
 
@@ -78,8 +68,8 @@ class CustomInterceptor extends Interceptor {
     // 토큰을 발급 받으려다가 에러가 난 것이다.
     final isPathRefresh = err.requestOptions.path == '/api/v1/token';
 
+    // 401 에러가 났을 때 토큰을 재발급 받는 시도를 하고 토큰이 재발급되면 다시 새로운 토큰으로 요청을 한다.
     if (isStatus401 && !isPathRefresh) {
-      debugPrint('[ERROR] RefreshToken Error');
       final dio = Dio();
 
       try {
@@ -99,7 +89,6 @@ class CustomInterceptor extends Interceptor {
         final newResponse = await dio.fetch(options);
         return handler.resolve(newResponse);
       } on DioError catch (e) {
-        print('Else error');
         // jwt 관련 다른 에러(토큰 만료)
 
         // 여기서 userMeProvider를 불러와서 logout을 해주면
@@ -112,7 +101,6 @@ class CustomInterceptor extends Interceptor {
 
     // 이렇게 하면 실제로 요청한 쪽에서는 에러가 안난 것으로 응답을 받게 된다.
     //return handler.resolve(response);
-
     return super.onError(err, handler);
   }
 
