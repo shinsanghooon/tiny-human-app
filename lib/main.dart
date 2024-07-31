@@ -47,7 +47,7 @@ void initializeNotification() async {
       print('onDidReceiveNotificationResponse');
       print(detail);
 
-      // TODO
+      // TODO routing diary page or chat detail page
     },
     // Android Background, Android Terminated, iOS Terminated
     onDidReceiveBackgroundNotificationResponse: backgroundHandler,
